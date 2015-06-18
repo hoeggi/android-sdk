@@ -1,4 +1,4 @@
-package de.falkorichter.android.okvolley;
+package com.sensorberg.sdk.internal.http;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
