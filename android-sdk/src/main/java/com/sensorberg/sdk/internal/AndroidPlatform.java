@@ -37,10 +37,8 @@ import com.sensorberg.sdk.settings.Settings;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +69,7 @@ public class AndroidPlatform implements Platform {
     private Settings settings;
     Class<? extends BroadcastReceiver> genericBroadcastReceiverClass = GenericBroadcastReceiver.class;
     private boolean shouldUseHttpCache = true;
+    private static boolean actionBroadcastReceiversRegistered;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
@@ -290,6 +289,19 @@ public class AndroidPlatform implements Platform {
     @Override
     public void removeStoredPendingIntent(int index) {
         pendingIntentStorage.removeStoredPendingIntent(index);
+    }
+
+    @Override
+    public boolean registerBroadcastReceiver() {
+        if (!actionBroadcastReceiversRegistered) {
+            List<BroadcastReceiver> broadcastReceiver = getBroadcastReceiver();
+            if (broadcastReceiver.isEmpty()) {
+                return false;
+            }
+            registerBroadcastReceiver(broadcastReceiver);
+            actionBroadcastReceiversRegistered = true;
+        }
+        return true;
     }
 
     private PendingIntent getPendingIntent(long index, Bundle extras) {

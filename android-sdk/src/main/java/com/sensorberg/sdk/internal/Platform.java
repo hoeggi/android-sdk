@@ -73,6 +73,8 @@ public interface Platform {
 
     List<BroadcastReceiver> getBroadcastReceiver();
 
+    boolean registerBroadcastReceiver();
+
     void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver);
 
     void setShouldUseHttpCache(boolean shouldUseHttpCache);
@@ -84,6 +86,8 @@ public interface Platform {
     void restorePendingIntents();
 
     void removeStoredPendingIntent(int index);
+
+
 
     interface ForegroundStateListener{
 

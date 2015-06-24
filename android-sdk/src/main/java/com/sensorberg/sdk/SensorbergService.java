@@ -154,15 +154,12 @@ public class SensorbergService extends Service {
             return START_NOT_STICKY;
         }
 
-        List<BroadcastReceiver> broadcastReceiver = platform.getBroadcastReceiver();
-        if (broadcastReceiver.isEmpty()){
+
+        if (!platform.registerBroadcastReceiver()){
             Logger.log.logError("no BroadcastReceiver registered for Action:com.sensorberg.android.PRESENT_ACTION");
             stopSelf();
             return START_NOT_STICKY;
-        } else {
-            platform.registerBroadcastReceiver(broadcastReceiver);
         }
-
 
         if (intent != null) {
             Logger.log.serviceHandlesMessage(MSG.stringFrom(intent.getIntExtra(SensorbergService.EXTRA_GENERIC_TYPE, -1)));
