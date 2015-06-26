@@ -260,6 +260,11 @@ public class TestPlatform implements Platform {
     }
 
     @Override
+    public boolean registerBroadcastReceiver() {
+        return false;
+    }
+
+    @Override
     public void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver) {
         android.util.Log.e(TAG, "NOT IMPLEMENTED");
     }
