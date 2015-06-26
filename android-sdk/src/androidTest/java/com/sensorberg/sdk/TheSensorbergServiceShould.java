@@ -55,7 +55,7 @@ public class TheSensorbergServiceShould extends AndroidTestCase {
         reset(testPlatform);
     }
 
-    public void test_should_persist_the_settings_when_getting_a_new_API_token() throws Exception {
+    public void should_persist_the_settings_when_getting_a_new_API_token() throws Exception {
         tested.onStartCommand(CHANGE_API_KEY_MESSAGE, -1, -1);
         verify(testPlatform).write(any(ServiceConfiguration.class), any(String.class));
     }
