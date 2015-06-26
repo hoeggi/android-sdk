@@ -13,12 +13,15 @@ public class PermissionChecker {
     private final Map<String, Boolean> permissionCache = new HashMap<String, Boolean>();
 
     public PermissionChecker(Context context) {
-
         this.context = context;
     }
 
     public boolean hasVibratePermission() {
         return checkForPermission(Manifest.permission.VIBRATE);
+    }
+
+    public boolean hasReadSyncSettingsPermissions() {
+        return checkForPermission(Manifest.permission.READ_SYNC_SETTINGS);
     }
 
     public boolean hasLocationPermission() {

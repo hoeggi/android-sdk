@@ -70,11 +70,14 @@ public class AndroidPlatform implements Platform {
     Class<? extends BroadcastReceiver> genericBroadcastReceiverClass = GenericBroadcastReceiver.class;
     private boolean shouldUseHttpCache = true;
     private static boolean actionBroadcastReceiversRegistered;
+    private final PermissionChecker permissionChecker;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
         this.clock = new AndroidClock();
         this.context = context;
+
+        permissionChecker = new PermissionChecker(context);
 
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -183,7 +186,11 @@ public class AndroidPlatform implements Platform {
 
     @Override
     public boolean isSyncEnabled() {
-        return ContentResolver.getMasterSyncAutomatically();
+        if (permissionChecker.hasReadSyncSettingsPermissions()) {
+            return ContentResolver.getMasterSyncAutomatically();
+        } else {
+            return true;
+        }
     }
 
     @Override
