@@ -2,11 +2,14 @@ package com.sensorberg.sdk.internal;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.test.AndroidTestCase;
 
 import com.sensorberg.sdk.SensorbergApplicationTest;
 
+import com.sensorberg.sdk.action.Action;
+import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import org.fest.assertions.api.Assertions;
 
@@ -41,18 +44,35 @@ public class TheAndroidPlatformShould extends SensorbergApplicationTest {
 
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        TestGenericBroadcastReceiver2.reset();
+        super.tearDown();
+    }
+
     public void test_should_return_the_sync_setting(){
         AndroidPlatform platform = new AndroidPlatform(getContext());
         Assertions.assertThat(platform.isSyncEnabled()).isTrue();
     }
 
     public void test_should_not_registerBroadcastReceiver_twice(){
+        TestGenericBroadcastReceiver2.reset(1);
+        AndroidPlatform androidPlatform = new AndroidPlatform(getContext());
 
+        androidPlatform.registerBroadcastReceiver();
+        androidPlatform.registerBroadcastReceiver();
+        androidPlatform.registerBroadcastReceiver();
+
+        Intent broadcastIntent = new Intent(ManifestParser.actionString);
+        broadcastIntent.putExtra(Action.INTENT_KEY, "foo");
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcastSync(broadcastIntent);
+
+        Assertions.assertThat(TestGenericBroadcastReceiver2.intentList).hasSize(1);
     }
 
     public void test_should_find_the_TestGenericBroadcastReceiver(){
         List<BroadcastReceiver> list = ManifestParser.findBroadcastReceiver(getContext());
 
-        Assertions.assertThat(list).isNotEmpty();
+        Assertions.assertThat(list).hasSize(2);
     }
 }

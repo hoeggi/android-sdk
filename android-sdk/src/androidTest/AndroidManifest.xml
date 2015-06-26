@@ -6,7 +6,19 @@
     <application
         android:name="android.support.multidex.MultiDexApplication">
         <receiver android:name="com.sensorberg.sdk.internal.TestGenericBroadcastReceiver"
-            android:enabled="true"/>
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.sensorberg.android.PRESENT_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.sensorberg.sdk.internal.TestGenericBroadcastReceiver2"
+            android:process=".sensorberg"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.sensorberg.android.PRESENT_ACTION" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name="com.sensorberg.sdk.testUtils.TestBroadcastReceiver"
             android:process=".sensorberg"
