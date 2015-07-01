@@ -288,10 +288,12 @@ public abstract class Request<T> implements Comparable<Request<T>> {
     }
 
     /**
-     * Returns the cache key for this request.  By default, this is the URL.
+     * Returns the cache key for this request.  By default, this is the URL. Only for GET.
      */
     public String getCacheKey() {
-        return getUrl();
+        if (this.getMethod() == Method.GET) {
+            return getUrl();
+        } return null;
     }
 
     /**

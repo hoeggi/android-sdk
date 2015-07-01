@@ -202,6 +202,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         settings.updateValues();
         //we do not care if sync is disabled, the app is in the foreground so we cache!
         platform.getTransport().updateBeaconLayout();
+        beaconActionHistoryPublisher.publishHistory();
     }
 
     public void hostApplicationInBackground() {

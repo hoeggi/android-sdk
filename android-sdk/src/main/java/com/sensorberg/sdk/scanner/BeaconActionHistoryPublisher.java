@@ -89,6 +89,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
         RealmResults<RealmScan> scans = RealmScan.notSentScans(realm);
         RealmResults<RealmAction> actions = RealmAction.notSentScans(realm);
         if (scans.isEmpty() && actions.isEmpty()){
+            Logger.log.verbose("nothing to report");
             return;
         }
         transport.publishHistory(scans, actions, new HistoryCallback(){
