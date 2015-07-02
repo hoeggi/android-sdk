@@ -12,6 +12,7 @@ import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.realm.migrations.Version0to1Migration;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
@@ -19,7 +20,10 @@ import com.sensorberg.sdk.settings.Settings;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmMigration;
 import io.realm.RealmResults;
+import io.realm.exceptions.RealmMigrationNeededException;
+import io.realm.processor.RealmVersionChecker;
 
 public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.MessageHandlerCallback {
 
@@ -56,8 +60,13 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
 
     @Override
     public void handleMessage(Message queueEvent) {
-        if (realm == null){
-            realm = Realm.getInstance(context, REALM_FILENAME);
+        if (realm == null) {
+            try {
+                realm = Realm.getInstance(context, REALM_FILENAME);
+            } catch (RealmMigrationNeededException e) {
+                Realm.migrateRealmAtPath(REALM_FILENAME, new Version0to1Migration(), false);
+                realm = Realm.getInstance(context, REALM_FILENAME);
+            }
         }
         long now = clock.now();
         switch (queueEvent.what){
