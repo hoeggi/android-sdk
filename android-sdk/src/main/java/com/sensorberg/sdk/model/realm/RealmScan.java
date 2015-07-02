@@ -25,6 +25,7 @@ public class RealmScan extends RealmObject {
     private int proximityMajor;
     private int proximityMinor;
     private long sentToServerTimestamp;
+    private long sentToServerTimestamp2;
     private long createdAt;
 
     public static RealmScan from(ScanEvent scanEvent, Realm realm, long now) {
@@ -34,7 +35,7 @@ public class RealmScan extends RealmObject {
         value.setProximityUUID(scanEvent.getBeaconId().getUuid().toString());
         value.setProximityMajor(scanEvent.getBeaconId().getMajorId());
         value.setProximityMinor(scanEvent.getBeaconId().getMinorId());
-        value.setSentToServerTimestamp(RealmFields.Scan.NO_DATE);
+        value.setSentToServerTimestamp2(RealmFields.Scan.NO_DATE);
         value.setCreatedAt(now);
         return value;
     }
@@ -79,10 +80,20 @@ public class RealmScan extends RealmObject {
         this.eventTime = eventTime;
     }
 
+    /**
+     * Do not use after 1.0.1. There was a bug in volley that prevented the data from being sent to the server correctly.
+     * @return  the deprecated timestamp
+     */
+    @Deprecated()
     public long getSentToServerTimestamp() {
         return sentToServerTimestamp;
     }
 
+    /**
+     * Do not use after 1.0.1. There was a bug in volley that prevented the data from being sent to the server correctly.
+     * @param sentToServerTimestamp the deprecated timestamp
+     */
+    @Deprecated()
     public void setSentToServerTimestamp(long sentToServerTimestamp) {
         this.sentToServerTimestamp = sentToServerTimestamp;
     }
@@ -107,7 +118,7 @@ public class RealmScan extends RealmObject {
 
     public static RealmResults<RealmScan> notSentScans(Realm realm){
         RealmQuery<RealmScan> scans = realm.where(RealmScan.class)
-                .equalTo(RealmFields.Scan.sentToServerTimestamp, RealmFields.Scan.NO_DATE);
+                .equalTo(RealmFields.Scan.sentToServerTimestamp2, RealmFields.Scan.NO_DATE);
         return scans.findAll();
     }
 
@@ -123,7 +134,7 @@ public class RealmScan extends RealmObject {
         if (scans.size() > 0) {
             realm.beginTransaction();
             for (int i = scans.size() - 1; i >= 0; i--) {
-                scans.get(i).setSentToServerTimestamp(now);
+                scans.get(i).setSentToServerTimestamp2(now);
             }
             realm.commitTransaction();
         }
@@ -133,7 +144,7 @@ public class RealmScan extends RealmObject {
     public static void removeAllOlderThan(Realm realm, long now, long cacheTtl) {
         RealmResults<?> actionsToDelete = realm.where(RealmScan.class)
                 .lessThan(RealmFields.Scan.createdAt, now - cacheTtl)
-                .not().equalTo(RealmFields.Scan.sentToServerTimestamp, RealmFields.Action.NO_DATE)
+                .not().equalTo(RealmFields.Scan.sentToServerTimestamp2, RealmFields.Action.NO_DATE)
                 .findAll();
 
         if (actionsToDelete.size() > 0){
@@ -143,6 +154,14 @@ public class RealmScan extends RealmObject {
             }
             realm.commitTransaction();
         }
+    }
+
+    public long getSentToServerTimestamp2() {
+        return sentToServerTimestamp2;
+    }
+
+    public void setSentToServerTimestamp2(long sentToServerTimestamp2) {
+        this.sentToServerTimestamp2 = sentToServerTimestamp2;
     }
 
     public static class RealmScanObjectTypeAdapter extends TypeAdapter<RealmScan> {

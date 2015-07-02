@@ -11,7 +11,9 @@ public class RealmFields {
         String proximityUUID            = "proximityUUID";
         String proximityMajor           = "proximityMajor";
         String proximityMinor           = "proximityMinor";
+        @Deprecated
         String sentToServerTimestamp    = "sentToServerTimestamp";
+        String sentToServerTimestamp2   = "sentToServerTimestamp2";
         String createdAt                = "createdAt";
         long NO_DATE = Long.MIN_VALUE;
     }
@@ -20,7 +22,9 @@ public class RealmFields {
         String actionId                 = "actionId";
         String timeOfPresentation       = "timeOfPresentation";
         String trigger                  = "trigger";
+        @Deprecated
         String sentToServerTimestamp    = "sentToServerTimestamp";
+        String sentToServerTimestamp2   = "sentToServerTimestamp2";
         String createdAt                = "createdAt";
         String pid                      = "pid";
         String keepForever              = "keepForever";
