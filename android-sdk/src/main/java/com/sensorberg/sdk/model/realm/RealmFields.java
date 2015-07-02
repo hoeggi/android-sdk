@@ -11,6 +11,9 @@ public class RealmFields {
         String proximityUUID            = "proximityUUID";
         String proximityMajor           = "proximityMajor";
         String proximityMinor           = "proximityMinor";
+        /**
+         * see {@link RealmScan#setCreatedAt(long)} and {@link RealmScan#getCreatedAt()}
+         */
         @Deprecated
         String sentToServerTimestamp    = "sentToServerTimestamp";
         String sentToServerTimestamp2   = "sentToServerTimestamp2";
@@ -22,6 +25,9 @@ public class RealmFields {
         String actionId                 = "actionId";
         String timeOfPresentation       = "timeOfPresentation";
         String trigger                  = "trigger";
+        /**
+         * see {@link RealmAction#setCreatedAt(long)} and {@link RealmAction#getCreatedAt()}
+         */
         @Deprecated
         String sentToServerTimestamp    = "sentToServerTimestamp";
         String sentToServerTimestamp2   = "sentToServerTimestamp2";
