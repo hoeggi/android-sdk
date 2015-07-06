@@ -170,7 +170,10 @@ public class OkHttpClientTransport implements Transport {
             }
         } else {
             HeadersJsonObjectRequest<T> request = new HeadersJsonObjectRequest<>(method, url, requestHeaders, body, listener, errorlistener, clazz)
-                    .setShouldAlwaysTryWithNetwork(shouldAlwaysTryWithNetwork);;
+                    .setShouldAlwaysTryWithNetwork(shouldAlwaysTryWithNetwork);
+            if (method == Request.Method.POST) {
+                request.setShouldCache(false);
+            }
             setupRetries(request);
             queue.add(request);
         }
