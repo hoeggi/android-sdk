@@ -27,10 +27,12 @@ public class URLFactory {
     private static String BASE_URL = PRODUCTION_BASE_URL;
     private static String customResolverURL = PRODUCTION_RESOLVER_URL;
 
-    public static void switchToProductionEnvironment(){
+    public static Conf switchToProductionEnvironment(){
+        Conf previousConf = new Conf(BASE_URL, SCHEME, customResolverURL);
         BASE_URL = PRODUCTION_BASE_URL;
         SCHEME = "https";
         customResolverURL = PRODUCTION_RESOLVER_URL;
+        return previousConf;
     }
 
     public static Conf switchToStagingEnvironment(){

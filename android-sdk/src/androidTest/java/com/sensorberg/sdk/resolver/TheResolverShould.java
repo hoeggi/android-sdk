@@ -74,6 +74,8 @@ public class TheResolverShould extends AndroidTestCase{
      *
      */
     public void test_enter_exit_action(){
+        URLFactory.Conf env = URLFactory.switchToProductionEnvironment();
+
         androidPlattform.getTransport().setApiToken("8961ee72ea4834053b376ad54007ea277cba4305db12188b74d104351ca8bf8a");
         androidPlattform.clock.setNowInMillis(new DateTime(2015, 7, 3, 1, 1, 1).getMillis());
 
@@ -99,8 +101,7 @@ public class TheResolverShould extends AndroidTestCase{
         resolution.start();
 
 
-
-
+        URLFactory.restorePreviousConf(env);
     }
 
     /**
