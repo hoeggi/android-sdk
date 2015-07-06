@@ -17,6 +17,7 @@ import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
 
+import java.io.File;
 import java.util.List;
 
 import io.realm.Realm;
@@ -64,8 +65,11 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
             try {
                 realm = Realm.getInstance(context, REALM_FILENAME);
             } catch (RealmMigrationNeededException e) {
-                Realm.migrateRealmAtPath(REALM_FILENAME, new Version0to1Migration(), false);
+                Logger.log.logServiceState("database migration needed");
+                Realm.migrateRealmAtPath(new File(context.getFilesDir(), REALM_FILENAME).getPath(), new Version0to1Migration(), false);
+                Logger.log.logServiceState("database migration complete, opening realm again");
                 realm = Realm.getInstance(context, REALM_FILENAME);
+                Logger.log.logServiceState("realm opened successfully");
             }
         }
         long now = clock.now();
