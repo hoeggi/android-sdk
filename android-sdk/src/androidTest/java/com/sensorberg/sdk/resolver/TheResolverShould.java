@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -15,6 +16,7 @@ import org.hamcrest.Description;
 import org.joda.time.DateTime;
 
 import java.util.List;
+import java.util.UUID;
 
 import util.TestConstants;
 
@@ -28,13 +30,14 @@ public class TheResolverShould extends AndroidTestCase{
             .withBeaconId(TestConstants.REGULAR_BEACON_ID)
             .build();
     private Resolver tested;
+    private TestPlatform androidPlattform;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
-        TestPlatform androidPlattform = spy(new TestPlatform());
+        androidPlattform = spy(new TestPlatform());
         androidPlattform.setContext(getContext());
         androidPlattform.setTransport(new OkHttpClientTransport(androidPlattform, null));
         androidPlattform.getTransport().setApiToken(TestConstants.API_TOKEN);
@@ -60,6 +63,44 @@ public class TheResolverShould extends AndroidTestCase{
         ResolutionConfiguration resolutionConiguration = new ResolutionConfiguration();
         resolutionConiguration.setScanEvent(SCANEVENT_1);
         return testedWithFakeBackend.createResolution(resolutionConiguration);
+    }
+
+
+    /**
+     * account falko@sensorberg.com
+     * https://manage.sensorberg.com/#/applications/edit/38eda3c5-649e-4178-9682-314d14abf1fe
+     * https://manage.sensorberg.com/#/campaign/edit/bd67e5ec-4426-4f51-b962-6beea2c82695
+     * https://manage.sensorberg.com/#/beacon/view/14053e1f-567b-43e5-818f-811c700b7ae4
+     *
+     */
+    public void test_enter_exit_action(){
+        androidPlattform.getTransport().setApiToken("8961ee72ea4834053b376ad54007ea277cba4305db12188b74d104351ca8bf8a");
+        androidPlattform.clock.setNowInMillis(new DateTime(2015, 7, 3, 1, 1, 1).getMillis());
+
+        ResolverListener mockListener = new ResolverListener() {
+            @Override
+            public void onResolutionFailed(Resolution resolution, Throwable cause) {
+                fail(cause.getMessage());
+            }
+
+            @Override
+            public void onResolutionsFinished(List<BeaconEvent> events) {
+                Assertions.assertThat(events).hasSize(1);
+            }
+
+        };
+        tested.addResolverListener(mockListener);
+        ResolutionConfiguration conf = new ResolutionConfiguration();
+        conf.setScanEvent(new ScanEvent.Builder()
+                        .withBeaconId(new BeaconId(UUID.fromString("73676723-7400-0000-ffff-0000ffff0003"), 40122, 43878))
+                        .withEventMask(ScanEventType.ENTRY.getMask()).build()
+        );
+        Resolution resolution = tested.createResolution(conf);
+        resolution.start();
+
+
+
+
     }
 
     /**
