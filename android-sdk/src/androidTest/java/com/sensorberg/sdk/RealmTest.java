@@ -24,15 +24,18 @@ import io.realm.Realm;
 import io.realm.exceptions.RealmMigrationNeededException;
 
 import static android.support.test.InstrumentationRegistry.getContext;
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 
 @RunWith(AndroidJUnit4.class)
 public class RealmTest  {
 
     private File realmFile;
+    private File folderForRealmFile;
 
     @Before
     public void setup(){
-        realmFile = new File(getContext().getExternalFilesDir(null), Realm.DEFAULT_REALM_NAME);
+        folderForRealmFile = getContext().getCacheDir();
+        realmFile = new File(folderForRealmFile, Realm.DEFAULT_REALM_NAME);
 
         if (realmFile.exists()){
             realmFile.delete();
@@ -45,7 +48,7 @@ public class RealmTest  {
 
         Assertions.assertThat(realmFile).doesNotExist();
 
-        Realm realm = Realm.getInstance(getContext().getExternalFilesDir(null));
+        Realm realm = Realm.getInstance(folderForRealmFile);
         realm.beginTransaction();
         RealmScan scan = realm.createObject(RealmScan.class);
         scan.setCreatedAt(1);
@@ -62,7 +65,7 @@ public class RealmTest  {
         realm.commitTransaction();
         realm.close();
 
-        File realmFileAfter = new File(getContext().getExternalFilesDir(null), Realm.DEFAULT_REALM_NAME);
+        File realmFileAfter = new File(folderForRealmFile, Realm.DEFAULT_REALM_NAME);
         Assertions.assertThat(realmFileAfter).exists();
 
 
@@ -72,12 +75,11 @@ public class RealmTest  {
     public void shouldBeCreatedFromRawResources() throws IOException {
         InputStream resource = getContext().getResources().openRawResource(com.sensorberg.sdk.test.R.raw.default_version_0);
 
-        realmFile.delete();
         realmFile.createNewFile();
         IOUtils.copy(resource, new FileOutputStream(realmFile));
 
         try{
-            Realm realm = Realm.getInstance(getContext().getExternalFilesDir(null));
+            Realm realm = Realm.getInstance(folderForRealmFile);
             Assertions.assertThat(realm.allObjects(RealmScan.class)).hasSize(1);
             Assertions.assertThat(realm.allObjects(RealmAction.class)).hasSize(1);
         } catch (RealmMigrationNeededException e){
@@ -97,7 +99,7 @@ public class RealmTest  {
 
         Realm.migrateRealmAtPath(realmFile.getPath(), new Version0to1Migration(), false);
 
-        Realm realm = Realm.getInstance(getContext().getExternalFilesDir(null));
+        Realm realm = Realm.getInstance(folderForRealmFile);
         Assertions.assertThat(realm.allObjects(RealmScan.class)).hasSize(1);
         Assertions.assertThat(realm.allObjects(RealmAction.class)).hasSize(1);
 

@@ -37,6 +37,10 @@ version = "${project.ext.SDK_VERSION}${project.ext.RC_VERSION}"
 
 def resolverURL = System.getenv("RESOLVER_URL") ?: project.ext.has("resolver_url") ? project.ext.get("resolver_url"): null
 
+if (resolverURL != null) {
+    println("using custom resolver: ${resolverURL}")
+}
+
 android {
     buildToolsVersion project.ext.buildToolsVersion
     compileSdkVersion project.ext.compileSdkVersion
