@@ -6,6 +6,7 @@ import com.android.sensorbergVolley.Network;
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergApplicationTest;
+import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.internal.BeaconResponseHandler;
@@ -55,7 +56,7 @@ public class TransportShould extends SensorbergApplicationTest {
     public void setUp() throws Exception {
         super.setUp();
         testPlattform = spy(new TestPlatform().setContext(getApplication()));
-        testPlattform.clock.setNowInMillis(new DateTime(2015, 5, 1, 1, 1, 1).getMillis());
+        testPlattform.clock.setNowInMillis(new DateTime(2015, 7, 10, 1, 1, 1).getMillis());
 
         scanEvent = new ScanEvent.Builder()
                 .withBeaconId(new BeaconId(BEACON_ID, MAJOR, MINOR))
@@ -108,7 +109,7 @@ public class TransportShould extends SensorbergApplicationTest {
         tested.getBeacon(new ResolutionConfiguration(scanEvent), new BeaconResponseHandler() {
             @Override
             public void onSuccess(List<BeaconEvent> foundBeaconEvents) {
-                Assertions.assertThat(foundBeaconEvents).overridingErrorMessage("There should be an action to the Beacon %s", scanEvent.getBeaconId().toTraditionalString()).isNotNull().hasSize(1);
+                Assertions.assertThat(foundBeaconEvents).overridingErrorMessage("There should be 1 action to the Beacon %s at %s there were %d", scanEvent.getBeaconId().toTraditionalString(), URLFactory.getResolveURLString(), foundBeaconEvents.size()).isNotNull().hasSize(1);
             }
 
             @Override
