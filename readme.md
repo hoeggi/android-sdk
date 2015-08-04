@@ -76,7 +76,7 @@ If you want to test the procedure, change the **dryRun** variable in the **bintr
 
 ```
 
-#Licence
+#License
 -------
 
 	The MIT License (MIT)
