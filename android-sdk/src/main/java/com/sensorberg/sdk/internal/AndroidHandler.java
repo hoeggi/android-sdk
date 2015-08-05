@@ -7,18 +7,16 @@ import android.os.Message;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class AndroidHandler implements RunLoop {
-    private final MessageHandlerCallback messageHandlerCallback;
     private final LooperThread looper;
     private Timer timer;
 
     public AndroidHandler(MessageHandlerCallback messageHandlerCallback) {
-        this.messageHandlerCallback = messageHandlerCallback;
-
-        looper = new LooperThread();
+        looper = new LooperThread(messageHandlerCallback);
         looper.start();
     }
 
@@ -100,19 +98,36 @@ public class AndroidHandler implements RunLoop {
         add(obtainMessage(what, obj));
     }
 
-    class LooperThread extends Thread {
+    static class LooperThread extends Thread {
         public Handler handler;
+        private MessageHandlerCallback messageHandlerCallback;
+
+        LooperThread(MessageHandlerCallback messageHandlerCallback) {
+            this.messageHandlerCallback = messageHandlerCallback;
+        }
 
         public void run() {
             Looper.prepare();
 
-            handler = new Handler() {
-                public void handleMessage(Message msg) {
-                    messageHandlerCallback.handleMessage(msg);
-                }
-            };
+            handler = new StaticHandler(messageHandlerCallback);
+            messageHandlerCallback = null;
 
             Looper.loop();
+        }
+
+        private static class StaticHandler extends Handler {
+            private final WeakReference<MessageHandlerCallback> messageHandlerCallback;
+
+            public StaticHandler(MessageHandlerCallback messageHandlerCallback) {
+                this.messageHandlerCallback = new WeakReference<>(messageHandlerCallback);
+            }
+
+                public void handleMessage(Message msg) {
+                    MessageHandlerCallback messageHandlerCallback = this.messageHandlerCallback.get();
+                    if (messageHandlerCallback != null) {
+                        messageHandlerCallback.handleMessage(msg);
+                    }
+                }
         }
     }
 }

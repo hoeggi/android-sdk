@@ -7,7 +7,7 @@ import java.util.TimerTask;
 public interface RunLoop {
 
     interface MessageHandlerCallback {
-        public static final MessageHandlerCallback NONE = new MessageHandlerCallback() {
+        MessageHandlerCallback NONE = new MessageHandlerCallback() {
             @Override
             public void handleMessage(Message queueEvent) {
 
