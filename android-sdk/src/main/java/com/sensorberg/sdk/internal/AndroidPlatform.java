@@ -93,6 +93,7 @@ public class AndroidPlatform implements Platform {
         pendingIntentStorage = new PendingIntentStorage(this);
     }
 
+    @SuppressLint("CommitPrefEdits")
     private String getOrCreatInstallationIdentifier() {
         String value;
         SharedPreferences preferences = getSettingsSharedPrefs();
@@ -427,6 +428,7 @@ public class AndroidPlatform implements Platform {
         if (bluetoothLowEnergySupported) {
             leScanRunning = true;
             getCrashCallBackWrapper().setCallback(scanCallback);
+            //noinspection deprecation
             bluetoothAdapter.startLeScan(crashCallBackWrapper);
         }
     }
@@ -435,6 +437,7 @@ public class AndroidPlatform implements Platform {
     @Override
     public void stopLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
         if(bluetoothLowEnergySupported) {
+            //noinspection deprecation
             bluetoothAdapter.stopLeScan(crashCallBackWrapper);
             getCrashCallBackWrapper().setCallback(null);
             leScanRunning = false;

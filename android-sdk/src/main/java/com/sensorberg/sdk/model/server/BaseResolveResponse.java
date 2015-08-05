@@ -7,6 +7,7 @@ public class BaseResolveResponse  {
 
     private List<String> accountProximityUUIDs = Collections.emptyList();
 
+    @SuppressWarnings("unchecked")
     public List<String> getAccountProximityUUIDs() {
         return accountProximityUUIDs == null ? Collections.EMPTY_LIST : accountProximityUUIDs;
     }

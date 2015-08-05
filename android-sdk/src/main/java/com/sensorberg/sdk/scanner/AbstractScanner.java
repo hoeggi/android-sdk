@@ -199,6 +199,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 break;
             }
             case ScannerEvent.RSSI_UPDATED: {
+                //noinspection unchecked
                 Pair<BeaconId, Integer> value = (Pair<BeaconId, Integer>) queueEvent.data;
                 this.rssiListener.onRssiUpdated(value.first, value.second);
                 break;

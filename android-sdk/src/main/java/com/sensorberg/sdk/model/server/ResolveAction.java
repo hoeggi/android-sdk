@@ -84,6 +84,7 @@ public class ResolveAction implements Serializable{
         trigger = in.readInt();
         type = in.readInt();
         name = (String) in.readObject();
+        //noinspection unchecked
         beacons = (List<String>) in.readObject();
         suppressionTime = in.readLong();
         delay = in.readLong();

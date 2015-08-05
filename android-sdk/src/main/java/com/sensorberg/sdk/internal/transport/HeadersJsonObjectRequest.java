@@ -63,6 +63,7 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
             try {
                 String jsonString =
                         new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                //noinspection unchecked
                 return Response.success((T) new JSONObject(jsonString), HttpHeaderParser.parseCacheHeaders(response));
             } catch (UnsupportedEncodingException e) {
                 return Response.error(new ParseError(e));

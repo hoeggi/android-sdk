@@ -86,6 +86,7 @@ public class OkHttpClientTransport implements Transport {
                 }
             }
         };
+        //noinspection unchecked
         perform(Request.Method.GET, getResolveURLString(), null, listener, Response.ErrorListener.NONE, BaseResolveResponse.class, Collections.EMPTY_MAP, true);
     }
 
@@ -145,6 +146,7 @@ public class OkHttpClientTransport implements Transport {
         perform(Request.Method.GET, url, null, listener, errorlistener);
     }
     public void perform(int method, String url, Object body, Response.Listener<JSONObject> listener, Response.ErrorListener errorlistener) {
+        //noinspection unchecked
         perform(method, url, body, listener, errorlistener, JSONObject.class, Collections.EMPTY_MAP, false);
     }
 
@@ -262,6 +264,7 @@ public class OkHttpClientTransport implements Transport {
 
         HistoryBody body = new HistoryBody(scans, actions, platform.getClock());
 
+        //noinspection unchecked
         perform(Request.Method.POST, getResolveURLString(), body, responseListener, errorListener, ResolveResponse.class, Collections.EMPTY_MAP, false);
 
     }

@@ -78,10 +78,12 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
                 realm.commitTransaction();
                 break;
             case MSG_MARK_SCANS_AS_SENT:
+                //noinspection unchecked
                 List<RealmScan> scans = (RealmResults<RealmScan>) queueEvent.obj;
                 RealmScan.maskAsSent(scans, realm, now, settings.getCacheTtl());
                 break;
             case MSG_MARK_ACTIONS_AS_SENT:
+                //noinspection unchecked
                 List<RealmAction> actions = (List<RealmAction>) queueEvent.obj;
                 RealmAction.markAsSent(actions, realm, now, settings.getCacheTtl());
                 break;
