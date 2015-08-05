@@ -8,13 +8,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.Parcelable;
 
 import com.android.sensorbergVolley.RequestQueue;
 import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
-import com.sensorberg.sdk.scanner.ScannerEvent;
 import com.sensorberg.sdk.settings.Settings;
 
 import java.io.File;

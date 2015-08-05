@@ -1,11 +1,9 @@
 package com.sensorberg.sdk.resolver;
 
-import android.content.SyncRequest;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.sensorberg.sdk.action.Action;
-import com.sensorberg.sdk.action.UriMessageAction;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 

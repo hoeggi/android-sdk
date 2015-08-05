@@ -1,7 +1,5 @@
 package com.sensorberg.sdk.model.realm;
 
-import java.util.Date;
-
 public class RealmFields {
 
     public interface Scan {

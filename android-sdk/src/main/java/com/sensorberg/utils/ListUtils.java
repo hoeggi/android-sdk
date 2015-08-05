@@ -1,7 +1,5 @@
 package com.sensorberg.utils;
 
-import com.sensorberg.sdk.model.server.ResolveAction;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

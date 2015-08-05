@@ -1,7 +1,5 @@
 package com.sensorberg.sdk.model.server;
 
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEvent;
@@ -11,7 +9,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class ResolveResponse extends BaseResolveResponse implements Serializable {
 

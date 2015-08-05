@@ -9,9 +9,9 @@ import android.util.Pair;
 
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
+import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.Settings;
 
 import java.io.File;

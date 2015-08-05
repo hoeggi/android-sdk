@@ -1,6 +1,5 @@
 package com.sensorberg.sdk;
 
-import com.sensorberg.sdk.internal.PendingIntentStorage;
 import com.sensorberg.sdk.internal.Platform;
 
 public class MinimalBootstrapper {

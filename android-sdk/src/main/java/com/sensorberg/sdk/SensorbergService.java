@@ -2,7 +2,6 @@ package com.sensorberg.sdk;
 
 import android.annotation.TargetApi;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -28,7 +27,6 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.net.URL;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static android.text.TextUtils.isEmpty;

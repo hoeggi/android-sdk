@@ -4,8 +4,6 @@ import com.android.sensorbergVolley.VolleyError;
 
 import org.json.JSONObject;
 
-import java.util.Map;
-
 public interface SettingsCallback {
     SettingsCallback NONE = new SettingsCallback() {
         @Override

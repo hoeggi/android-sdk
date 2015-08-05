@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.internal.FileHelper;
+import com.sensorberg.sdk.model.BeaconId;
 
 import java.io.File;
 import java.util.HashMap;

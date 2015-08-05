@@ -21,10 +21,8 @@ import java.io.File;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmMigration;
 import io.realm.RealmResults;
 import io.realm.exceptions.RealmMigrationNeededException;
-import io.realm.processor.RealmVersionChecker;
 
 public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.MessageHandlerCallback {
 

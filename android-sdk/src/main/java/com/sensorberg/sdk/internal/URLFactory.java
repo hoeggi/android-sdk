@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Build;
 
 import com.sensorberg.sdk.BuildConfig;
-import com.sensorberg.sdk.scanner.ScanHelper;
 
 import java.net.URL;
 
