@@ -76,7 +76,7 @@ public class BluetoothCrashResolver {
 
     private Context context = null;
     private UpdateNotifier updateNotifier;
-    private Set<String> distinctBluetoothAddresses = new HashSet<String>();
+    private final Set<String> distinctBluetoothAddresses = new HashSet<String>();
     private DiscoveryCanceller discoveryCanceller = new DiscoveryCanceller();
     /**
      // It is very likely a crash if Bluetooth turns off and comes
