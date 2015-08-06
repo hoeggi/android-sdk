@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.scanner;
 
-public class ScannerEvent {
+class ScannerEvent {
     final int type;
     final Object data;
 

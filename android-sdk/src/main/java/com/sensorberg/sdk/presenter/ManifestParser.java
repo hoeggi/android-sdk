@@ -3,10 +3,10 @@ package com.sensorberg.sdk.presenter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Bundle;
+
+import com.sensorberg.sdk.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +33,8 @@ public class ManifestParser {
                 }
                 BroadcastReceiver broadcastReceiver = (BroadcastReceiver) Class.forName(resolveInfo.activityInfo.name).newInstance();
                 result.add(broadcastReceiver);
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (ClassNotFoundException e) {
-
+            } catch (Exception e) {
+                Logger.log.logError("could not find any broadcastreceiver", e);
             }
         }
         return result;

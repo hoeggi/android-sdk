@@ -38,7 +38,7 @@ public class SQLiteStore {
     }
 
     public ArrayList<Entry> loadRegistry() {
-        ArrayList<Entry> values = new ArrayList<Entry>();
+        ArrayList<Entry> values = new ArrayList<>();
         Cursor cursor = diskRegistry.query("Entry", null, null, null, null, null, null);
         if(cursor.moveToFirst()) {
             do {

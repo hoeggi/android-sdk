@@ -18,7 +18,6 @@ import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.FileHelper;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
-import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
@@ -31,6 +30,7 @@ import java.util.Set;
 
 import static android.text.TextUtils.isEmpty;
 
+@SuppressWarnings("WeakerAccess") //external API
 public class SensorbergService extends Service {
 
 

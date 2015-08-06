@@ -137,6 +137,7 @@ public class Settings implements SettingsCallback {
     @Override
     public void onFailure(VolleyError e) {
         Logger.log.logSettingsUpdateState("onFailure");
+        Logger.log.logError("settings update failed", e);
     }
 
     @Override
@@ -194,7 +195,7 @@ public class Settings implements SettingsCallback {
         }
     }
 
-    public void persistToPreferecens(){
+    private void persistToPreferecens(){
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
 

@@ -136,10 +136,7 @@ public class BeaconId implements Parcelable, Serializable {
             return (false);
         }
         BeaconId otherId = (BeaconId) other;
-        if (!Arrays.equals(beaconId, otherId.beaconId)) {
-            return (false);
-        }
-        return (true);
+        return Arrays.equals(beaconId, otherId.beaconId);
     }
 
     @Override

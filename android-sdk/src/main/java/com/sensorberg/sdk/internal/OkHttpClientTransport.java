@@ -161,6 +161,7 @@ public class OkHttpClientTransport implements Transport {
                     .setShouldAlwaysTryWithNetwork(shouldAlwaysTryWithNetwork);
             setupRetries(request);
             queue.add(request);
+            //noinspection TryWithIdenticalCatches
             try {
                 T response = future.get(30, TimeUnit.SECONDS); // this will block
                 listener.onResponse(response);

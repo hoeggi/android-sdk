@@ -12,13 +12,13 @@ import java.util.List;
 
 public final class Resolver implements RunLoop.MessageHandlerCallback {
 
-    final Object listenersMonitor = new Object();
-    final Object resolutionsMonitor = new Object();
+    private final Object listenersMonitor = new Object();
+    private final Object resolutionsMonitor = new Object();
 
     public final ResolverConfiguration configuration;
-    final List<ResolverListener> listeners = new ArrayList<ResolverListener>();
+    private final List<ResolverListener> listeners = new ArrayList<>();
 
-    final CurrentResolutions currentResolutions = new CurrentResolutions();
+    private final CurrentResolutions currentResolutions = new CurrentResolutions();
     private final Transport transport;
     private final RunLoop runLoop;
 

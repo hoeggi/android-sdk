@@ -55,6 +55,7 @@ import java.util.Set;
  *
  * Created by dyoung on 3/24/14.
  */
+@SuppressWarnings({"ConstantConditions", "WeakerAccess", "PointlessBooleanExpression"})
 @TargetApi(5)
 public class BluetoothCrashResolver {
     private static final String TAG = "BluetoothCrashResolver";
@@ -78,8 +79,8 @@ public class BluetoothCrashResolver {
 
     private Context context = null;
     private UpdateNotifier updateNotifier;
-    private final Set<String> distinctBluetoothAddresses = new HashSet<String>();
-    private DiscoveryCanceller discoveryCanceller = new DiscoveryCanceller();
+    private final Set<String> distinctBluetoothAddresses = new HashSet<>();
+    private final DiscoveryCanceller discoveryCanceller = new DiscoveryCanceller();
     /**
      // It is very likely a crash if Bluetooth turns off and comes
      // back on in an extremely short interval.  Testing on a Nexus 4 shows
@@ -177,12 +178,10 @@ public class BluetoothCrashResolver {
      *
      * Future augmentation of this class may improve this by somehow centralizing the list of
      * unique scanned devices.
-     *
-     * @param device
      */
     @TargetApi(18)
     public void notifyScannedDevice(BluetoothDevice device, BluetoothAdapter.LeScanCallback scanner) {
-        int oldSize = 0, newSize = 0;
+        int oldSize = 0, newSize;
 
         if (isDebugEnabled()) oldSize = distinctBluetoothAddresses.size();
 
@@ -372,7 +371,7 @@ public class BluetoothCrashResolver {
 
 
     private void saveState() {
-        FileOutputStream outputStream = null;
+        FileOutputStream outputStream;
         OutputStreamWriter writer = null;
         lastStateSaveTime = new Date().getTime();
 
@@ -396,7 +395,9 @@ public class BluetoothCrashResolver {
             if (writer != null) {
                 try {
                     writer.close();
-                } catch (IOException e1) { }
+                } catch (IOException e1) {
+                    Logger.log.logError("Cant´ write macs", e1);
+                }
             }
         }
         if (isDebugEnabled()) Log.d(TAG, "Wrote "+distinctBluetoothAddresses.size()+" bluetooth addresses");
@@ -404,7 +405,7 @@ public class BluetoothCrashResolver {
     }
 
     private void loadState() {
-        FileInputStream inputStream = null;
+        FileInputStream inputStream;
         BufferedReader reader = null;
 
         try {
@@ -425,10 +426,7 @@ public class BluetoothCrashResolver {
             }
             line = reader.readLine();
             if (line != null) {
-                lastRecoverySucceeded = false;
-                if (line.equals("1")) {
-                    lastRecoverySucceeded = true;
-                }
+                lastRecoverySucceeded = line.equals("1");
             }
 
             String mac;
@@ -445,7 +443,7 @@ public class BluetoothCrashResolver {
             if (reader != null) {
                 try {
                     reader.close();
-                } catch (IOException e1) { }
+                } catch (IOException e1) { Logger.log.logError("close mac reader", e1); }
             }
         }
         if (isDebugEnabled()) Log.d(TAG, "Read "+distinctBluetoothAddresses.size()+" bluetooth addresses");

@@ -19,6 +19,7 @@ public class GenericBroadcastReceiver extends SensorbergBroadcastReceiver{
         context.startService(service);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private String toString(Intent intent) {
         StringBuilder builder = new StringBuilder("action:" + intent.getAction());
         Bundle extras = intent.getExtras();

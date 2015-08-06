@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Resolution {
 
-    final ResolutionConfiguration configuration;
+    public final ResolutionConfiguration configuration;
     private final Resolver resolver;
 
     private final Transport transport;

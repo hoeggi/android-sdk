@@ -36,6 +36,7 @@ public class BeaconMap {
         deleteFile();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void deleteFile() {
         if(file != null) {
             file.delete();

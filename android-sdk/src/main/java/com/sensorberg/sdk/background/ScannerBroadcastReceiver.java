@@ -39,14 +39,14 @@ public class ScannerBroadcastReceiver extends SensorbergBroadcastReceiver {
         context.startService(service);
     }
 
-    public void startScan(Context context) {
+    private void startScan(Context context) {
         Intent service = new Intent(context, SensorbergService.class);
         service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_BLUETOOTH);
         service.putExtra(SensorbergService.EXTRA_BLUETOOTH_STATE, true);
         context.startService(service);
     }
 
-    public void stopScan(Context context) {
+    private void stopScan(Context context) {
         Intent service = new Intent(context, SensorbergService.class);
         service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_BLUETOOTH);
         service.putExtra(SensorbergService.EXTRA_BLUETOOTH_STATE, false);

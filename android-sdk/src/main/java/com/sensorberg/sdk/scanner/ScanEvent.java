@@ -21,14 +21,14 @@ public class ScanEvent implements Parcelable {
             return (new ScanEvent[size]);
         }
     };
-    String hardwareAdress;
+    private String hardwareAdress;
 
-    int initialRssi;
+    private int initialRssi;
 
-    int calRssi;
-    final BeaconId beaconId;
-    final long eventTime;
-    final int eventMask;
+    private int calRssi;
+    private final BeaconId beaconId;
+    private final long eventTime;
+    private final int eventMask;
 
     protected ScanEvent(BeaconId beaconId, long eventTime, int eventMask) {
         this.beaconId = beaconId;
@@ -84,10 +84,7 @@ public class ScanEvent implements Parcelable {
         } else if (!beaconId.equals(other.beaconId)) {
             return (false);
         }
-        if (eventMask != other.eventMask) {
-            return (false);
-        }
-        return (true);
+        return eventMask == other.eventMask;
     }
 
     @Override
@@ -178,8 +175,7 @@ public class ScanEvent implements Parcelable {
         }
 
         public ScanEvent build() {
-            ScanEvent scanEvent = new ScanEvent(beaconId, eventTime, eventMask);
-            return scanEvent;
+            return new ScanEvent(beaconId, eventTime, eventMask);
         }
     }
 

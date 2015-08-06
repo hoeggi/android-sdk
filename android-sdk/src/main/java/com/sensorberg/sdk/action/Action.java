@@ -113,9 +113,8 @@ public abstract class Action implements Parcelable {
 
         Action action = (Action) o;
 
-        if (uuid != null ? !uuid.equals(action.uuid) : action.uuid != null) return false;
+        return !(uuid != null ? !uuid.equals(action.uuid) : action.uuid != null);
 
-        return true;
     }
 
     @Override

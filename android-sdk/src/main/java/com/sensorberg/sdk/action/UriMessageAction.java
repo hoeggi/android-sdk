@@ -27,12 +27,11 @@ public class UriMessageAction extends Action {
 
     /**
      * Creates and initializes a new {@link UriMessageAction}.
-     * @param actionUUID
      * @param title   the title of the {@link com.sensorberg.sdk.action.UriMessageAction}
      * @param content the message of the {@link com.sensorberg.sdk.action.UriMessageAction}
      * @param uri     the URI of the {@link com.sensorberg.sdk.action.UriMessageAction}
-     * @param payload
-     * @param delayTime
+     * @param payload payload from the server
+     * @param delayTime delay in millis
      */
     public UriMessageAction(UUID actionUUID, String title, String content, String uri, String payload, long delayTime) {
         super(ActionType.MESSAGE_URI, delayTime, actionUUID, payload);
@@ -41,7 +40,7 @@ public class UriMessageAction extends Action {
         this.uri = uri;
     }
 
-    protected UriMessageAction(Parcel source) {
+    private UriMessageAction(Parcel source) {
         super(source);
         this.title = source.readString();
         this.content = source.readString();
@@ -94,9 +93,8 @@ public class UriMessageAction extends Action {
 
         if (!content.equals(that.content)) return false;
         if (!title.equals(that.title)) return false;
-        if (!uri.equals(that.uri)) return false;
+        return uri.equals(that.uri);
 
-        return true;
     }
 
     @Override

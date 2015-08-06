@@ -2,6 +2,7 @@ package com.sensorberg.sdk.model.server;
 
 import java.util.Date;
 
+@SuppressWarnings("WeakerAccess") //gson serialization
 public class Timeframe {
     /**
      * can be null, if so, only the end is important.

@@ -44,6 +44,7 @@ import java.util.Set;
  * system.
  * </ul>
  */
+@SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
 public class LocalBroadcastManager {
     private static class ReceiverRecord {
         final IntentFilter filter;
@@ -55,6 +56,7 @@ public class LocalBroadcastManager {
             receiver = _receiver;
         }
 
+        @SuppressWarnings("StringBufferReplaceableByString")
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder(128);
@@ -283,7 +285,7 @@ public class LocalBroadcastManager {
 
     private void executePendingBroadcasts() {
         while (true) {
-            BroadcastRecord[] brs = null;
+            BroadcastRecord[] brs;
             synchronized (mReceivers) {
                 final int N = mPendingBroadcasts.size();
                 if (N <= 0) {

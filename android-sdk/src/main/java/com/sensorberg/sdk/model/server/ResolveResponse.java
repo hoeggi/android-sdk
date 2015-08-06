@@ -14,8 +14,8 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
 
     static final long serialVersionUID = 1L;
 
-    List<ResolveAction> actions = Collections.emptyList();
-    List<ResolveAction> instantActions = Collections.emptyList();
+    private List<ResolveAction> actions = Collections.emptyList();
+    private List<ResolveAction> instantActions = Collections.emptyList();
 
     @SerializedName("reportTrigger")
     public Long reportTriggerSeconds;
@@ -30,7 +30,7 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
     /**
      * used internally to create all the @{ResolveAction} from the @{actions} array
      * @return all matching BeaconEvents
-     * @param scanEvent
+     * @param scanEvent used to match
      */
     private List<ResolveAction> getActionsFromLayout(final ScanEvent scanEvent, final long now) {
         if (actions == null){

@@ -62,7 +62,7 @@ public final class ResolutionConfiguration implements Parcelable{
         dest.writeParcelable(this.scanEvent, 0);
     }
 
-    public ResolutionConfiguration(Parcel in) {
+    private ResolutionConfiguration(Parcel in) {
         this.retry = in.readInt();
         this.maxRetries = in.readInt();
         this.millisBetweenRetries = in.readLong();

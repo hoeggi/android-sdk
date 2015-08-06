@@ -123,9 +123,8 @@ public class BeaconEvent implements Parcelable {
 
         BeaconEvent that = (BeaconEvent) o;
 
-        if (action != null ? !action.equals(that.action) : that.action != null) return false;
+        return !(action != null ? !action.equals(that.action) : that.action != null);
 
-        return true;
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.sensorberg.sdk.resolver;
 
 import android.os.Message;
 
-public final class ResolverEvent {
+final class ResolverEvent {
 
 
     public static final int RESOLUTION_START_REQUESTED = 1;

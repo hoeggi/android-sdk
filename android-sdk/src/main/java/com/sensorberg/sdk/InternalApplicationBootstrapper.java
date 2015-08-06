@@ -90,7 +90,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         platform.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settings.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
     }
 
-    public void updateAlarmsForActionLayoutFetch(){
+    private void updateAlarmsForActionLayoutFetch(){
         if (platform.isSyncEnabled()) {
             platform.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settings.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
         } else{
@@ -154,7 +154,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     @Override
     public void onResolutionFailed(Resolution resolution, Throwable cause) {
-        Logger.log.logError("resolution failed:", cause);
+        Logger.log.logError("resolution failed:"+ resolution.configuration.getScanEvent().getBeaconId().toTraditionalString() , cause);
     }
 
     @Override

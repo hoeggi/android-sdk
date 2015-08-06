@@ -129,6 +129,7 @@ public class AndroidPlatform implements Platform {
         return String.valueOf(pm.getApplicationLabel(ai));
     }
 
+    @SuppressWarnings({"StringConcatenationInsideStringBufferAppend", "StringBufferReplaceableByString"})
     @Override
     public String getUserAgentString() {
         if (userAgentString == null){
@@ -186,9 +187,9 @@ public class AndroidPlatform implements Platform {
         return context;
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean isSyncEnabled() {
-        //noinspection simplifiableifstatement
         if (permissionChecker.hasReadSyncSettingsPermissions()) {
             return ContentResolver.getMasterSyncAutomatically();
         } else {
@@ -347,6 +348,7 @@ public class AndroidPlatform implements Platform {
         FileHelper.write(serializableObject, getFile(fileName));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void removeFile(String fileName) {
         getFile(fileName).delete();

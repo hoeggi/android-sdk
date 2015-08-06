@@ -308,6 +308,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
             }
         };
 
+        @SuppressWarnings("UnusedParameters")
         void onRssiUpdated(BeaconId beaconId, Integer rssiValue);
     }
 }
