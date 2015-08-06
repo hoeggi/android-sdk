@@ -36,7 +36,7 @@ public class ScanEvent implements Parcelable {
         this.eventMask = eventMask;
     }
 
-    protected ScanEvent(Parcel source) {
+    private ScanEvent(Parcel source) {
         this.beaconId = source.readParcelable(BeaconId.class.getClassLoader());
         this.eventTime = source.readLong();
         this.eventMask = source.readInt();

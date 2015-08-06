@@ -50,7 +50,7 @@ public class BeaconEvent implements Parcelable {
         this.trigger = trigger;
     }
 
-    protected BeaconEvent(Parcel source) {
+    private BeaconEvent(Parcel source) {
         action = source.readParcelable(Action.class.getClassLoader());
         resolvedTime = source.readLong();
         suppressionTimeMillis = source.readLong();
