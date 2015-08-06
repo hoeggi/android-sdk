@@ -23,10 +23,10 @@ import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.utils.Objects;
 
-import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +43,7 @@ public class OkHttpClientTransport implements Transport {
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
-    private Map<String, String> headers = new HashMap<String, String>();
+    private final Map<String, String> headers = new HashMap<>();
 
     private final RequestQueue queue;
     private final Platform platform;
@@ -82,6 +82,7 @@ public class OkHttpClientTransport implements Transport {
                 if ( response != null ) {
                     proximityUUIDUpdateHandler.proximityUUIDListUpdated(response.getAccountProximityUUIDs());
                 } else {
+                    //noinspection unchecked not returning null
                     proximityUUIDUpdateHandler.proximityUUIDListUpdated(Collections.EMPTY_LIST);
                 }
             }
@@ -145,12 +146,12 @@ public class OkHttpClientTransport implements Transport {
     public void perform(String url, Response.Listener<JSONObject> listener, Response.ErrorListener errorlistener) {
         perform(Request.Method.GET, url, null, listener, errorlistener);
     }
-    public void perform(int method, String url, Object body, Response.Listener<JSONObject> listener, Response.ErrorListener errorlistener) {
+    private void perform(int method, String url, Object body, Response.Listener<JSONObject> listener, Response.ErrorListener errorlistener) {
         //noinspection unchecked
         perform(method, url, body, listener, errorlistener, JSONObject.class, Collections.EMPTY_MAP, false);
     }
 
-    public <T> void perform(int method, String url, Object body, Response.Listener<T> listener, Response.ErrorListener errorlistener, Class<T> clazz, Map<String, String> headers, boolean shouldAlwaysTryWithNetwork) {
+    private <T> void perform(int method, String url, Object body, Response.Listener<T> listener, Response.ErrorListener errorlistener, Class<T> clazz, Map<String, String> headers, boolean shouldAlwaysTryWithNetwork) {
         Map<String, String> requestHeaders = new HashMap<>(headers);
         requestHeaders.putAll(this.headers);
 
@@ -230,11 +231,11 @@ public class OkHttpClientTransport implements Transport {
 
 
                 if (volleyError.networkResponse != null) {
-                    if (volleyError.networkResponse.statusCode == HttpStatus.SC_NOT_MODIFIED) {
+                    if (volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
                         settingsCallback.nothingChanged();
                         return;
                     }
-                    if (volleyError.networkResponse.statusCode == HttpStatus.SC_NO_CONTENT) {
+                    if (volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_NO_CONTENT) {
                         settingsCallback.onSettingsFound(NO_CONTENT);
                         return;
                     }

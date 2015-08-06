@@ -223,7 +223,7 @@ public class ResolveResponsePerformanceTest  extends AndroidTestCase {
     private ResolveAction getNewAction(ScanEventType event, BeaconId beaconId) {
         return new ResolveAction.Builder()
                 .withBeacons(Arrays.asList(beaconId.getBid()))
-                .withType(ActionFactory.SERVER_TYPE_IN_APP)
+                .withType(ActionFactory.ServerType.IN_APP)
                 .withTrigger(event.getMask())
                 .withUuid(ANY_UUID)
                 .withContent(ANY_IN_APP_JSON)
@@ -239,7 +239,7 @@ public class ResolveResponsePerformanceTest  extends AndroidTestCase {
 
         return new ResolveAction.Builder()
                 .withBeacons(Arrays.asList(bid.getBid()))
-                .withType(ActionFactory.SERVER_TYPE_IN_APP)
+                .withType(ActionFactory.ServerType.IN_APP)
                 .withTrigger(ScanEventType.ENTRY.getMask())
                 .withUuid(ANY_UUID)
                 .withContent(ANY_IN_APP_JSON)

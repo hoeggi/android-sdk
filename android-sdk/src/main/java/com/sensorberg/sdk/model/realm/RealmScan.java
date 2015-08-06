@@ -17,6 +17,8 @@ import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
+//needed for realm serialization
+@SuppressWarnings("WeakerAccess")
 public class RealmScan extends RealmObject {
 
     private long eventTime;

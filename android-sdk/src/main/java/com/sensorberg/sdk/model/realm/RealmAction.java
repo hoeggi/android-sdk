@@ -18,6 +18,8 @@ import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
+//needed for Realm serialization
+@SuppressWarnings("WeakerAccess")
 public class RealmAction extends RealmObject {
 
     private String actionId;

@@ -28,13 +28,13 @@ public class BeaconEvent implements Parcelable {
         }
     };
 
-    private Action action;
+    private final Action action;
     private final long resolvedTime;
     /**
      * time when the action is beeing actually presented, not used neccesary to be added to the @{Parcel}
      */
     private long presentationTime;
-    private long suppressionTimeMillis;
+    private final long suppressionTimeMillis;
     public final boolean sendOnlyOnce;
     public final Date deliverAt;
     public final int trigger;

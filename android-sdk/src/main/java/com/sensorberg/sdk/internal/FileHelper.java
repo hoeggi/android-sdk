@@ -15,6 +15,7 @@ public class FileHelper {
     public static HashMap<BeaconId, EventEntry> readFile(File file) {
         HashMap<BeaconId, EventEntry> value;
         try {
+            //noinspection unchecked if it fails, see catch block
             value = (HashMap<BeaconId, EventEntry>) getContentsOfFileOrNull(file);
             if (value == null){
                 return new HashMap<>();

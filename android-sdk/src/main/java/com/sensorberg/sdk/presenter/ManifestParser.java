@@ -14,17 +14,19 @@ import java.util.List;
 public class ManifestParser {
 
     public static final String actionString = "com.sensorberg.android.PRESENT_ACTION";
-    public static final Intent actionIntent = new Intent();
+    private static final Intent actionIntent = new Intent();
     static {
         actionIntent.setAction(actionString);
     }
 
 
+    @SuppressWarnings("EmptyCatchBlock")
     public static List<BroadcastReceiver> findBroadcastReceiver(Context context) {
         List<BroadcastReceiver> result = new ArrayList<>();
 
         List<ResolveInfo> infos = context.getPackageManager().queryBroadcastReceivers(actionIntent, PackageManager.SIGNATURE_MATCH);
         for (ResolveInfo resolveInfo : infos) {
+
             try {
                 if (!resolveInfo.activityInfo.processName.endsWith(".sensorberg")){
                     continue;
@@ -38,18 +40,5 @@ public class ManifestParser {
             }
         }
         return result;
-    }
-
-    public static String get(String key, Context context) {
-        try {
-            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-            Bundle bundle = ai.metaData;
-            if (bundle == null){
-                return null;
-            }
-            return bundle.getString(key);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
     }
 }

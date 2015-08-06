@@ -26,9 +26,9 @@ public class ScanEvent implements Parcelable {
     int initialRssi;
 
     int calRssi;
-    BeaconId beaconId;
-    long eventTime;
-    int eventMask;
+    final BeaconId beaconId;
+    final long eventTime;
+    final int eventMask;
 
     protected ScanEvent(BeaconId beaconId, long eventTime, int eventMask) {
         this.beaconId = beaconId;

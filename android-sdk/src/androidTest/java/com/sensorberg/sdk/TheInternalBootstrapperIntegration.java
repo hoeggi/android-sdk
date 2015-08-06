@@ -47,7 +47,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
             .withInstantActions(Arrays.asList(
                     new ResolveAction.Builder()
                             .withBeacons(Arrays.asList(TestConstants.ANY_BEACON_ID.getBid()))
-                            .withType(ActionFactory.SERVER_TYPE_IN_APP)
+                            .withType(ActionFactory.ServerType.IN_APP)
                             .withUuid(ANY_UUID)
                             .withContent(ANY_IN_APP_JSON)
                             .build()
@@ -69,7 +69,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
             .withActions(Arrays.asList(
                     new ResolveAction.Builder()
                             .withBeacons(Arrays.asList(TestConstants.ANY_BEACON_ID.getBid()))
-                            .withType(ActionFactory.SERVER_TYPE_IN_APP)
+                            .withType(ActionFactory.ServerType.IN_APP)
                             .withTrigger(ScanEventType.ENTRY.getMask())
                             .withUuid(ANY_UUID)
                             .withContent(ANY_IN_APP_JSON)

@@ -7,6 +7,7 @@ public enum ScanEventType {
     /**
      * Constant indicating the entry event; this is triggered when a device enters the proximity of a beacon
      */
+    @SuppressWarnings("PointlessBitwiseExpression")
     ENTRY(1 << 0),
     /**
      * Constant indicating the exit event; this is triggered when a device exits the proximity of a beacon
@@ -15,7 +16,7 @@ public enum ScanEventType {
 
     private final int mask;
 
-    private ScanEventType(int mask) {
+    ScanEventType(int mask) {
         this.mask = mask;
     }
 

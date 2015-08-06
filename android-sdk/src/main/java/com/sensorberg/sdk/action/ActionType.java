@@ -24,7 +24,7 @@ public enum ActionType {
 
     private final int id;
 
-    private ActionType(int id) {
+    ActionType(int id) {
         this.id = id;
     }
 

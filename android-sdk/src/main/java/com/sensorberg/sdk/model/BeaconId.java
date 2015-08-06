@@ -34,7 +34,7 @@ public class BeaconId implements Parcelable, Serializable {
         }
     };
 
-    protected final byte[] beaconId;
+    private final byte[] beaconId;
     transient private UUID uuid = null;
     /**
      * Creates and initializes a new {@link BeaconId}.

@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.scanner;
 
-import android.bluetooth.BluetoothAdapter;
 import android.test.AndroidTestCase;
 
 import com.sensorberg.sdk.Constants;
@@ -42,7 +41,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         reset(spyPlatform);
         tested.hostApplicationInBackground();
 
-        verify(spyPlatform).stopLeScan(any(BluetoothAdapter.LeScanCallback.class));
+        verify(spyPlatform).stopLeScan();
 
     }
 }

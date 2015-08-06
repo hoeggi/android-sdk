@@ -14,7 +14,7 @@ import com.radiusnetworks.bluetooth.BluetoothCrashResolver;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class CrashCallBackWrapper implements BluetoothAdapter.LeScanCallback{
 
-    final BluetoothAdapter.LeScanCallback NONE = new BluetoothAdapter.LeScanCallback(){
+    private final BluetoothAdapter.LeScanCallback NONE = new BluetoothAdapter.LeScanCallback(){
 
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {

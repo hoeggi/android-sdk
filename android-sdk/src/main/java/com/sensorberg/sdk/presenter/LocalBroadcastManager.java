@@ -16,6 +16,7 @@
 
 package com.sensorberg.sdk.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -82,14 +83,14 @@ public class LocalBroadcastManager {
     private final Context mAppContext;
 
     private final HashMap<BroadcastReceiver, ArrayList<IntentFilter>> mReceivers
-            = new HashMap<BroadcastReceiver, ArrayList<IntentFilter>>();
+            = new HashMap<>();
     private final HashMap<String, ArrayList<ReceiverRecord>> mActions
-            = new HashMap<String, ArrayList<ReceiverRecord>>();
+            = new HashMap<>();
 
     private final ArrayList<BroadcastRecord> mPendingBroadcasts
-            = new ArrayList<BroadcastRecord>();
+            = new ArrayList<>();
 
-    static final int MSG_EXEC_PENDING_BROADCASTS = 1;
+    private static final int MSG_EXEC_PENDING_BROADCASTS = 1;
 
     private final Handler mHandler;
 
@@ -105,6 +106,9 @@ public class LocalBroadcastManager {
         }
     }
 
+
+    //false positive, this is only retained until the next main thread loop
+    @SuppressLint("HandlerLeak")
     private LocalBroadcastManager(Context context) {
         mAppContext = context;
         mHandler = new Handler(context.getMainLooper()) {
@@ -135,7 +139,7 @@ public class LocalBroadcastManager {
             ReceiverRecord entry = new ReceiverRecord(filter, receiver);
             ArrayList<IntentFilter> filters = mReceivers.get(receiver);
             if (filters == null) {
-                filters = new ArrayList<IntentFilter>(1);
+                filters = new ArrayList<>(1);
                 mReceivers.put(receiver, filters);
             }
             filters.add(filter);
@@ -143,7 +147,7 @@ public class LocalBroadcastManager {
                 String action = filter.getAction(i);
                 ArrayList<ReceiverRecord> entries = mActions.get(action);
                 if (entries == null) {
-                    entries = new ArrayList<ReceiverRecord>(1);
+                    entries = new ArrayList<>(1);
                     mActions.put(action, entries);
                 }
                 entries.add(entry);
@@ -222,9 +226,7 @@ public class LocalBroadcastManager {
                     if (debug) Log.v(TAG, "Matching against filter " + receiver.filter);
 
                     if (receiver.broadcasting) {
-                        if (debug) {
-                            Log.v(TAG, "  Filter's target already added");
-                        }
+                        if (debug) {Log.v(TAG, "  Filter's target already added");}
                         continue;
                     }
 
@@ -234,7 +236,7 @@ public class LocalBroadcastManager {
                         if (debug) Log.v(TAG, "  Filter matched!  match=0x" +
                                 Integer.toHexString(match));
                         if (receivers == null) {
-                            receivers = new ArrayList<ReceiverRecord>();
+                            receivers = new ArrayList<>();
                         }
                         receivers.add(receiver);
                         receiver.broadcasting = true;

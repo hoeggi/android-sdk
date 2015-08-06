@@ -33,10 +33,6 @@ import static android.text.TextUtils.isEmpty;
 
 public class SensorbergService extends Service {
 
-    public static final String META_DATA_API_KEY = "com.sensorberg.sdk.ApiKey";
-    public static final String META_DATA_RESOLVER_URL = "com.sensorberg.sdk.resolverURL";
-
-
 
     public static final int MSG_APPLICATION_IN_FOREGROUND   = 1;
     public static final int MSG_APPLICATION_IN_BACKGROUND   = 2;
@@ -135,10 +131,6 @@ public class SensorbergService extends Service {
         super.onCreate();
         platform = new AndroidPlatform(getApplicationContext());
         Logger.log.logServiceState("onCreate");
-        String resolverURL = ManifestParser.get(META_DATA_RESOLVER_URL, this);
-        if (resolverURL != null) {
-            URLFactory.setLayoutURL(resolverURL);
-        }
         JodaTimeAndroid.init(this);
     }
 
@@ -176,10 +168,6 @@ public class SensorbergService extends Service {
             if (intent.hasExtra(EXTRA_START_SERVICE)) {
                 if (bootstrapper == null) {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
-
-                    if (isEmpty(apiKey)){
-                        apiKey = ManifestParser.get(META_DATA_API_KEY, this);
-                    }
 
                     if (!isEmpty(apiKey)) {
                         bootstrapper = new InternalApplicationBootstrapper(platform);
@@ -308,20 +296,17 @@ public class SensorbergService extends Service {
         return START_STICKY;
     }
 
-    private boolean handleDebuggingIntent(Intent intent, Context context) {
+    private void handleDebuggingIntent(Intent intent, Context context) {
         switch (intent.getIntExtra(EXTRA_GENERIC_TYPE, -1)) {
             case MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
                 Toast.makeText(context, "Log disabled " + platform.getHostApplicationId(), Toast.LENGTH_SHORT).show();
-                return true;
             }
             case MSG_TYPE_ENABLE_LOGGING: {
                 Logger.enableVerboseLogging();
                 Toast.makeText(context, "Log enabled " + platform.getHostApplicationId(), Toast.LENGTH_SHORT).show();
-                return true;
             }
         }
-        return false;
     }
 
     private void updateDiskConfiguration(Intent intent) {
@@ -385,10 +370,10 @@ public class SensorbergService extends Service {
     private void createBootstrapperFromDiskConfiguration() {
         try {
             ServiceConfiguration diskConf = (ServiceConfiguration) FileHelper.getContentsOfFileOrNull(platform.getFile(SERVICE_CONFIGURATION));
-            if (diskConf.resolverConfiguration.getResolverLayoutURL() != null){
+            if (diskConf != null && diskConf.resolverConfiguration.getResolverLayoutURL() != null){
                 URLFactory.setLayoutURL(diskConf.resolverConfiguration.getResolverLayoutURL().toString());
             }
-            if (diskConf.isComplete()) {
+            if (diskConf != null && diskConf.isComplete()) {
                 platform.getTransport().setApiToken(diskConf.resolverConfiguration.apiToken);
                 bootstrapper = new InternalApplicationBootstrapper(platform);
             } else{
@@ -443,7 +428,7 @@ public class SensorbergService extends Service {
     }
 
     class MessengerList {
-        private final Set<Messenger> storage = new HashSet<Messenger>();
+        private final Set<Messenger> storage = new HashSet<>();
 
         public void add(Messenger replyTo) {
             storage.clear();

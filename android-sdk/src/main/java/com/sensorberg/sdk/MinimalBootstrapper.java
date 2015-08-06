@@ -2,9 +2,9 @@ package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.internal.Platform;
 
-public class MinimalBootstrapper {
+class MinimalBootstrapper {
 
-    protected final Platform platform;
+    final Platform platform;
 
     public MinimalBootstrapper(Platform platform) {
         this.platform = platform;

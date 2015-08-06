@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class JSONObjectTyeAdapter extends TypeAdapter<JSONObject> {
+class JSONObjectTyeAdapter extends TypeAdapter<JSONObject> {
     @Override
     public void write(JsonWriter out, JSONObject value) throws IOException {
         if (value == null){
@@ -50,7 +50,7 @@ public class JSONObjectTyeAdapter extends TypeAdapter<JSONObject> {
     }
 
 
-    public JSONObject readJSONObject(JsonReader in) throws IOException {
+    private JSONObject readJSONObject(JsonReader in) throws IOException {
         JSONObject value = new JSONObject();
 
         in.beginObject();
@@ -106,7 +106,7 @@ public class JSONObjectTyeAdapter extends TypeAdapter<JSONObject> {
         }
     }
 
-    private JSONArray readJSONArray(JsonReader in) throws IOException, JSONException {
+    private JSONArray readJSONArray(JsonReader in) throws IOException {
         JSONArray value = new JSONArray();
         in.beginArray();
         while (in.hasNext()) {

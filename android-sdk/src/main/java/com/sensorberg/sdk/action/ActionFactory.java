@@ -9,9 +9,12 @@ import java.util.UUID;
 
 public class ActionFactory {
 
-    public static final int SERVER_TYPE_URL_MESSAGE        = 1;
-    public static final int SERVER_TYPE_VISIT_WEBSITE      = 2;
-    public static final int SERVER_TYPE_IN_APP             = 3;
+    public interface ServerType {
+        int URL_MESSAGE     = 1;
+        int VISIT_WEBSITE   = 2;
+        int IN_APP          = 3;
+    }
+
 
     private static final String SUBJECT = "subject";
     private static final String BODY = "body";
@@ -44,7 +47,7 @@ public class ActionFactory {
         }
 
         switch (actionType){
-            case SERVER_TYPE_URL_MESSAGE:{
+            case ServerType.URL_MESSAGE:{
                 value = new UriMessageAction(
                         actionUUID,
                         message.getString(SUBJECT),
@@ -55,7 +58,7 @@ public class ActionFactory {
                 );
                 break;
             }
-            case SERVER_TYPE_VISIT_WEBSITE:{
+            case ServerType.VISIT_WEBSITE:{
                 value = new VisitWebsiteAction(
                         actionUUID,
                         message.optString(SUBJECT, null),
@@ -66,7 +69,7 @@ public class ActionFactory {
                 );
                 break;
             }
-            case SERVER_TYPE_IN_APP:{
+            case ServerType.IN_APP:{
                 value = new InAppAction(
                         actionUUID,
                         message.optString(SUBJECT, null),

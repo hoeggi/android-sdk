@@ -7,7 +7,7 @@ public class EventEntry implements Serializable {
     private static final long serialVersionUID = 1L;
 
     long lastBeaconTime;
-    int  eventMask;
+    private final int  eventMask;
 
     EventEntry(EventEntry other) {
         this.lastBeaconTime = other.lastBeaconTime;

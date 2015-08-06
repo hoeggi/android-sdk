@@ -21,9 +21,9 @@ public class UriMessageAction extends Action {
             return (new UriMessageAction[size]);
         }
     };
-    private String title;
-    private String content;
-    private String uri;
+    private final String title;
+    private final String content;
+    private final String uri;
 
     /**
      * Creates and initializes a new {@link UriMessageAction}.

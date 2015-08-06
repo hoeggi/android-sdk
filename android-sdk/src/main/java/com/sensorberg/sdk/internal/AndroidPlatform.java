@@ -62,7 +62,7 @@ public class AndroidPlatform implements Platform {
     private String deviceInstallationIdentifier;
 
     private boolean leScanRunning = false;
-    private Set<Integer> repeatingPendingIntents = new HashSet<>();
+    private final Set<Integer> repeatingPendingIntents = new HashSet<>();
 
     private final PersistentIntegerCounter postToServiceCounter;
     private final PendingIntentStorage pendingIntentStorage;
@@ -139,6 +139,7 @@ public class AndroidPlatform implements Platform {
             StringBuilder userAgent = new StringBuilder();
             userAgent.append(appLabel + "/" + packageName + "/" + appVersion);
             userAgent.append(" ");
+            //noinspection deprecation old API compatability
             userAgent.append("(Android " + Build.VERSION.RELEASE + " "+  Build.CPU_ABI +")");
             userAgent.append(" ");
             userAgent.append("(" + Build.MANUFACTURER+ ":" + android.os.Build.MODEL + ":" + android.os.Build.PRODUCT + ")");
@@ -187,6 +188,7 @@ public class AndroidPlatform implements Platform {
 
     @Override
     public boolean isSyncEnabled() {
+        //noinspection simplifiableifstatement
         if (permissionChecker.hasReadSyncSettingsPermissions()) {
             return ContentResolver.getMasterSyncAutomatically();
         } else {
@@ -405,11 +407,9 @@ public class AndroidPlatform implements Platform {
      * @return a flag indicating whether Bluetooth is enabled
      */
     @Override
-    public boolean isBluetoothLowEnergyDeviceTurnedOn(){
-        if (!bluetoothLowEnergySupported) {
-            return false;
-        }
-        return (bluetoothAdapter.isEnabled());
+    public boolean isBluetoothLowEnergyDeviceTurnedOn() {
+        //noinspection SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement
+        return bluetoothLowEnergySupported && (bluetoothAdapter.isEnabled());
     }
 
     /**
@@ -428,16 +428,16 @@ public class AndroidPlatform implements Platform {
         if (bluetoothLowEnergySupported) {
             leScanRunning = true;
             getCrashCallBackWrapper().setCallback(scanCallback);
-            //noinspection deprecation
+            //noinspection deprecation old API compatability
             bluetoothAdapter.startLeScan(crashCallBackWrapper);
         }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
-    public void stopLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
+    public void stopLeScan() {
         if(bluetoothLowEnergySupported) {
-            //noinspection deprecation
+            //noinspection deprecation old API compatability
             bluetoothAdapter.stopLeScan(crashCallBackWrapper);
             getCrashCallBackWrapper().setCallback(null);
             leScanRunning = false;
@@ -470,7 +470,7 @@ public class AndroidPlatform implements Platform {
         return new AndroidHandler(callback);
     }
 
-    public CrashCallBackWrapper getCrashCallBackWrapper() {
+    private CrashCallBackWrapper getCrashCallBackWrapper() {
         if (crashCallBackWrapper == null) {
             if (bluetoothLowEnergySupported) {
                 crashCallBackWrapper = new CrashCallBackWrapper(context);

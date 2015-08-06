@@ -14,11 +14,11 @@ import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
 
-import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.util.Date;
 import java.util.Map;
 
@@ -28,9 +28,7 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
     private final Class<T> clazz;
     private boolean shouldAlwaysTryWithNetwork = false;
 
-    private static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-
-    public static Gson gson = new GsonBuilder()
+    public static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Date.class, ISO8601TypeAdapter.DATE_ADAPTER)
             .registerTypeAdapter(RealmScan.ADAPTER_TYPE(), new RealmScan.RealmScanObjectTypeAdapter())
             .registerTypeAdapter(RealmScan.class, new RealmScan.RealmScanObjectTypeAdapter())
@@ -53,7 +51,7 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
 
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
-        if (response.statusCode == HttpStatus.SC_NO_CONTENT){
+        if (response.statusCode == HttpURLConnection.HTTP_NO_CONTENT){
             return Response.success(null, null);
         }
         if (clazz == Cache.Entry.class){
@@ -63,7 +61,7 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
             try {
                 String jsonString =
                         new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                //noinspection unchecked
+                //noinspection unchecked -> see if condition
                 return Response.success((T) new JSONObject(jsonString), HttpHeaderParser.parseCacheHeaders(response));
             } catch (UnsupportedEncodingException e) {
                 return Response.error(new ParseError(e));

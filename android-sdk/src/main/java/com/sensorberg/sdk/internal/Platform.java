@@ -88,7 +88,7 @@ public interface Platform {
 
     interface ForegroundStateListener{
 
-        static final ForegroundStateListener NONE = new ForegroundStateListener() {
+        ForegroundStateListener NONE = new ForegroundStateListener() {
             @Override
             public void hostApplicationInBackground() {
 
@@ -125,7 +125,7 @@ public interface Platform {
     void startLeScan(BluetoothAdapter.LeScanCallback scanCallback);
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    void stopLeScan(BluetoothAdapter.LeScanCallback scanCallback);
+    void stopLeScan();
 
     boolean isLeScanRunning();
 

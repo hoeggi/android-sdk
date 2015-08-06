@@ -14,11 +14,11 @@ import java.util.List;
 public class Resolution {
 
     final ResolutionConfiguration configuration;
-    final Resolver resolver;
+    private final Resolver resolver;
 
     private final Transport transport;
 
-    protected Resolution(Resolver resolver, ResolutionConfiguration configuration, Transport transport) {
+    Resolution(Resolver resolver, ResolutionConfiguration configuration, Transport transport) {
         this.transport = transport;
         this.configuration = configuration;
         this.resolver = resolver;

@@ -7,6 +7,8 @@ import com.sensorberg.sdk.model.realm.RealmScan;
 import java.util.Date;
 import java.util.List;
 
+//serialized by gson
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class HistoryBody {
 
     public final List<RealmScan> events;

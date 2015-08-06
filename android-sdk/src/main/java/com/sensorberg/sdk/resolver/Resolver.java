@@ -20,7 +20,7 @@ public final class Resolver implements RunLoop.MessageHandlerCallback {
 
     final CurrentResolutions currentResolutions = new CurrentResolutions();
     private final Transport transport;
-    private RunLoop runLoop;
+    private final RunLoop runLoop;
 
     public Resolver(ResolverConfiguration configuration, Platform platform) {
         this.configuration = configuration;

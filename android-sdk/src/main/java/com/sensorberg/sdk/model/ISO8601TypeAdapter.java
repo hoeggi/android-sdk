@@ -13,13 +13,9 @@ import java.util.Date;
 
 public abstract class ISO8601TypeAdapter extends TypeAdapter<Date>{
 
-    protected final DateTimeFormatter iso8601Format;
+    private static final DateTimeFormatter iso8601Format = ISODateTimeFormat.dateTime();
 
-    private ISO8601TypeAdapter() {
-        this.iso8601Format = ISODateTimeFormat.dateTime();
-    }
-
-    public static TypeAdapter<Date> DATE_ADAPTER = new ISO8601TypeAdapter() {
+    public static final TypeAdapter<Date> DATE_ADAPTER = new ISO8601TypeAdapter() {
         @Override
         public void write(JsonWriter out, Date value) throws IOException {
             if (value != null) {

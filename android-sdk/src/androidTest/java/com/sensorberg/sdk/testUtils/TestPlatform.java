@@ -15,11 +15,9 @@ import com.android.sensorbergVolley.RequestQueue;
 import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
-import com.sensorberg.sdk.internal.SQLiteStore;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.FileHelper;
-import com.sensorberg.sdk.internal.PendingIntentStorage;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
@@ -315,7 +313,7 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public void stopLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
+    public void stopLeScan() {
         this.scanCallback = null;
     }
 

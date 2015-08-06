@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 
-public class PendingIntentStorage {
+class PendingIntentStorage {
     private final Platform platform;
     private final SQLiteStore storage;
 

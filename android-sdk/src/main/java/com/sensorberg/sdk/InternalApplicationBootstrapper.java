@@ -44,7 +44,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     private final Object proximityUUIDsMonitor = new Object();
 
     private SensorbergService.MessengerList presentationDelegate;
-    Set<String> proximityUUIDs = new HashSet<>();
+    final Set<String> proximityUUIDs = new HashSet<>();
 
     public InternalApplicationBootstrapper(Platform plattform){
         super(plattform);
@@ -86,7 +86,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         platform.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, settings.getHistoryUploadInterval(), TimeUnit.MILLISECONDS);
     }
 
-    public void setUpAlarmsForSettings(){
+    private void setUpAlarmsForSettings(){
         platform.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settings.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
     }
 
@@ -223,19 +223,19 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     @Override
     public void onSettingsUpdateIntervalChange(Long updateIntervalMillies) {
         this.platform.cancel(SensorbergService.MSG_SETTINGS_UPDATE);
-        this.platform.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settings.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
+        this.platform.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, updateIntervalMillies, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void onSettingsBeaconLayoutUpdateIntervalChange(long newLayoutUpdateInterval) {
         this.platform.cancel(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
-        this.platform.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settings.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
+        this.platform.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, newLayoutUpdateInterval, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void onHistoryUploadIntervalChange(long newHistoryUploadInterval) {
         this.platform.cancel(SensorbergService.MSG_UPLOAD_HISTORY);
-        this.platform.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, settings.getHistoryUploadInterval(), TimeUnit.MILLISECONDS);
+        this.platform.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, newHistoryUploadInterval, TimeUnit.MILLISECONDS);
     }
 
     public void retryScanEventResolve(ResolutionConfiguration retry) {

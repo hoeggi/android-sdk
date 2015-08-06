@@ -103,8 +103,7 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
 
 
         public ResolveResponse build() {
-            ResolveResponse resolveResponse = new ResolveResponse(accountProximityUUIDs, actions, instantActions);
-            return resolveResponse;
+            return new ResolveResponse(accountProximityUUIDs, actions, instantActions);
         }
     }
 }

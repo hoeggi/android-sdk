@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("WeakerAccess")
 public class ResolveAction implements Serializable{
 
     static final long serialVersionUID = 1L;
@@ -41,6 +42,7 @@ public class ResolveAction implements Serializable{
         }
     };
 
+
     public String eid;
     public int trigger;
     public int type;
@@ -54,6 +56,7 @@ public class ResolveAction implements Serializable{
     public List<Timeframe> timeframes;
     public Date deliverAt;
 
+    @SuppressWarnings("WeakerAccess")
     public ResolveAction(String uuid, int trigger, int type, String name, List<String> beacons, long suppressionTime, long delay, boolean reportImmediately, JSONObject content, Date deliverAt) {
         this.eid = uuid;
         this.trigger = trigger;
@@ -84,7 +87,7 @@ public class ResolveAction implements Serializable{
         trigger = in.readInt();
         type = in.readInt();
         name = (String) in.readObject();
-        //noinspection unchecked
+        //noinspection unchecked -> see writeObject
         beacons = (List<String>) in.readObject();
         suppressionTime = in.readLong();
         delay = in.readLong();

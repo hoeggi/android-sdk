@@ -10,7 +10,7 @@ import java.util.Map;
 public class PermissionChecker {
 
     private final Context context;
-    private final Map<String, Boolean> permissionCache = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> permissionCache = new HashMap<>();
 
     public PermissionChecker(Context context) {
         this.context = context;

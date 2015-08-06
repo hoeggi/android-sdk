@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ResolverListener {
 
-    public static ResolverListener NONE = new ResolverListener() {
+    ResolverListener NONE = new ResolverListener() {
         @Override
         public void onResolutionFailed(Resolution resolution, Throwable cause) {
 

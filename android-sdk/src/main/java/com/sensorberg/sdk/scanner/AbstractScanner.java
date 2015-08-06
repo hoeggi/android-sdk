@@ -22,21 +22,21 @@ import java.util.TimerTask;
 public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback, Platform.ForegroundStateListener {
 
     private static final long NEVER_STOPPED = 0L;
-    protected final Platform platform;
+    final Platform platform;
 
-    public long waitTime = Settings.DEFAULT_BACKGROUND_WAIT_TIME;
-    public long scanTime = Settings.DEFAULT_BACKGROUND_SCAN_TIME;
+    long waitTime = Settings.DEFAULT_BACKGROUND_WAIT_TIME;
+    long scanTime = Settings.DEFAULT_BACKGROUND_SCAN_TIME;
    
-    protected Settings settings;
+    private final Settings settings;
 
 
-    final ScanCallback scanCallback = new ScanCallback();
-    final Object listenersMonitor = new Object();
-    final List<ScannerListener> listeners = new ArrayList<ScannerListener>();
+    private final ScanCallback scanCallback = new ScanCallback();
+    private final Object listenersMonitor = new Object();
+    private final List<ScannerListener> listeners = new ArrayList<>();
 
     private final Object enteredBeaconsMonitor = new Object();
     private final BeaconMap enteredBeacons;
-    protected final RunLoop runLoop;
+    final RunLoop runLoop;
     private long lastStopTimestamp = NEVER_STOPPED; // this.platform.getClock().now(); // or 0L
 
     private long started;
@@ -47,7 +47,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private RssiListener rssiListener = RssiListener.NONE;
 
-    public AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates) {
+    AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates) {
         this.platform = platform;
         this.settings = settings;
         scanning = false;
@@ -69,7 +69,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
         }
     }
 
-    void checkAndExitEnteredBeacons() {
+    private void checkAndExitEnteredBeacons() {
         final long now = platform.getClock().now();
         lastExitCheckTimestamp = now;
         synchronized (enteredBeaconsMonitor) {
@@ -94,7 +94,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     /**
      * Clears the {@link ScanEvent} cache.
      */
-    public void clearCache() {
+    private void clearCache() {
         synchronized (enteredBeaconsMonitor) {
             enteredBeacons.clear();
         }
@@ -109,7 +109,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
         return scanning;
     }
 
-    void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+    private void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
         Pair<BeaconId,Integer> beacon = ScanHelper.getBeaconID(scanRecord);
         if (beacon != null) {
             BeaconId beaconId = beacon.first;
@@ -154,15 +154,14 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 break;
             }
             case ScannerEvent.PAUSE_SCAN: {
-                platform.stopLeScan(scanCallback);
+                platform.stopLeScan();
                 Logger.log.scannerStateChange("sleeping for" + waitTime + "millis");
                 scheduleExecution(ScannerEvent.UN_PAUSE_SCAN, waitTime);
                 runLoop.cancelFixedRateExecution();
                 break;
             }
             case ScannerEvent.UN_PAUSE_SCAN: {
-                long now = platform.getClock().now();
-                lastScanStart = now;
+                lastScanStart = platform.getClock().now();
                 lastBreakLength = platform.getClock().now() - lastExitCheckTimestamp;
                 Logger.log.scannerStateChange("starting to scan again, scan break was " + lastBreakLength + "millis");
                 if (scanning) {
@@ -183,7 +182,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 started = 0;
                 scanning = false;
                 clearScheduledExecutions();
-                platform.stopLeScan(scanCallback);
+                platform.stopLeScan();
                 lastStopTimestamp = platform.getClock().now();
                 runLoop.cancelFixedRateExecution();
                 Logger.log.scannerStateChange("scan stopped");
@@ -199,7 +198,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 break;
             }
             case ScannerEvent.RSSI_UPDATED: {
-                //noinspection unchecked
+                //noinspection unchecked -> see useage of ScannerEvent.RSSI_UPDATED
                 Pair<BeaconId, Integer> value = (Pair<BeaconId, Integer>) queueEvent.data;
                 this.rssiListener.onRssiUpdated(value.first, value.second);
                 break;
@@ -213,7 +212,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     protected abstract void clearScheduledExecutions();
 
-    public void loop() {
+    private void loop() {
         if (platform.getClock().now() > (started + settings.getExitTimeout())) {
             if (platform.isLeScanRunning()) {
                 checkAndExitEnteredBeacons();
@@ -256,7 +255,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    class ScanCallback implements BluetoothAdapter.LeScanCallback {
+    private class ScanCallback implements BluetoothAdapter.LeScanCallback {
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             AbstractScanner.this.onLeScan(device, rssi, scanRecord);
         }
@@ -300,14 +299,15 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
         }
     }
 
+    @SuppressWarnings("EmptyMethod")
     public interface RssiListener {
         RssiListener NONE = new RssiListener() {
             @Override
-            public void onRssiUpdated(BeaconId first, Integer second) {
+            public void onRssiUpdated(BeaconId beaconId, Integer rssiValue) {
 
             }
         };
 
-        void onRssiUpdated(BeaconId first, Integer second);
+        void onRssiUpdated(BeaconId beaconId, Integer rssiValue);
     }
 }
