@@ -120,7 +120,7 @@ public class TheResolverShould extends AndroidTestCase{
         ResolverListener mockListener = new ResolverListener() {
             @Override
             public void onResolutionFailed(Resolution resolution, Throwable cause) {
-                fail(cause.getMessage());
+                fail(cause.getMessage() + resolution.toString());
             }
 
             @Override
