@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.sensorberg.sdk.model.BeaconId;
+import com.sensorberg.utils.Objects;
 
 /**
  * Class {@link ScanEvent} represents an event.
@@ -77,12 +78,8 @@ public class ScanEvent implements Parcelable {
             return (false);
         }
         ScanEvent other = (ScanEvent) object;
-        if (beaconId == null) {
-            if (other.beaconId != null) {
-                return (false);
-            }
-        } else if (!beaconId.equals(other.beaconId)) {
-            return (false);
+        if (!Objects.equals(beaconId, other.beaconId)){
+            return false;
         }
         return eventMask == other.eventMask;
     }

@@ -2,6 +2,8 @@ package com.sensorberg.sdk.action;
 
 import android.os.Parcel;
 
+import com.sensorberg.utils.Objects;
+
 import java.util.UUID;
 
 /**
@@ -91,9 +93,9 @@ public class UriMessageAction extends Action {
 
         UriMessageAction that = (UriMessageAction) o;
 
-        if (!content.equals(that.content)) return false;
-        if (!title.equals(that.title)) return false;
-        return uri.equals(that.uri);
+        return  Objects.equals(content, that.content) &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(uri, that.uri);
 
     }
 

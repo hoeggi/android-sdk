@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
+import com.sensorberg.utils.Objects;
 
 import java.util.Date;
 
@@ -123,7 +124,7 @@ public class BeaconEvent implements Parcelable {
 
         BeaconEvent that = (BeaconEvent) o;
 
-        return !(action != null ? !action.equals(that.action) : that.action != null);
+        return Objects.equals(action, that.action);
 
     }
 
