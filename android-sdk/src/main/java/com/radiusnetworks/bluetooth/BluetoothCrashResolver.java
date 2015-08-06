@@ -195,9 +195,9 @@ public class BluetoothCrashResolver {
         }
         if (distinctBluetoothAddresses.size()  > getCrashRiskDeviceCount()) {
             if (PREEMPTIVE_ACTION_ENABLED && !recoveryInProgress) {
-                Log.w(TAG, "Large number of bluetooth devices detected: "+distinctBluetoothAddresses.size()+" Proactively attempting to clear out address list to prevent a crash");
-                Log.w(TAG, "Stopping LE Scan");
-                //noinspection deprecation
+                Logger.log.verbose("Large number of bluetooth devices detected: "+distinctBluetoothAddresses.size()+" Proactively attempting to clear out address list to prevent a crash");
+                Logger.log.verbose(TAG, "Stopping LE Scan");
+                //noinspection deprecation old API compatability
                 BluetoothAdapter.getDefaultAdapter().stopLeScan(scanner);
                 startRecovery();
                 processStateChange();
@@ -210,12 +210,11 @@ public class BluetoothCrashResolver {
             if (isDebugEnabled()) Log.d(TAG, "Ignoring crashes before SDK 18, because BLE is unsupported.");
             return;
         }
-        Log.w(TAG, "BluetoothService crash detected");
+        Logger.log.verbose("BluetoothService crash detected");
         if (distinctBluetoothAddresses.size() > 0) {
             if (isDebugEnabled()) Log.d(TAG, "Distinct bluetooth devices seen at crash: "+distinctBluetoothAddresses.size());
         }
-        long nowTimestamp = new Date().getTime();
-        lastBluetoothCrashDetectionTime = nowTimestamp;
+        lastBluetoothCrashDetectionTime = new Date().getTime();
         detectedCrashCount++;
 
         if (recoveryInProgress) {
@@ -243,7 +242,7 @@ public class BluetoothCrashResolver {
     public boolean isRecoveryInProgress() { return recoveryInProgress; }
 
     public interface UpdateNotifier {
-        public void dataUpdated();
+        void dataUpdated();
     }
 
     public void setUpdateNotifier(UpdateNotifier updateNotifier) {
@@ -288,7 +287,7 @@ public class BluetoothCrashResolver {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (isDebugEnabled()) Log.d(TAG, "about to check if discovery is active");
         if (!adapter.isDiscovering()) {
-            Log.w(TAG, "Recovery attempt started");
+            Logger.log.verbose("Recovery attempt started");
             recoveryInProgress = true;
             discoveryStartConfirmed = false;
             if (isDebugEnabled()) Log.d(TAG, "about to command discovery");
