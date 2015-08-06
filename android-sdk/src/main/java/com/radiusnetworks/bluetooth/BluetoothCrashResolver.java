@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.sensorberg.sdk.Logger;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -291,7 +293,7 @@ public class BluetoothCrashResolver {
             discoveryStartConfirmed = false;
             if (isDebugEnabled()) Log.d(TAG, "about to command discovery");
             if (!adapter.startDiscovery()) {
-                Log.w(TAG, "Can't start discovery.  Is bluetooth turned on?");
+                Logger.log.verbose("Can't start discovery.  Is bluetooth turned on?");
             }
             if (isDebugEnabled()) Log.d(TAG, "startDiscovery commanded.  isDiscovering()="+adapter.isDiscovering());
             // We don't actually need to do a discovery -- we just need to kick one off so the
@@ -302,16 +304,16 @@ public class BluetoothCrashResolver {
                 discoveryCanceller.doInBackground();
             }
             else {
-                Log.d(TAG, "We will let this discovery run its course.");
+                Logger.log.verbose("We will let this discovery run its course.");
             }
         }
         else {
-            Log.w(TAG, "Already discovering.  Recovery attempt abandoned.");
+            Logger.log.verbose("Already discovering.Recovery attempt abandoned.");
         }
 
     }
     private void finishRecovery() {
-        Log.w(TAG, "Recovery attempt finished");
+        Logger.log.verbose("Recovery attempt finished");
         distinctBluetoothAddresses.clear();
         recoveryInProgress = false;
     }
@@ -389,7 +391,7 @@ public class BluetoothCrashResolver {
                 }
             }
         } catch (IOException e) {
-            Log.w(TAG, "Can't write macs to "+DISTINCT_BLUETOOTH_ADDRESSES_FILE);
+            Logger.log.verbose("Can't write macs to " + DISTINCT_BLUETOOTH_ADDRESSES_FILE);
         }
         finally {
             if (writer != null) {
@@ -436,9 +438,9 @@ public class BluetoothCrashResolver {
             }
 
         } catch (IOException e) {
-            Log.w(TAG, "Can't read macs from "+DISTINCT_BLUETOOTH_ADDRESSES_FILE);
+            Logger.log.verbose("Can't read macs from " + DISTINCT_BLUETOOTH_ADDRESSES_FILE);
         } catch (NumberFormatException e) {
-            Log.w(TAG, "Can't parse file "+DISTINCT_BLUETOOTH_ADDRESSES_FILE);
+            Logger.log.verbose("Can't parse file " + DISTINCT_BLUETOOTH_ADDRESSES_FILE);
         }
         finally {
             if (reader != null) {
@@ -456,7 +458,7 @@ public class BluetoothCrashResolver {
             try {
                 Thread.sleep(TIME_TO_LET_DISCOVERY_RUN_MILLIS);
                 if (!discoveryStartConfirmed) {
-                    Log.w(TAG, "BluetoothAdapter.ACTION_DISCOVERY_STARTED never received.  Recovery may fail.");
+                    Logger.log.verbose("BluetoothAdapter.ACTION_DISCOVERY_STARTED never received.  Recovery may fail.");
                 }
 
                 final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
