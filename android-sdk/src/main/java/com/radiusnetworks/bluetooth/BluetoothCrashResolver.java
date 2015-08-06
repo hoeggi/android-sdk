@@ -196,7 +196,7 @@ public class BluetoothCrashResolver {
         if (distinctBluetoothAddresses.size()  > getCrashRiskDeviceCount()) {
             if (PREEMPTIVE_ACTION_ENABLED && !recoveryInProgress) {
                 Logger.log.verbose("Large number of bluetooth devices detected: "+distinctBluetoothAddresses.size()+" Proactively attempting to clear out address list to prevent a crash");
-                Logger.log.verbose(TAG, "Stopping LE Scan");
+                Logger.log.verbose("Stopping LE Scan");
                 //noinspection deprecation old API compatability
                 BluetoothAdapter.getDefaultAdapter().stopLeScan(scanner);
                 startRecovery();
