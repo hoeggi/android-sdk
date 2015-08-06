@@ -95,7 +95,7 @@ public class RequestQueue {
     private CacheDispatcher mCacheDispatcher;
 
     private List<RequestFinishedListener> mFinishedListeners =
-            new ArrayList<RequestFinishedListener>();
+            new ArrayList<>();
 
     /**
      * Creates the worker pool. Processing will not begin until {@link #start()} is called.

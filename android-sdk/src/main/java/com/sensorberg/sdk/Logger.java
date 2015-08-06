@@ -139,7 +139,7 @@ public class Logger {
 
         @Override
         public void beaconResolveState(BeaconEvent event, String state) {
-            android.util.Log.d(TAG, "showing an action for a beacon scanevent " + state);
+            android.util.Log.d(TAG, "showing an action for a beacon scanevent " + event.getBeaconId().toTraditionalString() + " state " + state);
         }
 
         @Override
@@ -218,7 +218,7 @@ public class Logger {
 
     public static class VerboseLoggerSeenAgainSlowed extends VerboseLogger {
 
-        Map<BeaconId, Integer> counter = new HashMap<BeaconId, Integer>();
+        final Map<BeaconId, Integer> counter = new HashMap<>();
         private final int countNeeded;
 
         public VerboseLoggerSeenAgainSlowed(int countNeeded) {
