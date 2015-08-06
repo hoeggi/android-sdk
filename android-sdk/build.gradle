@@ -54,7 +54,7 @@ android {
 		testInstrumentationRunner "com.sensorberg.sdk.test.SensorbergTestRunner"
     }
     lintOptions {
-        disable 'InvalidPackage', 'CommitPrefEdits', 'DefaultLocale'
+        disable 'InvalidPackage', 'CommitPrefEdits', 'DefaultLocale', 'SameParameterValue'
         lintConfig file("realm-lint.xml")
 
     }
