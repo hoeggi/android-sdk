@@ -94,7 +94,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     /**
      * Clears the {@link ScanEvent} cache.
      */
-    private void clearCache() {
+    public void clearCache() {
         synchronized (enteredBeaconsMonitor) {
             enteredBeacons.clear();
         }
