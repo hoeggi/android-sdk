@@ -253,6 +253,10 @@ public class OkHttpClientTransport implements Transport {
         Response.Listener<ResolveResponse> responseListener = new Response.Listener<ResolveResponse>() {
             @Override
             public void onResponse(ResolveResponse response) {
+                if (response == null){
+                    callback.onFailure(new VolleyError("No Content, Invalid Api Key"));
+                    return;
+                }
                 callback.onSuccess(scans, actions);
                 callback.onInstantActions(response.getInstantActionsAsBeaconEvent());
             }
