@@ -116,7 +116,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         }
     }
 
-    protected void presentBeaconEvent(BeaconEvent beaconEvent) {
+    private void presentBeaconEvent(BeaconEvent beaconEvent) {
         Action beaconEventAction = beaconEvent.getAction();
         if (beaconEventAction != null) {
             if(beaconEvent.deliverAt != null){
