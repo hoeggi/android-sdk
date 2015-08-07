@@ -23,6 +23,7 @@
         <receiver
             android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"
             android:process=":sensorberg"
+            android:exported="false"
             android:enabled="false" >
             <intent-filter>
                 <action android:name="android.intent.action.USER_PRESENT" />

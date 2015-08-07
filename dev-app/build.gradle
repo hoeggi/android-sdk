@@ -1,0 +1,20 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 21
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile "com.sensorberg.sdk:android-sdk-bootstrapper:2.0.1RC1"
+    compile project(':android-sdk')
+}
