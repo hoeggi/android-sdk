@@ -78,10 +78,7 @@ public class ScanEvent implements Parcelable {
             return (false);
         }
         ScanEvent other = (ScanEvent) object;
-        if (!Objects.equals(beaconId, other.beaconId)){
-            return false;
-        }
-        return eventMask == other.eventMask;
+        return Objects.equals(beaconId, other.beaconId) && eventMask == other.eventMask;
     }
 
     @Override
