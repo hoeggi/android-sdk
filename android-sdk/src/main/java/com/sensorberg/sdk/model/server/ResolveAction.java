@@ -31,7 +31,7 @@ public class ResolveAction implements Serializable{
                 }
                 return new BeaconEvent.Builder()
                         .withAction(action)
-                        .withSuppressionTime(resolveAction.suppressionTime)
+                        .withSuppressionTime(resolveAction.suppressionTime * Constants.Time.ONE_SECOND)
                         .withSendOnlyOnce(resolveAction.sendOnlyOnce)
                         .withDeliverAtDate(resolveAction.deliverAt)
                         .withTrigger(resolveAction.trigger)
@@ -48,7 +48,7 @@ public class ResolveAction implements Serializable{
     public int type;
     public String name;
     public List<String> beacons;
-    public long suppressionTime;
+    public long suppressionTime; //in seconds
     public boolean sendOnlyOnce;
     public long delay;
     public boolean reportImmediately;
