@@ -211,8 +211,10 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     public void setApiToken(String apiToken) {
         platform.getTransport().setApiToken(apiToken);
+        beaconActionHistoryPublisher.publishHistory();
         if (resolver.configuration.setApiToken(apiToken)){
             unscheduleAllPendingActions();
+            beaconActionHistoryPublisher.deleteAllObjects();
         }
     }
 
