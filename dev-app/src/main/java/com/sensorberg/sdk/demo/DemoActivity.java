@@ -26,8 +26,12 @@ public class DemoActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
+		((DemoApplication) getApplication()).setActivityContext(this);
+	}
 
-
-        //You might want to inform the user, that btle is not supported on this device and all cool iBeacon features will not be accessible.
+	@Override
+	protected void onPause() {
+		((DemoApplication) getApplication()).setActivityContext(null);
+		super.onPause();
 	}
 }

@@ -34,7 +34,7 @@ public class MyActionPresenter extends BroadcastReceiver {
         }
     }
 
-    private void showNotification(Context context, int id, String title, String content, Uri uri) {
+    public static void showNotification(Context context, int id, String title, String content, Uri uri) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, title + "\n" + content + "\n" + uri.toString());
