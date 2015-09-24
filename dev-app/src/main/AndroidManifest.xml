@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.sensorberg.sdk.demo.demoOne"
+          package="com.sensorberg.sdk.testApp"
           android:versionCode="1"
           android:versionName="1.0">
 
@@ -13,7 +13,7 @@
         android:name="com.sensorberg.sdk.demo.DemoApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="SB Demo 1"
+        android:label="SB Test App"
         android:theme="@android:style/Theme.Black" >
 
         <activity
@@ -36,21 +36,21 @@
         </receiver>
         <!-- Do not use this in production. It´s only used so you can debug easier-->
 
-        <service android:name="com.sensorberg.sdk.SensorbergService"
-            tools:replace="android:process"
-            android:process=""/>
-            android:process=""/>
+        <!--<service android:name="com.sensorberg.sdk.SensorbergService"-->
+            <!--tools:replace="android:process"-->
+            <!--android:process=""/>-->
+            <!--android:process=""/>-->
 
-        <receiver android:name="com.sensorberg.sdk.GenericBroadcastReceiver"
-            tools:replace="android:process"
-            android:process=""/>
-        <receiver
-            android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"
-            tools:replace="android:process"
-            android:process=""/>
-        <receiver android:name="com.sensorberg.sdk.SensorbergCodeReceiver"
-            tools:replace="android:process"
-            android:process=""/>
+        <!--<receiver android:name="com.sensorberg.sdk.GenericBroadcastReceiver"-->
+            <!--tools:replace="android:process"-->
+            <!--android:process=""/>-->
+        <!--<receiver-->
+            <!--android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"-->
+            <!--tools:replace="android:process"-->
+            <!--android:process=""/>-->
+        <!--<receiver android:name="com.sensorberg.sdk.SensorbergCodeReceiver"-->
+            <!--tools:replace="android:process"-->
+            <!--android:process=""/>-->
         <!-- //Do not use this in production. It´s only used so you can debug easier-->
 
     </application>

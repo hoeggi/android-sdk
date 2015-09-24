@@ -12,6 +12,38 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    def isReleaseAble = System.getenv("SENSORBERG_KEYSTORE_PATH") != null
+
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'LICENSE.txt'
+    }
+
+
+    signingConfigs {
+        if (isReleaseAble) {
+            release {
+                storeFile file(System.getenv("SENSORBERG_KEYSTORE_PATH"))
+                storePassword System.getenv("SENSORBERG_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("SENSORBERG_KEYSTORE_KEY_ALIAS")
+                keyPassword System.getenv("SENSORBERG_KEYSTORE_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
+
+        release {
+            applicationIdSuffix null
+            if (isReleaseAble) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
 }
 
 dependencies {
