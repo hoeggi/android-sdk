@@ -301,10 +301,12 @@ public class SensorbergService extends Service {
             case MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
                 Toast.makeText(context, "Log disabled " + platform.getHostApplicationId(), Toast.LENGTH_SHORT).show();
+                break;
             }
             case MSG_TYPE_ENABLE_LOGGING: {
                 Logger.enableVerboseLogging();
                 Toast.makeText(context, "Log enabled " + platform.getHostApplicationId(), Toast.LENGTH_SHORT).show();
+                break;
             }
         }
     }
