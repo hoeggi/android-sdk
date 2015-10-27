@@ -84,7 +84,7 @@ public interface Platform {
 
     void removeStoredPendingIntent(int index);
 
-
+    void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 
     interface ForegroundStateListener{
 
@@ -136,4 +136,9 @@ public interface Platform {
     RunLoop getResolverRunLoop(RunLoop.MessageHandlerCallback callback);
 
     RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback);
+
+    public interface DeviceInstallationIdentifierChangeListener {
+
+        public void deviceInstallationIdentifierchanged(String deviceInstallationIdentifier);
+    }
 }

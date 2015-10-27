@@ -293,6 +293,11 @@ public class TestPlatform implements Platform {
     }
 
     @Override
+    public void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener) {
+
+    }
+
+    @Override
     public Clock getClock() {
         return clock;
     }

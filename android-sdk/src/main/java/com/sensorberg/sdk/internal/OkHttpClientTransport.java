@@ -39,7 +39,7 @@ import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
 
-public class OkHttpClientTransport implements Transport {
+public class OkHttpClientTransport implements Transport, Platform.DeviceInstallationIdentifierChangeListener {
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
@@ -58,6 +58,12 @@ public class OkHttpClientTransport implements Transport {
         this.queue = platform.getVolleyQueue();
         this.headers.put("User-Agent", platform.getUserAgentString());
         this.headers.put("X-iid", platform.getDeviceInstallationIdentifier());
+        platform.addDeviceInstallationIdentifierChangeListener(this);
+    }
+
+    @Override
+    public void deviceInstallationIdentifierchanged(String deviceInstallationIdentifier) {
+        this.headers.put("X-iid", deviceInstallationIdentifier);
     }
 
     @Override

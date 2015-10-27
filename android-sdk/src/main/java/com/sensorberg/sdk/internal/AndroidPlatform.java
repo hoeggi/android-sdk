@@ -23,6 +23,9 @@ import android.os.Parcelable;
 import android.os.SystemClock;
 
 import com.android.sensorbergVolley.RequestQueue;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.BuildConfig;
@@ -35,7 +38,9 @@ import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +53,7 @@ import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 public class AndroidPlatform implements Platform {
 
     private static final String SENSORBERG_PREFERENCE_IDENTIFIER = "com.sensorberg.preferences";
-    private static final String SENSORBERG_PREFERENCE_UUID = "com.sensorberg.preferences.installationUUID";
+    private static final String SENSORBERG_PREFERENCE_UUID_OR_ADVERTISING_IDENTIFIER = "com.sensorberg.preferences.installationUuidOrAdvertisingIdentifier";
 
     private final Context context;
     private final Clock clock;
@@ -71,6 +76,7 @@ public class AndroidPlatform implements Platform {
     private boolean shouldUseHttpCache = true;
     private static boolean actionBroadcastReceiversRegistered;
     private final PermissionChecker permissionChecker;
+    private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
@@ -93,22 +99,28 @@ public class AndroidPlatform implements Platform {
         pendingIntentStorage = new PendingIntentStorage(this);
     }
 
-    @SuppressLint("CommitPrefEdits")
+
     private String getOrCreatInstallationIdentifier() {
         String value;
         SharedPreferences preferences = getSettingsSharedPrefs();
 
-        String uuidString = preferences.getString(SENSORBERG_PREFERENCE_UUID, null);
+        String uuidString = preferences.getString(SENSORBERG_PREFERENCE_UUID_OR_ADVERTISING_IDENTIFIER, null);
         if (uuidString != null){
             value = uuidString;
         }
         else {
             value = uuidWithoutDashesString(UUID.randomUUID());
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(SENSORBERG_PREFERENCE_UUID, value);
-            editor.commit();
+            persisstInstallationIdentifier(value);
         }
         return value;
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    private void persisstInstallationIdentifier(String value){
+        SharedPreferences preferences = getSettingsSharedPrefs();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(SENSORBERG_PREFERENCE_UUID_OR_ADVERTISING_IDENTIFIER, value);
+        editor.commit();
     }
 
     private static String getAppVersionString(Context context) {
@@ -156,6 +168,39 @@ public class AndroidPlatform implements Platform {
         if (deviceInstallationIdentifier == null) {
             deviceInstallationIdentifier = getOrCreatInstallationIdentifier();
         }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long timeBefore = System.currentTimeMillis();
+                try {
+                    AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
+                    if (info == null || info.getId() == null){
+                        Logger.log.logError("AdvertisingIdClient.getAdvertisingIdInfo returned null");
+                        return;
+                    }
+                    String newDeviceInstallationIdentifier = "google:" + info.getId();
+                    if (!newDeviceInstallationIdentifier.equals(deviceInstallationIdentifier)){
+                        deviceInstallationIdentifier = newDeviceInstallationIdentifier;
+                        persisstInstallationIdentifier(deviceInstallationIdentifier);
+                        for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
+                            listener.deviceInstallationIdentifierchanged(newDeviceInstallationIdentifier);
+                        }
+                    }
+                } catch (IOException e) {
+                    Logger.log.logError("could not fetch the advertising identifier beacuse of an IO Exception" , e);
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    Logger.log.logError("play services not available", e);
+                } catch (GooglePlayServicesRepairableException e) {
+                    Logger.log.logError("play services need repairing", e);
+                } catch (Exception e){
+                    Logger.log.logError("could not fetch the advertising identifier beacuse of an unknown error" , e);
+                }
+                Logger.log.verbose("fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
+
+            }
+        }).start();
+
         return deviceInstallationIdentifier;
     }
 
@@ -300,6 +345,11 @@ public class AndroidPlatform implements Platform {
     @Override
     public void removeStoredPendingIntent(int index) {
         pendingIntentStorage.removeStoredPendingIntent(index);
+    }
+
+    @Override
+    public void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener) {
+        this.deviceInstallationIdentifierChangeListener.add(listener);
     }
 
     @Override
