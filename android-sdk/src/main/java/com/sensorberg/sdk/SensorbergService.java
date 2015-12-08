@@ -18,6 +18,7 @@ import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.FileHelper;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
@@ -25,10 +26,15 @@ import com.sensorberg.sdk.resolver.ResolverConfiguration;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static android.text.TextUtils.isEmpty;
+import static android.text.TextUtils.regionMatches;
 
 @SuppressWarnings("WeakerAccess") //external API
 public class SensorbergService extends Service {
@@ -56,12 +62,16 @@ public class SensorbergService extends Service {
     public static final int MSG_TYPE_ENABLE_LOGGING                 = 104;
     public static final int MSG_TYPE_SET_RESOLVER_ENDPOINT          = 105;
 
+    public static final int MSG_LIST_OF_BEACONS                     = 201;
+
 
     public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
     public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL = "com.sensorberg.android.sdk.intent.recolverEndpoint";
     public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
+    private static final boolean SHUTDOWN_SERVICE = true;
+    private static final boolean CONTINUE_SERVICE = false;
 
 
     Platform platform;
@@ -105,6 +115,8 @@ public class SensorbergService extends Service {
                     return "MSG_BEACON_LAYOUT_UPDATE";
                 case MSG_TYPE_SET_RESOLVER_ENDPOINT:
                     return "MSG_TYPE_SET_RESOLVER_ENDPOINT";
+                case MSG_LIST_OF_BEACONS:
+                    return "MSG_LIST_OF_BEACONS";
                 default:
                     return "unknown message" + what;
             }
@@ -362,11 +374,29 @@ public class SensorbergService extends Service {
                     minimalBootstrapper.stopScanning();
                     minimalBootstrapper.stopAllScheduledOperations();
                     bootstrapper = null;
-                    return true;
+                    return SHUTDOWN_SERVICE;
+                }
+                case SensorbergService.MSG_LIST_OF_BEACONS: {
+                    final Messenger messenger = intent.getParcelableExtra("messenger");
+                    Message message = Message.obtain();
+                    message.what = SensorbergService.MSG_LIST_OF_BEACONS;
+
+                    ArrayList<BeaconId> beaconIds = new ArrayList<>();
+                    beaconIds.add(new BeaconId(UUID.randomUUID(), 1337, 1337));
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("beaconIds", beaconIds);
+                    message.setData(bundle);
+                    try {
+                        messenger.send(message);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        Logger.log.logError("could not answer with the list of beacons",e);
+                    }
+                    return CONTINUE_SERVICE;
                 }
             }
         }
-        return false;
+        return CONTINUE_SERVICE;
     }
 
     private void createBootstrapperFromDiskConfiguration() {
