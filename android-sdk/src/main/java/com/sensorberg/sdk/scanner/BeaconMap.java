@@ -7,8 +7,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class BeaconMap {
+
+    public Set<BeaconId> getCurrentNearbyBeacons() {
+        return storage.keySet();
+    }
 
     public interface Filter {
         boolean filter(EventEntry beaconEntry, BeaconId beaconId);

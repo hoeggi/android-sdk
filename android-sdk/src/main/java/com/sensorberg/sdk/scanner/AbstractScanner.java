@@ -17,6 +17,7 @@ import com.sensorberg.sdk.settings.Settings;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TimerTask;
 
 public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback, Platform.ForegroundStateListener {
@@ -253,6 +254,10 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
      */
     public void stop() {
         runLoop.sendMessage(ScannerEvent.SCAN_STOP_REQUESTED);
+    }
+
+    public Set<BeaconId> getCurrentBeacons() {
+        return enteredBeacons.getCurrentNearbyBeacons();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
