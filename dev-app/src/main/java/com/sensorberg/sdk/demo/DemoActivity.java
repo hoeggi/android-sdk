@@ -5,25 +5,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.model.BeaconId;
-import com.sensorberg.sdk.resolver.Resolver;
-import com.sensorberg.sdk.scanner.Scanner;
+import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 import com.sensorberg.support.LatestBeacons;
-
-import org.joda.time.Minutes;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+
+import io.realm.Realm;
+
+import static com.sensorberg.utils.ListUtils.distinct;
+import static com.sensorberg.utils.ListUtils.map;
 
 @SuppressWarnings("javadoc")
 public class DemoActivity extends Activity
@@ -53,9 +54,31 @@ public class DemoActivity extends Activity
                 AsyncTask task = new AsyncTask() {
                     @Override
                     protected Object doInBackground(Object[] params) {
-                        Collection<BeaconId> beacons = LatestBeacons.getLatestBeacons(getApplicationContext(),
-                                5, TimeUnit.MINUTES);
-                        Logger.log.verbose("got " + beacons.size() + " beacons");
+                        {
+                            long before = System.currentTimeMillis();
+                            Collection<BeaconId> beacons = LatestBeacons.getLatestBeacons(getApplicationContext(),
+                                    5, TimeUnit.MINUTES);
+                            StringBuilder beaconIds = new StringBuilder("got these from the other process: ");
+                            for (BeaconId beacon : beacons) {
+                                beaconIds.append(beacon.getBid()).append(",");
+                            }
+                            beaconIds.append(" beacons");
+                            beaconIds.append("took ").append(System.currentTimeMillis() - before).append("ms");
+                            Logger.log.verbose(beaconIds.toString());
+                        }
+                        {
+                            long before = System.currentTimeMillis();
+                            Collection<BeaconId> beacons = getLatestBeaconsInMyProcess(getApplicationContext(),
+                                    5, TimeUnit.MINUTES);
+                            StringBuilder beaconIds = new StringBuilder("got these in my process: ");
+                            for (BeaconId beacon : beacons) {
+                                beaconIds.append(beacon.getBid()).append(",");
+                            }
+                            beaconIds.append(" beacons");
+                            beaconIds.append("took ").append(System.currentTimeMillis() - before).append("ms");
+                            Logger.log.verbose(beaconIds.toString());
+                        }
+
                         return null;
                     }
                 };
@@ -109,4 +132,16 @@ public class DemoActivity extends Activity
 		intent.putExtra(EXTRA_ACTION, action);
 		return intent;
 	}
+
+    /**
+     * this method is only here for a speed reference.
+     */
+    @Deprecated
+    public static Collection<BeaconId> getLatestBeaconsInMyProcess(Context context,long duration, TimeUnit unit){
+        long now = System.currentTimeMillis() - unit.toMillis(duration);
+        Realm realm = Realm.getInstance(context, BeaconActionHistoryPublisher.REALM_FILENAME);
+        return  distinct(map(
+                RealmScan.latestEnterEvents(now, realm),
+                BeaconId.FROM_REALM_SCAN));
+    }
 }

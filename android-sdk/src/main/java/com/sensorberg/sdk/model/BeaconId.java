@@ -3,6 +3,8 @@ package com.sensorberg.sdk.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.utils.ListUtils;
 import com.sensorberg.utils.UUIDUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -18,6 +20,13 @@ import java.util.UUID;
  * Class {@link BeaconId} represents the id of a beacon.
  */
 public class BeaconId implements Parcelable, Serializable {
+
+    public static final ListUtils.Mapper<RealmScan, BeaconId> FROM_REALM_SCAN = new ListUtils.Mapper<RealmScan, BeaconId>() {
+        @Override
+        public BeaconId map(RealmScan realmScan) {
+            return new BeaconId(UUID.fromString(realmScan.getProximityUUID()), realmScan.getProximityMajor(), realmScan.getProximityMinor());
+        }
+    };
 
     private static final long serialVersionUID = 1L;
 

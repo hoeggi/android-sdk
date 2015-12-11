@@ -9,15 +9,21 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 
-import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.model.BeaconId;
+import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import io.realm.Realm;
+
+import static com.sensorberg.utils.ListUtils.distinct;
+import static com.sensorberg.utils.ListUtils.map;
 
 /**
  * Created by falkorichter on 07.12.15.
@@ -54,7 +60,7 @@ public class LatestBeacons {
                 case SensorbergService.MSG_LIST_OF_BEACONS:
                     Bundle bundle = msg.getData();
                     bundle.setClassLoader(BeaconId.class.getClassLoader());
-                    beaconIds = bundle.getParcelableArrayList("beaconIds");
+                    beaconIds = bundle.getParcelableArrayList(SensorbergService.MSG_LIST_OF_BEACONS_BEACON_IDS);
                     latch.countDown();
                     break;
                 default:
@@ -73,9 +79,6 @@ public class LatestBeacons {
         if(Looper.getMainLooper() == Looper.myLooper()){
             throw new IllegalArgumentException("Calling this from your main thread can lead to deadlock");
         }
-
-
-
         CountDownLatch latch = new CountDownLatch(1);
         LopperThread thread = new LopperThread(latch);
         thread.start();
@@ -83,8 +86,8 @@ public class LatestBeacons {
 
         Messenger messenger = new Messenger(thread.handler);
         Intent intent = new Intent(context, SensorbergService.class);
-        intent.putExtra("messenger", messenger);
-        intent.putExtra("milliseconds", unit.toMillis(duration));
+        intent.putExtra(SensorbergService.MSG_LIST_OF_BEACONS_MESSENGER, messenger);
+        intent.putExtra(SensorbergService.MSG_LIST_OF_BEACONS_MILLIS, unit.toMillis(duration));
         intent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_LIST_OF_BEACONS);
 
         context.startService(intent);

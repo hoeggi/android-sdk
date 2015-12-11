@@ -1,16 +1,22 @@
 package com.sensorberg.sdk.model.realm;
 
+import android.content.Context;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+import com.sensorberg.utils.ListUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -20,6 +26,8 @@ import io.realm.RealmResults;
 //needed for realm serialization
 @SuppressWarnings("WeakerAccess")
 public class RealmScan extends RealmObject {
+
+
 
     private long eventTime;
     private boolean isEntry;
@@ -164,6 +172,13 @@ public class RealmScan extends RealmObject {
 
     public void setSentToServerTimestamp2(long sentToServerTimestamp2) {
         this.sentToServerTimestamp2 = sentToServerTimestamp2;
+    }
+
+    public static RealmResults<RealmScan> latestEnterEvents(long now, Realm realm) {
+        return realm.where(RealmScan.class)
+                .greaterThan(RealmFields.Scan.eventTime, now)
+                .equalTo(RealmFields.Scan.isEntry, true)
+                .findAll();
     }
 
     public static class RealmScanObjectTypeAdapter extends TypeAdapter<RealmScan> {

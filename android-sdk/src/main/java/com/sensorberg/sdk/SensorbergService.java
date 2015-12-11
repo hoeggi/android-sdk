@@ -19,22 +19,24 @@ import com.sensorberg.sdk.internal.FileHelper;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.model.BeaconId;
+import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
+import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+import io.realm.Realm;
 
 import static android.text.TextUtils.isEmpty;
-import static android.text.TextUtils.regionMatches;
+import static com.sensorberg.utils.ListUtils.distinct;
+import static com.sensorberg.utils.ListUtils.map;
 
 @SuppressWarnings("WeakerAccess") //external API
 public class SensorbergService extends Service {
@@ -65,13 +67,18 @@ public class SensorbergService extends Service {
     public static final int MSG_LIST_OF_BEACONS                     = 201;
 
 
-    public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
-    public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL = "com.sensorberg.android.sdk.intent.recolverEndpoint";
-    public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
+    public static final String MSG_SET_API_TOKEN_TOKEN                  = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
+    public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL   = "com.sensorberg.android.sdk.intent.recolverEndpoint";
+    public static final String MSG_PRESENT_ACTION_BEACONEVENT           = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
+    public static final String MSG_LIST_OF_BEACONS_BEACON_IDS           = "com.sensorberg.android.sdk.message.list_of_beacons.beacon_ids";
+    public static final String MSG_LIST_OF_BEACONS_MILLIS               = "com.sensorberg.android.sdk.message.list_of_beacons.time";
+    public static final String MSG_LIST_OF_BEACONS_MESSENGER            = "com.sensorberg.android.sdk.message.list_of_beacons.messenger";
+
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
     private static final boolean SHUTDOWN_SERVICE = true;
     private static final boolean CONTINUE_SERVICE = false;
+
 
 
     Platform platform;
@@ -377,14 +384,22 @@ public class SensorbergService extends Service {
                     return SHUTDOWN_SERVICE;
                 }
                 case SensorbergService.MSG_LIST_OF_BEACONS: {
-                    final Messenger messenger = intent.getParcelableExtra("messenger");
+                    final Messenger messenger = intent.getParcelableExtra(MSG_LIST_OF_BEACONS_MESSENGER);
+                    final long milliseconds = intent.getLongExtra(MSG_LIST_OF_BEACONS_MILLIS, -1);
+
+                    Realm realm = Realm.getInstance(this, BeaconActionHistoryPublisher.REALM_FILENAME);
+                    ArrayList<BeaconId> beaconIds = map(
+                            RealmScan.latestEnterEvents(platform.getClock().now() - milliseconds, realm),
+                            BeaconId.FROM_REALM_SCAN);
+                    if (bootstrapper != null){
+                        beaconIds.addAll(bootstrapper.scanner.getCurrentBeacons());
+                    }
+
                     Message message = Message.obtain();
                     message.what = SensorbergService.MSG_LIST_OF_BEACONS;
 
-                    ArrayList<BeaconId> beaconIds = new ArrayList<>();
-                    beaconIds.add(new BeaconId(UUID.randomUUID(), 1337, 1337));
                     Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("beaconIds", beaconIds);
+                    bundle.putParcelableArrayList(MSG_LIST_OF_BEACONS_BEACON_IDS, distinct(beaconIds));
                     message.setData(bundle);
                     try {
                         messenger.send(message);
