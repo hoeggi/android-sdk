@@ -11,31 +11,23 @@ import android.os.Messenger;
 
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.model.BeaconId;
-import com.sensorberg.sdk.model.realm.RealmScan;
-import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import io.realm.Realm;
-
-import static com.sensorberg.utils.ListUtils.distinct;
-import static com.sensorberg.utils.ListUtils.map;
-
-/**
- * Created by falkorichter on 07.12.15.
- */
 public class LatestBeacons {
 
-    static class LopperThread extends HandlerThread {
+    //inspired by http://stackoverflow.com/questions/4838207/how-to-create-a-looper-thread-then-send-it-a-message-immediately
+    static class LooperThread extends HandlerThread {
 
         final CountDownLatch latch;
         Incominghandler handler;
 
-        LopperThread(CountDownLatch latch) {
+        LooperThread(CountDownLatch latch) {
             super("LatestBeacons thread");
             this.latch = latch;
         }
@@ -79,8 +71,8 @@ public class LatestBeacons {
         if(Looper.getMainLooper() == Looper.myLooper()){
             throw new IllegalArgumentException("Calling this from your main thread can lead to deadlock");
         }
-        CountDownLatch latch = new CountDownLatch(1);
-        LopperThread thread = new LopperThread(latch);
+
+        LooperThread thread = new LooperThread(new CountDownLatch(1));
         thread.start();
         thread.waitUntilReady();
 
@@ -92,12 +84,12 @@ public class LatestBeacons {
 
         context.startService(intent);
         try {
-            if (latch.await(timeoutduration, timeoutTimeUnit)){
+            if (thread.latch.await(timeoutduration, timeoutTimeUnit)){
                 thread.quit();
                 return thread.handler.beaconIds;
             }
-            return Collections.EMPTY_LIST;
-        } catch (InterruptedException e) {
+            throw new TimeoutException("The inter process communication timed out. Timeout was set to " + timeoutTimeUnit.toMillis(duration) + "ms");
+        } catch (Exception e){
             e.printStackTrace();
             return Collections.EMPTY_LIST;
         }

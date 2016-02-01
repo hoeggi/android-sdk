@@ -1,6 +1,7 @@
 package com.sensorberg.sdk.internal;
 
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
@@ -98,21 +99,26 @@ public class AndroidHandler implements RunLoop {
         add(obtainMessage(what, obj));
     }
 
-    static class LooperThread extends Thread {
+    static class LooperThread extends HandlerThread {
         public Handler handler;
         private MessageHandlerCallback messageHandlerCallback;
 
         LooperThread(MessageHandlerCallback messageHandlerCallback) {
+            super("LooperThread");
             this.messageHandlerCallback = messageHandlerCallback;
         }
 
         public void run() {
             Looper.prepare();
 
-            handler = new StaticHandler(messageHandlerCallback);
-            messageHandlerCallback = null;
+
 
             Looper.loop();
+        }
+
+        public void onLooperPrepared(){
+            handler = new StaticHandler(messageHandlerCallback);
+            messageHandlerCallback = null;
         }
 
         private static class StaticHandler extends Handler {

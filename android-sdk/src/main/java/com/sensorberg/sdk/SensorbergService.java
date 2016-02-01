@@ -209,7 +209,7 @@ public class SensorbergService extends Service {
                 if (bootstrapper == null) {
                     createBootstrapperFromDiskConfiguration();
                     if (bootstrapper == null) {
-                        Logger.log.logError("could set up the scanning infrastructure");
+                        Logger.log.logError("could not set up the scanning infrastructure");
                         stopSelf();
                         return START_NOT_STICKY;
                     }
