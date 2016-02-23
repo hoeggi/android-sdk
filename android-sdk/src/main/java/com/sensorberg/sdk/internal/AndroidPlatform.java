@@ -429,10 +429,12 @@ public class AndroidPlatform implements Platform {
     @Override
     public void startLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
         if (bluetoothLowEnergySupported) {
-            leScanRunning = true;
-            getCrashCallBackWrapper().setCallback(scanCallback);
-            //noinspection deprecation old API compatability
-            bluetoothAdapter.startLeScan(crashCallBackWrapper);
+            if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+                //noinspection deprecation old API compatability
+                bluetoothAdapter.startLeScan(crashCallBackWrapper);
+                getCrashCallBackWrapper().setCallback(scanCallback);
+                leScanRunning = true;
+            }
         }
     }
 
