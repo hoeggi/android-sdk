@@ -442,10 +442,15 @@ public class AndroidPlatform implements Platform {
     @Override
     public void stopLeScan() {
         if(bluetoothLowEnergySupported) {
-            //noinspection deprecation old API compatability
-            bluetoothAdapter.stopLeScan(crashCallBackWrapper);
-            getCrashCallBackWrapper().setCallback(null);
-            leScanRunning = false;
+            try {
+                //noinspection deprecation old API compatability
+                bluetoothAdapter.stopLeScan(crashCallBackWrapper);
+            } catch (NullPointerException sentBySysteminternally) {
+                Logger.log.logError("System bug throwing a NullPointerException internally.", sentBySysteminternally);
+            } finally {
+                leScanRunning = false;
+                getCrashCallBackWrapper().setCallback(null);
+            }
         }
     }
 
