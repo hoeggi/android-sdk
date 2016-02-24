@@ -431,7 +431,7 @@ public class AndroidPlatform implements Platform {
         if (bluetoothLowEnergySupported) {
             if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
                 //noinspection deprecation old API compatability
-                bluetoothAdapter.startLeScan(crashCallBackWrapper);
+                bluetoothAdapter.startLeScan(getCrashCallBackWrapper());
                 getCrashCallBackWrapper().setCallback(scanCallback);
                 leScanRunning = true;
             }
@@ -444,7 +444,7 @@ public class AndroidPlatform implements Platform {
         if(bluetoothLowEnergySupported) {
             try {
                 //noinspection deprecation old API compatability
-                bluetoothAdapter.stopLeScan(crashCallBackWrapper);
+                bluetoothAdapter.stopLeScan(getCrashCallBackWrapper());
             } catch (NullPointerException sentBySysteminternally) {
                 Logger.log.logError("System bug throwing a NullPointerException internally.", sentBySysteminternally);
             } finally {
