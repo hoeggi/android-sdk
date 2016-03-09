@@ -40,6 +40,7 @@ import com.sensorberg.sdk.settings.Settings;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -126,7 +127,7 @@ public class AndroidPlatform implements Platform {
     private static String getAppVersionString(Context context) {
         try {
             PackageInfo myInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return myInfo.versionName + "/" + myInfo.versionCode;
+            return URLEncoder.encode(myInfo.versionName) + "/" + myInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             return "<unknown>";
         }
@@ -146,7 +147,7 @@ public class AndroidPlatform implements Platform {
     public String getUserAgentString() {
         if (userAgentString == null){
             String packageName = context.getPackageName();
-            String appLabel = getAppLabel(context);
+            String appLabel = URLEncoder.encode(getAppLabel(context));
             String appVersion = getAppVersionString(context);
 
             StringBuilder userAgent = new StringBuilder();
@@ -478,10 +479,12 @@ public class AndroidPlatform implements Platform {
     @Override
     public void startLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
         if (bluetoothLowEnergySupported) {
-            leScanRunning = true;
-            getCrashCallBackWrapper().setCallback(scanCallback);
-            //noinspection deprecation old API compatability
-            bluetoothAdapter.startLeScan(crashCallBackWrapper);
+            if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+                //noinspection deprecation old API compatability
+                bluetoothAdapter.startLeScan(getCrashCallBackWrapper());
+                getCrashCallBackWrapper().setCallback(scanCallback);
+                leScanRunning = true;
+            }
         }
     }
 
@@ -489,10 +492,15 @@ public class AndroidPlatform implements Platform {
     @Override
     public void stopLeScan() {
         if(bluetoothLowEnergySupported) {
-            //noinspection deprecation old API compatability
-            bluetoothAdapter.stopLeScan(crashCallBackWrapper);
-            getCrashCallBackWrapper().setCallback(null);
-            leScanRunning = false;
+            try {
+                //noinspection deprecation old API compatability
+                bluetoothAdapter.stopLeScan(getCrashCallBackWrapper());
+            } catch (NullPointerException sentBySysteminternally) {
+                Logger.log.logError("System bug throwing a NullPointerException internally.", sentBySysteminternally);
+            } finally {
+                leScanRunning = false;
+                getCrashCallBackWrapper().setCallback(null);
+            }
         }
     }
 

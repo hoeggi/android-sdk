@@ -214,6 +214,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         beaconActionHistoryPublisher.publishHistory();
         if (resolver.configuration.setApiToken(apiToken)){
             unscheduleAllPendingActions();
+            beaconActionHistoryPublisher.deleteAllObjects();
         }
     }
 

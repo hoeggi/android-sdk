@@ -31,6 +31,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private static final int MSG_PUBLISH_HISTORY = 1;
     private static final int MSG_ACTION = 4;
     private static final int MSG_MARK_ACTIONS_AS_SENT = 5;
+    private static final int MSG_DELETE_ALL_DATA = 6;
     public static String REALM_FILENAME = "scannerstorage.realm";
 
     private final RunLoop runloop;
@@ -95,7 +96,12 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
                 RealmAction.from((BeaconEvent) queueEvent.obj, realm, clock);
                 realm.commitTransaction();
                 break;
-
+            case MSG_DELETE_ALL_DATA:
+                realm.beginTransaction();
+                realm.clear(RealmScan.class);
+                realm.clear(RealmAction.class);
+                realm.commitTransaction();
+                break;
         }
     }
     private void publishHistorySynchronously() {
@@ -131,5 +137,9 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
 
     public void onActionPresented(BeaconEvent beaconEvent) {
         runloop.sendMessage(MSG_ACTION, beaconEvent);
+    }
+
+    public void deleteAllObjects() {
+        runloop.sendMessage(MSG_DELETE_ALL_DATA);
     }
 }

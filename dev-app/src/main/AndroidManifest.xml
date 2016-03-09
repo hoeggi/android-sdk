@@ -18,7 +18,7 @@
 
         <activity
             android:name="com.sensorberg.sdk.demo.DemoActivity"
-            android:label="simple demo"
+            android:label="simple demo ø"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,21 +36,21 @@
         </receiver>
         <!-- Do not use this in production. It´s only used so you can debug easier-->
 
-        <!--<service android:name="com.sensorberg.sdk.SensorbergService"-->
-            <!--tools:replace="android:process"-->
-            <!--android:process=""/>-->
-            <!--android:process=""/>-->
+        <service android:name="com.sensorberg.sdk.SensorbergService"
+            tools:replace="android:process"
+            android:process=""/>
+            android:process=""/>
 
-        <!--<receiver android:name="com.sensorberg.sdk.GenericBroadcastReceiver"-->
-            <!--tools:replace="android:process"-->
-            <!--android:process=""/>-->
-        <!--<receiver-->
-            <!--android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"-->
-            <!--tools:replace="android:process"-->
-            <!--android:process=""/>-->
-        <!--<receiver android:name="com.sensorberg.sdk.SensorbergCodeReceiver"-->
-            <!--tools:replace="android:process"-->
-            <!--android:process=""/>-->
+        <receiver android:name="com.sensorberg.sdk.GenericBroadcastReceiver"
+            tools:replace="android:process"
+            android:process=""/>
+        <receiver
+            android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"
+            tools:replace="android:process"
+            android:process=""/>
+        <receiver android:name="com.sensorberg.sdk.SensorbergCodeReceiver"
+            tools:replace="android:process"
+            android:process=""/>
         <!-- //Do not use this in production. It´s only used so you can debug easier-->
 
     </application>

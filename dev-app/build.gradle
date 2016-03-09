@@ -38,8 +38,9 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+            versionNameSuffix "ø"
             manifestPlaceholders = [
-                    applicationLabelAddition :  " Debug"
+                    applicationLabelAddition :  " Debug ø"
             ]
         }
 
