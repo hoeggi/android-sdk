@@ -7,10 +7,49 @@ android {
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 21
+        manifestPlaceholders = [
+                applicationLabelAddition :  ""
+        ]
     }
 
     lintOptions {
         abortOnError false
+    }
+
+    def isReleaseAble = System.getenv("SENSORBERG_KEYSTORE_PATH") != null
+
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'LICENSE.txt'
+    }
+
+
+    signingConfigs {
+        if (isReleaseAble) {
+            release {
+                storeFile file(System.getenv("SENSORBERG_KEYSTORE_PATH"))
+                storePassword System.getenv("SENSORBERG_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("SENSORBERG_KEYSTORE_KEY_ALIAS")
+                keyPassword System.getenv("SENSORBERG_KEYSTORE_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "ø"
+            manifestPlaceholders = [
+                    applicationLabelAddition :  " Debug ø"
+            ]
+        }
+
+        release {
+            applicationIdSuffix null
+            if (isReleaseAble) {
+                signingConfig signingConfigs.release
+            }
+        }
     }
 }
 
