@@ -39,7 +39,10 @@ import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
 
-public class OkHttpClientTransport implements Transport, Platform.DeviceInstallationIdentifierChangeListener {
+public class OkHttpClientTransport implements
+        Transport,
+        Platform.DeviceInstallationIdentifierChangeListener,
+        Platform.GoogleAdvertisingIdentifierChangeListener {
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
@@ -52,18 +55,28 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     private ProximityUUIDUpdateHandler proximityUUIDUpdateHandler = ProximityUUIDUpdateHandler.NONE;
     private String apiToken;
 
+    private static final String INSTALLATION_IDENTIFIER = "X-iid";
+    private static final String ADVERTISER_IDENTIFIER = "X-aid";
+
     public OkHttpClientTransport(Platform platform, Settings settings) {
         this.platform = platform;
         this.settings = settings;
         this.queue = platform.getVolleyQueue();
         this.headers.put("User-Agent", platform.getUserAgentString());
-        this.headers.put("X-iid", platform.getDeviceInstallationIdentifier());
+        this.headers.put(INSTALLATION_IDENTIFIER, platform.getDeviceInstallationIdentifier());
+        this.headers.put(ADVERTISER_IDENTIFIER, platform.getGoogleAdvertisingIdentifier());
+        platform.addGoogleAdvertisingIdentifierChangeListener(this);
         platform.addDeviceInstallationIdentifierChangeListener(this);
     }
 
     @Override
-    public void deviceInstallationIdentifierchanged(String deviceInstallationIdentifier) {
-        this.headers.put("X-iid", deviceInstallationIdentifier);
+    public void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier) {
+        this.headers.put(INSTALLATION_IDENTIFIER, deviceInstallationIdentifier);
+    }
+
+    @Override
+    public void googleAdvertisingIdentifierChanged(String googleAdvertiserIdentifier) {
+        this.headers.put(ADVERTISER_IDENTIFIER, platform.getGoogleAdvertisingIdentifier());
     }
 
     @Override

@@ -54,7 +54,8 @@ import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 public class AndroidPlatform implements Platform {
 
     private static final String SENSORBERG_PREFERENCE_IDENTIFIER = "com.sensorberg.preferences";
-    private static final String SENSORBERG_PREFERENCE_UUID_OR_ADVERTISING_IDENTIFIER = "com.sensorberg.preferences.installationUuidOrAdvertisingIdentifier";
+    private static final String SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER = "com.sensorberg.preferences.installationUuidIdentifier";
+    private static final String SENSORBERG_PREFERENCE_ADVERTISING_IDENTIFIER = "com.sensorberg.preferences.advertisingIdentifier";
 
     private final Context context;
     private final Clock clock;
@@ -66,6 +67,7 @@ public class AndroidPlatform implements Platform {
     private Transport asyncTransport;
 
     private String deviceInstallationIdentifier;
+    private String googleAdvertiserIdentifier;
 
     private boolean leScanRunning = false;
     private final Set<Integer> repeatingPendingIntents = new HashSet<>();
@@ -78,6 +80,9 @@ public class AndroidPlatform implements Platform {
     private static boolean actionBroadcastReceiversRegistered;
     private final PermissionChecker permissionChecker;
     private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
+    private  final ArrayList<GoogleAdvertisingIdentifierChangeListener> googleAdvertisingIdentifierChangeListener = new ArrayList<>();
+
+    //public static final String THING = getOrCreateInstallationIdentifier();
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
@@ -101,26 +106,34 @@ public class AndroidPlatform implements Platform {
     }
 
 
-    private String getOrCreatInstallationIdentifier() {
+    private String getOrCreateInstallationIdentifier() {
         String value;
         SharedPreferences preferences = getSettingsSharedPrefs();
 
-        String uuidString = preferences.getString(SENSORBERG_PREFERENCE_UUID_OR_ADVERTISING_IDENTIFIER, null);
+        String uuidString = preferences.getString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, null);
         if (uuidString != null){
             value = uuidString;
         }
         else {
             value = uuidWithoutDashesString(UUID.randomUUID());
-            persisstInstallationIdentifier(value);
+            persistInstallationIdentifier(value);
         }
         return value;
     }
 
     @SuppressLint("CommitPrefEdits")
-    private void persisstInstallationIdentifier(String value){
+    private void persistInstallationIdentifier(String value){
         SharedPreferences preferences = getSettingsSharedPrefs();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(SENSORBERG_PREFERENCE_UUID_OR_ADVERTISING_IDENTIFIER, value);
+        editor.putString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, value);
+        editor.commit();
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    private void persistAdvertisingIdentifier(String value){
+        SharedPreferences preferences = getSettingsSharedPrefs();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(SENSORBERG_PREFERENCE_ADVERTISING_IDENTIFIER, value);
         editor.commit();
     }
 
@@ -167,42 +180,65 @@ public class AndroidPlatform implements Platform {
     @Override
     public String getDeviceInstallationIdentifier() {
         if (deviceInstallationIdentifier == null) {
-            deviceInstallationIdentifier = getOrCreatInstallationIdentifier();
+            deviceInstallationIdentifier = getOrCreateInstallationIdentifier();
         }
 
-        new Thread(new Runnable() {
+        new Thread(new Runnable() { //wasn't there supposed to be two ids? Yes
             @Override
             public void run() {
                 long timeBefore = System.currentTimeMillis();
+
+                persistInstallationIdentifier(deviceInstallationIdentifier);
+                for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
+                    listener.deviceInstallationIdentifierChanged(deviceInstallationIdentifier);
+                }
+
+                Logger.log.verbose("Fetching installation ID took " + (System.currentTimeMillis() - timeBefore) + " millis");
+            }
+        }).start();
+
+        return deviceInstallationIdentifier;
+    }
+
+    @Override
+    public String getGoogleAdvertisingIdentifier() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                long timeBefore = System.currentTimeMillis();
+
                 try {
                     AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
                     if (info == null || info.getId() == null){
                         Logger.log.logError("AdvertisingIdClient.getAdvertisingIdInfo returned null");
                         return;
                     }
-                    String newDeviceInstallationIdentifier = "google:" + info.getId();
-                    if (!newDeviceInstallationIdentifier.equals(deviceInstallationIdentifier)){
-                        deviceInstallationIdentifier = newDeviceInstallationIdentifier;
-                        persisstInstallationIdentifier(deviceInstallationIdentifier);
-                        for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
-                            listener.deviceInstallationIdentifierchanged(newDeviceInstallationIdentifier);
-                        }
+                    if (info.isLimitAdTrackingEnabled()) {
+                        return;
                     }
-                } catch (IOException e) {
-                    Logger.log.logError("could not fetch the advertising identifier beacuse of an IO Exception" , e);
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    Logger.log.logError("play services not available", e);
-                } catch (GooglePlayServicesRepairableException e) {
-                    Logger.log.logError("play services need repairing", e);
-                } catch (Exception e){
-                    Logger.log.logError("could not fetch the advertising identifier beacuse of an unknown error" , e);
-                }
-                Logger.log.verbose("fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
 
+                    googleAdvertiserIdentifier = "google:" + info.getId();
+                    persistAdvertisingIdentifier(googleAdvertiserIdentifier);
+
+                    for (GoogleAdvertisingIdentifierChangeListener listener : googleAdvertisingIdentifierChangeListener) {
+                        listener.googleAdvertisingIdentifierChanged((!info.isLimitAdTrackingEnabled()) ? googleAdvertiserIdentifier : "");
+                    }
+
+                } catch (IOException e) {
+                    Logger.log.logError("Could not fetch the advertising identifier because of an IO Exception" , e);
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    Logger.log.logError("Play services are not available", e);
+                } catch (GooglePlayServicesRepairableException e) {
+                    Logger.log.logError("Play services are in need of repairs", e);
+                } catch (Exception e){
+                    Logger.log.logError("Could not fetch the advertising identifier because of an unknown error" , e);
+                }
+                Logger.log.verbose("Fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
             }
         }).start();
 
-        return deviceInstallationIdentifier;
+        return googleAdvertiserIdentifier;
     }
 
     @Override
@@ -351,6 +387,11 @@ public class AndroidPlatform implements Platform {
     @Override
     public void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener) {
         this.deviceInstallationIdentifierChangeListener.add(listener);
+    }
+
+    @Override
+    public void addGoogleAdvertisingIdentifierChangeListener(GoogleAdvertisingIdentifierChangeListener listener) {
+        this.googleAdvertisingIdentifierChangeListener.add(listener);
     }
 
     @Override

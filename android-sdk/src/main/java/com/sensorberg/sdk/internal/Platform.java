@@ -26,6 +26,8 @@ public interface Platform {
 
     String getDeviceInstallationIdentifier();
 
+    String getGoogleAdvertisingIdentifier();
+
     Transport getTransport();
 
     File getFile(String fileName);
@@ -86,6 +88,8 @@ public interface Platform {
 
     void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 
+    void addGoogleAdvertisingIdentifierChangeListener(GoogleAdvertisingIdentifierChangeListener listener);
+
     interface ForegroundStateListener{
 
         ForegroundStateListener NONE = new ForegroundStateListener() {
@@ -137,8 +141,15 @@ public interface Platform {
 
     RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback);
 
-    public interface DeviceInstallationIdentifierChangeListener {
-
-        public void deviceInstallationIdentifierchanged(String deviceInstallationIdentifier);
+    interface DeviceInstallationIdentifierChangeListener {
+        void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier);
     }
+
+    /**
+     * Interface for advertising identifier.
+     */
+    interface GoogleAdvertisingIdentifierChangeListener {
+        void googleAdvertisingIdentifierChanged(String googleAdvertisingIdentifier);
+    }
+
 }

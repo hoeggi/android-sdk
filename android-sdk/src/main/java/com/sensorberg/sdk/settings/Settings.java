@@ -184,18 +184,18 @@ public class Settings implements SettingsCallback {
             callback.onSettingsUpdateIntervalChange(newSettingsUpdateInterval);
         }
 
-        persistToPreferecens();
+        persistToPreferences();
     }
 
     public void historyUploadIntervalChanged(Long newHistoryUploadIntervalMillis) {
         if (newHistoryUploadIntervalMillis != historyUploadInterval){
             historyUploadInterval = newHistoryUploadIntervalMillis;
             callback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
-            persistToPreferecens();
+            persistToPreferences();
         }
     }
 
-    private void persistToPreferecens(){
+    private void persistToPreferences(){
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
 

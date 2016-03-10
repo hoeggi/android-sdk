@@ -33,7 +33,7 @@ public class TheSettingsShould extends AndroidTestCase {
         untouched = new Settings(platform, untouchedSharedPreferences);
     }
 
-    public void test_intial_values_should_be_identical() throws Exception {
+    public void test_initial_values_should_be_identical() throws Exception {
         Assertions.assertThat(untouched.getBackgroundScanTime()).isEqualTo(tested.getBackgroundScanTime());
         Assertions.assertThat(untouched.getBackgroundWaitTime()).isEqualTo(tested.getBackgroundWaitTime());
         Assertions.assertThat(untouched.getExitTimeout()).isEqualTo(tested.getExitTimeout());

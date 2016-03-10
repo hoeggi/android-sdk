@@ -18,6 +18,7 @@ import com.sensorberg.sdk.bootstrapper.BackgroundDetector;
 import com.sensorberg.sdk.bootstrapper.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.testApp.BuildConfig;
 import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.internal.AndroidPlatform;
 
 @SuppressWarnings("javadoc")
 public class DemoApplication extends Application
