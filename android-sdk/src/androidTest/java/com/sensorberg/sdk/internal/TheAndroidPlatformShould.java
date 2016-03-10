@@ -11,6 +11,8 @@ import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
+import com.sensorberg.sdk.testUtils.TestPlatform;
+
 import org.fest.assertions.api.Assertions;
 
 import java.util.List;
@@ -74,5 +76,11 @@ public class TheAndroidPlatformShould extends SensorbergApplicationTest {
         List<BroadcastReceiver> list = ManifestParser.findBroadcastReceiver(getContext());
 
         Assertions.assertThat(list).hasSize(2);
+    }
+
+    public void test_get_installation_identifier() {
+        AndroidPlatform androidPlatform = new AndroidPlatform(getContext());
+
+        Assertions.assertThat(androidPlatform.getDeviceInstallationIdentifier()).isNotNull();
     }
 }

@@ -82,8 +82,6 @@ public class AndroidPlatform implements Platform {
     private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
     private  final ArrayList<GoogleAdvertisingIdentifierChangeListener> googleAdvertisingIdentifierChangeListener = new ArrayList<>();
 
-    //public static final String THING = getOrCreateInstallationIdentifier();
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
         this.clock = new AndroidClock();
@@ -183,7 +181,7 @@ public class AndroidPlatform implements Platform {
             deviceInstallationIdentifier = getOrCreateInstallationIdentifier();
         }
 
-        new Thread(new Runnable() { //wasn't there supposed to be two ids? Yes
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 long timeBefore = System.currentTimeMillis();
