@@ -15,6 +15,7 @@ import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.internal.AndroidPlatform;
+import com.sensorberg.sdk.internal.Platform;
 
 import java.io.IOException;
 
@@ -29,6 +30,7 @@ public class DemoActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
+
         textView = new TextView(this);
 		StringBuilder infoText = new StringBuilder("This is an app that exposes some SDK APIs to the user").append('\n');
 		infoText.append('\n').append("API Key: ").append(DemoApplication.API_KEY);

@@ -44,7 +44,7 @@ public class TestPlatform implements Platform {
     public static final String TAG = "TestPlattform";
 
     public static final UUID deviceInstallationIdentifier = UUID.randomUUID();
-    public static final UUID googleAdertiserIdentifier = UUID.randomUUID();
+    public static final String googleAdertiserIdentifier = "google" + UUID.randomUUID();
 
     public static final String ADVERTISEMENT_DATA_FLAGS = "020106";
     public static final String ADVERTISEMENT_DATA_FLAGS_ANDROID_NEXUS_9 = "020102";
@@ -133,7 +133,7 @@ public class TestPlatform implements Platform {
 
     @Override
     public String getGoogleAdvertisingIdentifier() {
-        return googleAdertiserIdentifier.toString();
+        return googleAdertiserIdentifier;
     }
 
     @Override

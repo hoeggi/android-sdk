@@ -55,7 +55,7 @@ public class AndroidPlatform implements Platform {
 
     private static final String SENSORBERG_PREFERENCE_IDENTIFIER = "com.sensorberg.preferences";
     private static final String SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER = "com.sensorberg.preferences.installationUuidIdentifier";
-    private static final String SENSORBERG_PREFERENCE_ADVERTISING_IDENTIFIER = "com.sensorberg.preferences.advertisingIdentifier";
+    private static final String SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER = "com.sensorberg.preferences.advertiserIdentifier";
 
     private final Context context;
     private final Clock clock;
@@ -128,10 +128,10 @@ public class AndroidPlatform implements Platform {
     }
 
     @SuppressLint("CommitPrefEdits")
-    private void persistAdvertisingIdentifier(String value){
+    private void persistAdvertiserIdentifier(String value){
         SharedPreferences preferences = getSettingsSharedPrefs();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(SENSORBERG_PREFERENCE_ADVERTISING_IDENTIFIER, value);
+        editor.putString(SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER, value);
         editor.commit();
     }
 
@@ -188,6 +188,7 @@ public class AndroidPlatform implements Platform {
 
                 persistInstallationIdentifier(deviceInstallationIdentifier);
                 for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
+                    getListenerValue(listener);
                     listener.deviceInstallationIdentifierChanged(deviceInstallationIdentifier);
                 }
 
@@ -196,6 +197,10 @@ public class AndroidPlatform implements Platform {
         }).start();
 
         return deviceInstallationIdentifier;
+    }
+
+    public DeviceInstallationIdentifierChangeListener getListenerValue(DeviceInstallationIdentifierChangeListener listener){
+        return listener;
     }
 
     @Override
@@ -217,7 +222,7 @@ public class AndroidPlatform implements Platform {
                     }
 
                     googleAdvertiserIdentifier = "google:" + info.getId();
-                    persistAdvertisingIdentifier(googleAdvertiserIdentifier);
+                    persistAdvertiserIdentifier(googleAdvertiserIdentifier);
 
                     for (GoogleAdvertisingIdentifierChangeListener listener : googleAdvertisingIdentifierChangeListener) {
                         listener.googleAdvertisingIdentifierChanged((!info.isLimitAdTrackingEnabled()) ? googleAdvertiserIdentifier : "");

@@ -39,10 +39,7 @@ import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
 
-public class OkHttpClientTransport implements
-        Transport,
-        Platform.DeviceInstallationIdentifierChangeListener,
-        Platform.GoogleAdvertisingIdentifierChangeListener {
+public class OkHttpClientTransport implements Transport, Platform.DeviceInstallationIdentifierChangeListener, Platform.GoogleAdvertisingIdentifierChangeListener {
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
