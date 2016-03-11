@@ -67,7 +67,7 @@ public class AndroidPlatform implements Platform {
     private Transport asyncTransport;
 
     private String deviceInstallationIdentifier;
-    private String googleAdvertiserIdentifier;
+    private String advertiserIdentifier;
 
     private boolean leScanRunning = false;
     private final Set<Integer> repeatingPendingIntents = new HashSet<>();
@@ -80,7 +80,7 @@ public class AndroidPlatform implements Platform {
     private static boolean actionBroadcastReceiversRegistered;
     private final PermissionChecker permissionChecker;
     private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
-    private  final ArrayList<GoogleAdvertisingIdentifierChangeListener> googleAdvertisingIdentifierChangeListener = new ArrayList<>();
+    private  final ArrayList<AdvertiserIdentifierChangeListener> advertiserIdentifierChangeListener = new ArrayList<>();
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
@@ -204,7 +204,7 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public String getGoogleAdvertisingIdentifier() {
+    public String getAdvertiserIdentifier() {
         new Thread(new Runnable() {
 
             @Override
@@ -221,11 +221,11 @@ public class AndroidPlatform implements Platform {
                         return;
                     }
 
-                    googleAdvertiserIdentifier = "google:" + info.getId();
-                    persistAdvertiserIdentifier(googleAdvertiserIdentifier);
+                    advertiserIdentifier = "google:" + info.getId();
+                    persistAdvertiserIdentifier(advertiserIdentifier);
 
-                    for (GoogleAdvertisingIdentifierChangeListener listener : googleAdvertisingIdentifierChangeListener) {
-                        listener.googleAdvertisingIdentifierChanged((!info.isLimitAdTrackingEnabled()) ? googleAdvertiserIdentifier : "");
+                    for (AdvertiserIdentifierChangeListener listener : advertiserIdentifierChangeListener) {
+                        listener.advertiserIdentifierChanged((!info.isLimitAdTrackingEnabled()) ? advertiserIdentifier : "");
                     }
 
                 } catch (IOException e) {
@@ -241,7 +241,7 @@ public class AndroidPlatform implements Platform {
             }
         }).start();
 
-        return googleAdvertiserIdentifier;
+        return advertiserIdentifier;
     }
 
     @Override
@@ -393,8 +393,8 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public void addGoogleAdvertisingIdentifierChangeListener(GoogleAdvertisingIdentifierChangeListener listener) {
-        this.googleAdvertisingIdentifierChangeListener.add(listener);
+    public void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener) {
+        this.advertiserIdentifierChangeListener.add(listener);
     }
 
     @Override

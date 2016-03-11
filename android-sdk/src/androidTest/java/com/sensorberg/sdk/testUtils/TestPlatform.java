@@ -127,12 +127,12 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-     public String getDeviceInstallationIdentifier() {
+    public String getDeviceInstallationIdentifier() {
         return deviceInstallationIdentifier.toString();
     }
 
     @Override
-    public String getGoogleAdvertisingIdentifier() {
+    public String getAdvertiserIdentifier() {
         return googleAdertiserIdentifier;
     }
 
@@ -303,7 +303,7 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public void addGoogleAdvertisingIdentifierChangeListener(GoogleAdvertisingIdentifierChangeListener listener) {
+    public void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener) {
     }
 
     @Override

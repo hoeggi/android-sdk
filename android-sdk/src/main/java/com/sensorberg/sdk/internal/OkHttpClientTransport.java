@@ -39,7 +39,7 @@ import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
 
-public class OkHttpClientTransport implements Transport, Platform.DeviceInstallationIdentifierChangeListener, Platform.GoogleAdvertisingIdentifierChangeListener {
+public class OkHttpClientTransport implements Transport, Platform.DeviceInstallationIdentifierChangeListener, Platform.AdvertiserIdentifierChangeListener {
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
@@ -61,8 +61,8 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
         this.queue = platform.getVolleyQueue();
         this.headers.put("User-Agent", platform.getUserAgentString());
         this.headers.put(INSTALLATION_IDENTIFIER, platform.getDeviceInstallationIdentifier());
-        this.headers.put(ADVERTISER_IDENTIFIER, platform.getGoogleAdvertisingIdentifier());
-        platform.addGoogleAdvertisingIdentifierChangeListener(this);
+        this.headers.put(ADVERTISER_IDENTIFIER, platform.getAdvertiserIdentifier());
+        platform.addAdvertiserIdentifierChangeListener(this);
         platform.addDeviceInstallationIdentifierChangeListener(this);
     }
 
@@ -72,8 +72,8 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     }
 
     @Override
-    public void googleAdvertisingIdentifierChanged(String googleAdvertiserIdentifier) {
-        this.headers.put(ADVERTISER_IDENTIFIER, googleAdvertiserIdentifier);
+    public void advertiserIdentifierChanged(String advertiserIdentifier) {
+        this.headers.put(ADVERTISER_IDENTIFIER, advertiserIdentifier);
     }
 
     @Override

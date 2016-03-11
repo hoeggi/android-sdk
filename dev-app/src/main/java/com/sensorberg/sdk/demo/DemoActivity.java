@@ -47,9 +47,9 @@ public class DemoActivity extends Activity
 			@Override
 			protected Pair<String, Long> doInBackground(String... params) {
 				long timeBefore = System.currentTimeMillis();
-				String googleAdvertiserIdentifier = "not-found";
+				String advertiserIdentifier = "not-found";
 				try {
-                    googleAdvertiserIdentifier = "google:" + AdvertisingIdClient.getAdvertisingIdInfo(DemoActivity.this).getId();
+                    advertiserIdentifier = "google:" + AdvertisingIdClient.getAdvertisingIdInfo(DemoActivity.this).getId();
 			} catch (IOException e) {
 				Logger.log.logError("foreground could not fetch the advertising identifier because of an IO Exception" , e);
 			} catch (GooglePlayServicesNotAvailableException e) {
@@ -61,7 +61,7 @@ public class DemoActivity extends Activity
 			}
 				long timeItTook = System.currentTimeMillis() - timeBefore;
 				Logger.log.verbose("foreground fetching the advertising identifier took " + timeItTook + " millis");
-				return Pair.create(googleAdvertiserIdentifier, timeItTook);
+				return Pair.create(advertiserIdentifier, timeItTook);
 			}
 
 			@Override

@@ -26,7 +26,7 @@ public interface Platform {
 
     String getDeviceInstallationIdentifier();
 
-    String getGoogleAdvertisingIdentifier();
+    String getAdvertiserIdentifier();
 
     Transport getTransport();
 
@@ -88,7 +88,7 @@ public interface Platform {
 
     void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 
-    void addGoogleAdvertisingIdentifierChangeListener(GoogleAdvertisingIdentifierChangeListener listener);
+    void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener);
 
     interface ForegroundStateListener{
 
@@ -148,8 +148,8 @@ public interface Platform {
     /**
      * Interface for advertising identifier.
      */
-    interface GoogleAdvertisingIdentifierChangeListener {
-        void googleAdvertisingIdentifierChanged(String googleAdvertisingIdentifier);
+    interface AdvertiserIdentifierChangeListener {
+        void advertiserIdentifierChanged(String advertiserIdentifier);
     }
 
 }
