@@ -84,6 +84,6 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
         });
 
         RecordedRequest request = waitForRequests(1).get(2);
-        Assertions.assertThat(request.getHeader("X-aid")).isEqualTo(plattform.getDeviceInstallationIdentifier());
+        Assertions.assertThat(request.getHeader("X-aid")).isEqualTo(plattform.getAdvertiserIdentifier());
     }
 }

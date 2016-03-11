@@ -141,6 +141,9 @@ public interface Platform {
 
     RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback);
 
+    /**
+     * Interface for device installation identifier.
+     */
     interface DeviceInstallationIdentifierChangeListener {
         void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier);
     }

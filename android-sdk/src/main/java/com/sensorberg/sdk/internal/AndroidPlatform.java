@@ -119,6 +119,11 @@ public class AndroidPlatform implements Platform {
         return value;
     }
 
+    /**
+     * Persists the installation identifier value to preferences.
+     *
+     * @param value - Value to save.
+     */
     @SuppressLint("CommitPrefEdits")
     private void persistInstallationIdentifier(String value){
         SharedPreferences preferences = getSettingsSharedPrefs();
@@ -127,6 +132,11 @@ public class AndroidPlatform implements Platform {
         editor.commit();
     }
 
+    /**
+     * Persists the advertiser identifier value to preferences.
+     *
+     * @param value - Value to save.
+     */
     @SuppressLint("CommitPrefEdits")
     private void persistAdvertiserIdentifier(String value){
         SharedPreferences preferences = getSettingsSharedPrefs();
@@ -143,8 +153,6 @@ public class AndroidPlatform implements Platform {
             return "<unknown>";
         }
     }
-
-
 
     @TargetApi(Build.VERSION_CODES.DONUT)
     private static String getAppLabel(Context application) {
@@ -188,7 +196,6 @@ public class AndroidPlatform implements Platform {
 
                 persistInstallationIdentifier(deviceInstallationIdentifier);
                 for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
-                    getListenerValue(listener);
                     listener.deviceInstallationIdentifierChanged(deviceInstallationIdentifier);
                 }
 
@@ -197,10 +204,6 @@ public class AndroidPlatform implements Platform {
         }).start();
 
         return deviceInstallationIdentifier;
-    }
-
-    public DeviceInstallationIdentifierChangeListener getListenerValue(DeviceInstallationIdentifierChangeListener listener){
-        return listener;
     }
 
     @Override
