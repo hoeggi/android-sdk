@@ -76,7 +76,7 @@ public class OkHttpClientTransport implements
 
     @Override
     public void googleAdvertisingIdentifierChanged(String googleAdvertiserIdentifier) {
-        this.headers.put(ADVERTISER_IDENTIFIER, platform.getGoogleAdvertisingIdentifier());
+        this.headers.put(ADVERTISER_IDENTIFIER, googleAdvertiserIdentifier);
     }
 
     @Override
