@@ -91,6 +91,7 @@ public class RealmAction extends RealmObject {
     }
 
 
+    //TODO - come back
     public static Type ADAPTER_TYPE() {
         try {
             return Class.forName("io.realm.RealmActionRealmProxy");
@@ -100,6 +101,7 @@ public class RealmAction extends RealmObject {
         }
     }
 
+    //TODO come back
     public static RealmResults<RealmAction> notSentScans(Realm realm){
         RealmQuery<RealmAction> scans = realm.where(RealmAction.class)
                 .equalTo(RealmFields.Action.sentToServerTimestamp2, RealmFields.Scan.NO_DATE);
