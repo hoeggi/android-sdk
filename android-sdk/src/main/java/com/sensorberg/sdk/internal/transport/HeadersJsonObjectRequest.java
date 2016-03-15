@@ -28,6 +28,7 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
     private final Class<T> clazz;
     private boolean shouldAlwaysTryWithNetwork = false;
 
+    //TODO - will need to update
     public static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Date.class, ISO8601TypeAdapter.DATE_ADAPTER)
             .registerTypeAdapter(RealmScan.ADAPTER_TYPE(), new RealmScan.RealmScanObjectTypeAdapter())

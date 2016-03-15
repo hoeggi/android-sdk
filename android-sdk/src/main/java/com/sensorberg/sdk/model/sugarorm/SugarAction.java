@@ -1,18 +1,23 @@
 package com.sensorberg.sdk.model.sugarorm;
 
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.orm.SugarRecord;
 import com.orm.query.Select;
 import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.model.ISO8601TypeAdapter;
+import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmFields;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.locks.Condition;
 
 import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
+import com.orm.query.Condition;
 
 /**
  * Created by skraynick on 16-03-14.
@@ -130,14 +135,22 @@ public class SugarAction extends SugarRecord {
         return value;
     }
 
-    /*
-    public static RealmResults<SugarAction> notSentScans(){
-        return Select.from(SugarAction.class);//.where(SugarAction.class).eql(SugarFields.Action.sentToServerTimestamp2, SugarFields.Scan.NO_DATE);
-    }*/
+    /**
+     * List not sent scans.
+     *
+     * @return - A list of notSentScans.
+     */
+    public static List<SugarAction> notSentScans(){
+        return Select.from(SugarAction.class)
+                .where(Condition.prop(SugarFields.Action.sentToServerTimestamp2).eq(SugarFields.Scan.NO_DATE))
+                .list();
+    }
+
 
     public static boolean getCountForSuppressionTime(long lastAllowedPresentationTime, UUID actionUUID) {
         Select select = Select.from(SugarAction.class)
-        .where(SugarFields.Action.actionId + "= ? AND " + SugarFields.Action.timeOfPresentation + ">= ?", new String[] {actionUUID.toString(), Long.toString(lastAllowedPresentationTime)});
+                .where(SugarFields.Action.timeOfPresentation + ">=?", new String[]{Long.toString(lastAllowedPresentationTime)})
+                .and(Condition.prop(SugarFields.Action.actionId).eq(actionUUID));
 
         keepForever(select);
         return select.count() > 0;
@@ -167,8 +180,57 @@ public class SugarAction extends SugarRecord {
      */
     public static boolean getCountForShowOnlyOnceSuppression(UUID actionUUID){
         Select select = Select.from(SugarAction.class)
-                .where(SugarFields.Action.actionId + "= ?", new String[] {actionUUID.toString()});
+                .where(Condition.prop(SugarFields.Action.actionId).eq(actionUUID));
         keepForever(select);
         return select.count() > 0;
+    }
+
+    public static void markAsSent(List<SugarAction> actions, long now, long actionCacheTtl) {
+        if (actions.size() > 0) {
+            for (int i = actions.size() - 1; i >= 0; i--) {
+                actions.get(i).setSentToServerTimestamp2(now);
+            }
+        }
+        removeAllOlderThan(now, actionCacheTtl);
+    }
+
+    /**
+     * Removes all older items as specified by the parameters.
+     *
+     * @param now - Time Now ? millisecond?
+     * @param time - Time in the past.
+     */
+    public static void removeAllOlderThan(long now, long time) {
+        List<SugarAction> actionsToDelete = Select.from(SugarAction.class)
+                .where(Condition.prop(SugarFields.Action.createdAt).lt(now - time))
+                .and(Condition.prop(SugarFields.Action.keepForever).eq(false))
+                .and(Condition.prop(SugarFields.Action.sentToServerTimestamp2).notEq(SugarFields.Action.NO_DATE))
+                .list();
+
+        if (actionsToDelete.size() > 0){
+            for (int i = actionsToDelete.size() - 1; i >= 0; i--) {
+                //delete
+                actionsToDelete.get(i).delete();
+            }
+        }
+    }
+
+    public static class SugarActionTypeAdapter extends TypeAdapter<SugarAction> {
+
+        @Override
+        public void write(JsonWriter out, SugarAction value) throws IOException {
+            out.beginObject();
+            out.name("eid").value(value.getActionId());
+            out.name("trigger").value(value.getTrigger());
+            out.name("pid").value(value.getPid());
+            out.name("dt");
+            ISO8601TypeAdapter.DATE_ADAPTER.write(out, new Date(value.getTimeOfPresentation()));
+            out.endObject();
+        }
+
+        @Override
+        public SugarAction read(JsonReader in) throws IOException {
+            throw new IllegalArgumentException("you must not use this to read a RealmAction");
+        }
     }
 }

@@ -154,6 +154,7 @@ public class RealmAction extends RealmObject {
         return keepForever;
     }
 
+    //TODO how is this affected by the new setup?
     public static void markAsSent(List<RealmAction> actions, Realm realm, long now, long actionCacheTtl) {
         if (actions.size() > 0) {
             realm.beginTransaction();
