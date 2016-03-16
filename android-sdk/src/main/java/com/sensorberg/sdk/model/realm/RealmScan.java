@@ -108,7 +108,7 @@ public class RealmScan extends RealmObject {
         return isEntry() ? ScanEventType.ENTRY.getMask() : ScanEventType.EXIT.getMask();
     }
 
-
+    //How to deal with this.
     public static Type ADAPTER_TYPE() {
         try {
             return Class.forName("io.realm.RealmScanRealmProxy");
