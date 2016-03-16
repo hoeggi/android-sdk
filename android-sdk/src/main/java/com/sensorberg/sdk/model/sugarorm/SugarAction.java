@@ -33,6 +33,15 @@ public class SugarAction extends SugarRecord {
     private String pid;
     private boolean keepForever;
 
+    /**
+     * Default constructor as required by SugarORM.
+     */
+    public SugarAction() {
+
+    }
+
+    //Do we need a non-default constructor.
+
     public String getActionId() {
         return actionId;
     }
@@ -142,7 +151,7 @@ public class SugarAction extends SugarRecord {
      */
     public static List<SugarAction> notSentScans(){
         return Select.from(SugarAction.class)
-                .where(Condition.prop(SugarFields.Action.sentToServerTimestamp2).eq(SugarFields.Scan.NO_DATE))
+                .where(Condition.prop("SENT_TO_SERVER_TIMESTAMP2").eq(SugarFields.Scan.NO_DATE))
                 .list();
     }
 

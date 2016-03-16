@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.orm.SugarContext;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;
@@ -41,6 +42,7 @@ public class DemoApplication extends Application
     @Override
 	public void onCreate() {
 		super.onCreate();
+        SugarContext.init(this);
         Log.d(TAG, "onCreate application");
 
         boot = new SensorbergApplicationBootstrapper(this, true){

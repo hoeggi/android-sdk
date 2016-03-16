@@ -91,7 +91,7 @@ public class RealmAction extends RealmObject {
     }
 
 
-    //TODO - come back
+    //TODO - come back - don't know if need this in the new setup.
     public static Type ADAPTER_TYPE() {
         try {
             return Class.forName("io.realm.RealmActionRealmProxy");
@@ -101,7 +101,6 @@ public class RealmAction extends RealmObject {
         }
     }
 
-    //TODO come back
     public static RealmResults<RealmAction> notSentScans(Realm realm){
         RealmQuery<RealmAction> scans = realm.where(RealmAction.class)
                 .equalTo(RealmFields.Action.sentToServerTimestamp2, RealmFields.Scan.NO_DATE);
@@ -154,7 +153,6 @@ public class RealmAction extends RealmObject {
         return keepForever;
     }
 
-    //TODO how is this affected by the new setup?
     public static void markAsSent(List<RealmAction> actions, Realm realm, long now, long actionCacheTtl) {
         if (actions.size() > 0) {
             realm.beginTransaction();

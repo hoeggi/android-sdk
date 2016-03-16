@@ -14,7 +14,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="SB Test App${applicationLabelAddition}"
-        android:theme="@android:style/Theme.Black" >
+        android:theme="@android:style/Theme.Black">
 
         <activity
             android:name="com.sensorberg.sdk.demo.DemoActivity"
