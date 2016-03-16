@@ -37,7 +37,6 @@ public class SugarAction extends SugarRecord {
      * Default constructor as required by SugarORM.
      */
     public SugarAction() {
-
     }
 
     //Do we need a non-default constructor.
@@ -151,7 +150,7 @@ public class SugarAction extends SugarRecord {
      */
     public static List<SugarAction> notSentScans(){
         return Select.from(SugarAction.class)
-                .where(Condition.prop("SENT_TO_SERVER_TIMESTAMP2").eq(SugarFields.Scan.NO_DATE))
+                .where(Condition.prop(SugarFields.Action.sentToServerTimestamp2Column).eq(SugarFields.Scan.NO_DATE))
                 .list();
     }
 
@@ -159,7 +158,7 @@ public class SugarAction extends SugarRecord {
     public static boolean getCountForSuppressionTime(long lastAllowedPresentationTime, UUID actionUUID) {
         Select select = Select.from(SugarAction.class)
                 .where(SugarFields.Action.timeOfPresentation + ">=?", new String[]{Long.toString(lastAllowedPresentationTime)})
-                .and(Condition.prop(SugarFields.Action.actionId).eq(actionUUID));
+                .and(Condition.prop(SugarFields.Action.actionIdColumn).eq(actionUUID));
 
         keepForever(select);
         return select.count() > 0;
@@ -189,7 +188,7 @@ public class SugarAction extends SugarRecord {
      */
     public static boolean getCountForShowOnlyOnceSuppression(UUID actionUUID){
         Select select = Select.from(SugarAction.class)
-                .where(Condition.prop(SugarFields.Action.actionId).eq(actionUUID));
+                .where(Condition.prop(SugarFields.Action.actionIdColumn).eq(actionUUID));
         keepForever(select);
         return select.count() > 0;
     }
@@ -211,9 +210,9 @@ public class SugarAction extends SugarRecord {
      */
     public static void removeAllOlderThan(long now, long time) {
         List<SugarAction> actionsToDelete = Select.from(SugarAction.class)
-                .where(Condition.prop(SugarFields.Action.createdAt).lt(now - time))
-                .and(Condition.prop(SugarFields.Action.keepForever).eq(false))
-                .and(Condition.prop(SugarFields.Action.sentToServerTimestamp2).notEq(SugarFields.Action.NO_DATE))
+                .where(Condition.prop(SugarFields.Action.createdAtColumn).lt(now - time))
+                .and(Condition.prop(SugarFields.Action.keepForeverColumn).eq(false))
+                .and(Condition.prop(SugarFields.Action.sentToServerTimestamp2Column).notEq(SugarFields.Action.NO_DATE))
                 .list();
 
         if (actionsToDelete.size() > 0){
@@ -239,7 +238,7 @@ public class SugarAction extends SugarRecord {
 
         @Override
         public SugarAction read(JsonReader in) throws IOException {
-            throw new IllegalArgumentException("you must not use this to read a RealmAction");
+            throw new IllegalArgumentException("You must not use this to read a RealmAction");
         }
     }
 }

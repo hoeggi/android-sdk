@@ -170,7 +170,7 @@ public class SugarScan extends SugarRecord {
     public static void removeAllOlderThan(long timeNow, long cacheTtl) {
         List<SugarScan> actionsToDelete = Select.from(SugarScan.class)
                 .where(Condition.prop("CREATED_AT").lt(timeNow - cacheTtl))
-                .and(Condition.prop("SENT_TO_SERVER_TIMESTAMP2").notEq(RealmFields.Action.NO_DATE))
+                .and(Condition.prop(SugarFields.Scan.sentToServerTimestamp2Column).notEq(RealmFields.Action.NO_DATE))
                 .list();
 
         if (actionsToDelete.size() > 0){

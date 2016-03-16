@@ -18,8 +18,10 @@ import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarFields;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.Resolver;
+import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.scanner.Scanner;
 
@@ -35,6 +37,7 @@ public class DemoActivity extends Activity
     private TextView textView;
     private Clock clock;
     private UUID uuid = UUID.fromString("6133172D-935F-437F-B932-A901265C24B0");
+	private SugarScan testScan;
 
 
 
@@ -62,8 +65,16 @@ public class DemoActivity extends Activity
         tested = SugarAction.from(beaconEvent, clock);
         tested.save();
 
+		ScanEvent scanevent = new ScanEvent.Builder()
+				.withEventMask(ScanEventType.ENTRY.getMask())
+				.withBeaconId(new BeaconId(BEACON_PROXIMITY_ID, 1337, 1337))
+				.withEventTime(100)
+				.build();
+		testScan = SugarScan.from(scanevent, 0);
+		testScan.save();
 
-        List<SugarAction> list = SugarAction.listAll(SugarAction.class);
+		List<SugarScan> scans = SugarScan.listAll(SugarScan.class);
+ 		List<SugarAction> list = SugarAction.listAll(SugarAction.class);
         SugarAction sugar = SugarAction.findById(SugarAction.class, 1);
         List<SugarAction> list2 = SugarAction.notSentScans();
 
@@ -76,6 +87,7 @@ public class DemoActivity extends Activity
 		infoText.append('\n').append("API Key:").append(DemoApplication.API_KEY);
 		infoText.append('\n').append("SDK Version:").append(BuildConfig.VERSION_NAME);
 		infoText.append('\n').append("Bootstrapper Version:").append(com.sensorberg.sdk.bootstrapper.BuildConfig.VERSION_NAME);
+		infoText.append('\n').append("Scan proof it works!: ").append(scans.get(0).getSentToServerTimestamp2());
 
 		textView.setText(infoText.toString());
 		setContentView(textView);
