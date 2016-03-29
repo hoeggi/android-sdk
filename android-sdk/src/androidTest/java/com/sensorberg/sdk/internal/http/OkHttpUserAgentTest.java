@@ -22,7 +22,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        plattform = spy(new AndroidPlatform(getContext()));
+        plattform = spy(new AndroidPlatform(getApplication().getApplicationContext()));
 
         when(plattform.useSyncClient()).thenReturn(true);
 

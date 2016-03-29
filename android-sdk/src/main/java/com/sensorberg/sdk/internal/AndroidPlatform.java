@@ -23,6 +23,7 @@ import android.os.Parcelable;
 import android.os.SystemClock;
 
 import com.android.sensorbergVolley.RequestQueue;
+
 import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.BuildConfig;
@@ -33,6 +34,7 @@ import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorbergorm.SugarContext;
 
 import java.io.File;
 import java.io.Serializable;
@@ -90,6 +92,7 @@ public class AndroidPlatform implements Platform {
             bluetoothAdapter = null;
         }
 
+        SugarContext.init(context);
         postToServiceCounter = new PersistentIntegerCounter(getSettingsSharedPrefs());
         pendingIntentStorage = new PendingIntentStorage(this);
     }
@@ -120,7 +123,6 @@ public class AndroidPlatform implements Platform {
             return "<unknown>";
         }
     }
-
 
 
     @TargetApi(Build.VERSION_CODES.DONUT)

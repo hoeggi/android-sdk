@@ -12,7 +12,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,14 +29,16 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
     private final Class<T> clazz;
     private boolean shouldAlwaysTryWithNetwork = false;
 
-    //TODO - will need to update
+    //TODO - will need to update - take out adapter
     public static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Date.class, ISO8601TypeAdapter.DATE_ADAPTER)
-            .registerTypeAdapter(RealmScan.ADAPTER_TYPE(), new RealmScan.RealmScanObjectTypeAdapter())
-            .registerTypeAdapter(RealmScan.class, new RealmScan.RealmScanObjectTypeAdapter())
-            .registerTypeAdapter(RealmAction.ADAPTER_TYPE(), new RealmAction.RealmActionTypeAdapter())
-            .registerTypeAdapter(RealmAction.class, new RealmAction.RealmActionTypeAdapter())
+            .registerTypeAdapter(SugarScan.class, new SugarScan.SugarScanObjectTypeAdapter())
+            .registerTypeAdapter(SugarAction.class, new SugarAction.SugarActionTypeAdapter())
             .registerTypeAdapter(JSONObject.class, new JSONObjectTyeAdapter())
+            .create();
+
+    public static final Gson gson2 = new GsonBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
             .create();
 
 

@@ -2,6 +2,8 @@ package com.sensorberg.sdk;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.orm.SugarApp;
+import com.orm.SugarContext;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;

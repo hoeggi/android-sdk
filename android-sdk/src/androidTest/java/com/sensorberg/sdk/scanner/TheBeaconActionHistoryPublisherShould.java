@@ -1,5 +1,6 @@
 package com.sensorberg.sdk.scanner;
 
+import com.orm.SugarContext;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import util.TestConstants;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
@@ -7,10 +8,13 @@ import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.RealmResults;
@@ -34,6 +38,7 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
 
         testPlattform = new TestPlatform().setContext(getContext());
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());
+
         transport = mock(Transport.class);
         testPlattform.setTransport(transport);
         tested = new BeaconActionHistoryPublisher(testPlattform, ResolverListener.NONE, null);
@@ -51,12 +56,12 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
     }
 
     public void test_should_persist_scans_that_need_queing() throws Exception {
-        RealmResults<RealmScan> notSentObjects = RealmScan.notSentScans(getRealmInstance());
+        List<SugarScan> notSentObjects = SugarScan.notSentScans();
         assertThat(notSentObjects).hasSize(1);
     }
 
     public void test_should_persist_actions_that_need_queing() throws Exception {
-        RealmResults<RealmAction> notSentObjects = RealmAction.notSentScans(getRealmInstance());
+        List<SugarAction> notSentObjects = SugarAction.notSentScans();
         assertThat(notSentObjects).hasSize(1);
     }
 

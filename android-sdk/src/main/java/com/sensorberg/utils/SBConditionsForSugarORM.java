@@ -1,6 +1,6 @@
 package com.sensorberg.utils;
 
-import com.orm.query.Condition;
+import com.sensorbergorm.query.Condition;
 
 /**
  * Created by skraynick on 16-03-15.

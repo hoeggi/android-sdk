@@ -2,7 +2,8 @@ package com.sensorberg.sdk.internal.transport.model;
 
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 
 import java.util.Date;
 import java.util.List;
@@ -11,11 +12,11 @@ import java.util.List;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class HistoryBody {
 
-    public final List<RealmScan> events;
-    public final List<RealmAction> actions;
+    public final List<SugarScan> events;
+    public final List<SugarAction> actions;
     public final Date deviceTimestamp;
 
-    public HistoryBody(List<RealmScan> scans, List<RealmAction> actions, Clock clock) {
+    public HistoryBody(List<SugarScan> scans, List<SugarAction> actions, Clock clock) {
         this.events = scans;
         this.deviceTimestamp = new Date(clock.now());
         this.actions = actions;

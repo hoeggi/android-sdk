@@ -1,11 +1,12 @@
 package com.sensorberg.sdk.model.sugarorm;
 
 import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.orm.SugarRecord;
-import com.orm.query.Condition;
-import com.orm.query.Select;
+import com.sensorbergorm.SugarRecord;
+import com.sensorbergorm.query.Condition;
+import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.model.realm.RealmFields;
 import com.sensorberg.sdk.scanner.ScanEvent;
@@ -20,13 +21,21 @@ import java.util.List;
  */
 public class SugarScan extends SugarRecord {
 
+    @Expose
     private long eventTime;
+    @Expose
     private boolean isEntry;
+    @Expose
     private String proximityUUID;
+    @Expose
     private int proximityMajor;
+    @Expose
     private int proximityMinor;
+    @Expose
     private long sentToServerTimestamp;
+    @Expose
     private long sentToServerTimestamp2;
+    @Expose
     private long createdAt;
 
     /**
@@ -189,7 +198,7 @@ public class SugarScan extends SugarRecord {
         public void write(JsonWriter out, SugarScan value) throws IOException {
             out.beginObject();
             out.name("pid").value(value.getPid());
-            out.name("trigger").value(value.getPid());
+            out.name("trigger").value(value.getTrigger());
             out.name("dt");
             ISO8601TypeAdapter.DATE_ADAPTER.write(out, new Date(value.getEventTime()));
             out.endObject();

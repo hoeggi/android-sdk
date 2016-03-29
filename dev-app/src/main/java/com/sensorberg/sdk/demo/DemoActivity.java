@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.orm.SugarRecord;
-import com.orm.query.Condition;
-import com.orm.query.Select;
+import com.sensorbergorm.SugarApp;
+import com.sensorbergorm.SugarContext;
+import com.sensorbergorm.SugarRecord;
+import com.sensorbergorm.query.Condition;
+import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.InAppAction;
@@ -39,8 +41,6 @@ public class DemoActivity extends Activity
     private UUID uuid = UUID.fromString("6133172D-935F-437F-B932-A901265C24B0");
 	private SugarScan testScan;
 
-
-
     @Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -62,8 +62,10 @@ public class DemoActivity extends Activity
                 return 0;
             }
         };
+
+        //app = (SugarApp)getApplication();
         tested = SugarAction.from(beaconEvent, clock);
-        tested.save();
+        //tested.save();
 
 		ScanEvent scanevent = new ScanEvent.Builder()
 				.withEventMask(ScanEventType.ENTRY.getMask())
@@ -74,19 +76,18 @@ public class DemoActivity extends Activity
 		testScan.save();
 
 		List<SugarScan> scans = SugarScan.listAll(SugarScan.class);
- 		List<SugarAction> list = SugarAction.listAll(SugarAction.class);
-        SugarAction sugar = SugarAction.findById(SugarAction.class, 1);
-        List<SugarAction> list2 = SugarAction.notSentScans();
+ 		//List<SugarAction> list = SugarAction.listAll(SugarAction.class);
+        List<SugarScan> list2 = SugarScan.notSentScans();
 
 
         textView = new TextView(this);
 		StringBuilder infoText = new StringBuilder("This is an app that exposes some SDK APIs to the user");
         infoText.append('\n').append("TESTed").append(HeadersJsonObjectRequest.gson.toJson(tested));
-        infoText.append('\n').append("Action ID: ").append(list.get(0).getActionId());
+        //infoText.append('\n').append("Action ID: ").append(list.get(0).getActionId());
         infoText.append('\n').append("sentToServerTimestamp2: ").append(list2.get(0).getSentToServerTimestamp2());
 		infoText.append('\n').append("API Key:").append(DemoApplication.API_KEY);
 		infoText.append('\n').append("SDK Version:").append(BuildConfig.VERSION_NAME);
-		infoText.append('\n').append("Bootstrapper Version:").append(com.sensorberg.sdk.bootstrapper.BuildConfig.VERSION_NAME);
+		//infoText.append('\n').append("Bootstrapper Version:").append(com.sensorberg.sdk.bootstrapper.BuildConfig.VERSION_NAME);
 		infoText.append('\n').append("Scan proof it works!: ").append(scans.get(0).getSentToServerTimestamp2());
 
 		textView.setText(infoText.toString());

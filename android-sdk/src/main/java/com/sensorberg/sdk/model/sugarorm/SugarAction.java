@@ -1,36 +1,40 @@
 package com.sensorberg.sdk.model.sugarorm;
 
 import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.orm.SugarRecord;
-import com.orm.query.Select;
+import com.sensorbergorm.SugarRecord;
+import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
-import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmFields;
 import com.sensorberg.sdk.resolver.BeaconEvent;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import io.realm.Realm;
-import com.orm.query.Condition;
+import com.sensorbergorm.query.Condition;
 
 /**
  * Created by skraynick on 16-03-14.
  */
 public class SugarAction extends SugarRecord {
 
+    @Expose
     private String actionId;
+    @Expose
     private long timeOfPresentation;
+    @Expose
     private long sentToServerTimestamp;
+    @Expose
     private long sentToServerTimestamp2;
+    @Expose
     private long createdAt;
+    @Expose
     private int trigger;
+    @Expose
     private String pid;
+    @Expose
     private boolean keepForever;
 
     /**
@@ -157,7 +161,7 @@ public class SugarAction extends SugarRecord {
 
     public static boolean getCountForSuppressionTime(long lastAllowedPresentationTime, UUID actionUUID) {
         Select select = Select.from(SugarAction.class)
-                .where(SugarFields.Action.timeOfPresentation + ">=?", new String[]{Long.toString(lastAllowedPresentationTime)})
+                .where(Condition.prop(SugarFields.Action.timeOfPresentationColumn).gtOrEq(lastAllowedPresentationTime))
                 .and(Condition.prop(SugarFields.Action.actionIdColumn).eq(actionUUID));
 
         keepForever(select);

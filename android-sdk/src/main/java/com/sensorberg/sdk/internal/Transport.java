@@ -4,6 +4,8 @@ import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 
 import java.util.List;
@@ -41,7 +43,7 @@ public interface Transport {
 
     void getSettings(SettingsCallback settingsCallback);
 
-    void publishHistory(List<RealmScan> scans, List<RealmAction> actions, HistoryCallback callback);
+    void publishHistory(List<SugarScan> scans, List<SugarAction> actions, HistoryCallback callback);
 
     void updateBeaconLayout();
 }

@@ -25,6 +25,7 @@ public class SugarFields {
         String sentToServerTimestampColumn  = "SENT_TO_SERVER_TIMESTAMP";
         String sentToServerTimestamp2Column = "SENT_TO_SERVER_TIMESTAMP2";
         String createdAtColumn              = "CREATED_AT";
+
         long NO_DATE = Long.MIN_VALUE;
     }
 

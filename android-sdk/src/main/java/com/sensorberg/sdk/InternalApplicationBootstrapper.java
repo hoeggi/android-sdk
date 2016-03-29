@@ -10,6 +10,7 @@ import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.model.realm.RealmAction;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -157,7 +158,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         Logger.log.logError("resolution failed:"+ resolution.configuration.getScanEvent().getBeaconId().toTraditionalString() , cause);
     }
 
-    @Override
+    /*@Override
     public void onResolutionsFinished(List<BeaconEvent> beaconEvents) {
         final Realm realm = Realm.getInstance(platform.getContext(), BeaconActionHistoryPublisher.REALM_FILENAME);
         List<BeaconEvent> events = ListUtils.filter(beaconEvents, new ListUtils.Filter<BeaconEvent>() {
@@ -171,6 +172,32 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
                 }
                 if (beaconEvent.sendOnlyOnce){
                     if (RealmAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid(), realm)){
+                        return false;
+                    }
+
+                }
+                return true;
+            }
+        });
+        for (BeaconEvent event : events) {
+            presentBeaconEvent(event);
+        }
+    }*/
+
+    @Override
+    public void onResolutionsFinished(List<BeaconEvent> beaconEvents) {
+        //final Realm realm = Realm.getInstance(platform.getContext(), BeaconActionHistoryPublisher.REALM_FILENAME);
+        List<BeaconEvent> events = ListUtils.filter(beaconEvents, new ListUtils.Filter<BeaconEvent>() {
+            @Override
+            public boolean matches(BeaconEvent beaconEvent) {
+                if (beaconEvent.getSuppressionTimeMillis() > 0) {
+                    long lastAllowedPresentationTime = platform.getClock().now() - beaconEvent.getSuppressionTimeMillis();
+                    if (SugarAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid())){
+                        return false;
+                    }
+                }
+                if (beaconEvent.sendOnlyOnce){
+                    if (SugarAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid())){
                         return false;
                     }
 
