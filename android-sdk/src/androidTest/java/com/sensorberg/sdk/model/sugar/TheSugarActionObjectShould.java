@@ -3,11 +3,8 @@ package com.sensorberg.sdk.model.sugar;
 import android.support.test.InstrumentationRegistry;
 import android.test.AndroidTestCase;
 
-import com.orm.SugarApp;
-import com.orm.SugarContext;
-import com.orm.SugarDb;
-import com.orm.SugarRecord;
-import com.orm.query.Select;
+import com.sensorbergorm.SugarRecord;
+import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.internal.Clock;
@@ -22,8 +19,6 @@ import org.fest.assertions.api.Assertions;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-import static com.orm.SugarRecord.save;
-import io.realm.RealmResults;
 import util.TestConstants;
 
 /**
@@ -34,8 +29,6 @@ public class TheSugarActionObjectShould extends SensorbergApplicationTest {
     private SugarAction tested;
     private UUID uuid = UUID.fromString("6133172D-935F-437F-B932-A901265C24B0");
     private Clock clock;
-
-
 
     @Override
     public void setUp() throws Exception {

@@ -24,7 +24,6 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/sensorberg_orm-0.7.1.201405082137.jar')
-    //compile 'com.github.satyan:sugar:1.5'
 
     compile project(':networkstate')
     compile project(':okvolley')
@@ -39,7 +38,7 @@ group = "com.sensorberg.sdk"
 archivesBaseName = 'android-sdk'
 version = "${project.ext.SDK_VERSION}${project.ext.RC_VERSION}"
 
-def resolverURL = "http://localhost:8080/layout"//System.getenv("RESOLVER_URL") ?: project.ext.has("resolver_url") ? project.ext.get("resolver_url"): null
+def resolverURL = System.getenv("RESOLVER_URL") ?: project.ext.has("resolver_url") ? project.ext.get("resolver_url"): null
 
 if (resolverURL != null) {
     println("using custom resolver: ${resolverURL}")

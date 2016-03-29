@@ -11,13 +11,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
-import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.Date;
@@ -29,7 +26,6 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
     private final Class<T> clazz;
     private boolean shouldAlwaysTryWithNetwork = false;
 
-    //TODO - will need to update - take out adapter
     public static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Date.class, ISO8601TypeAdapter.DATE_ADAPTER)
             .registerTypeAdapter(SugarScan.class, new SugarScan.SugarScanObjectTypeAdapter())
@@ -40,7 +36,6 @@ public class HeadersJsonObjectRequest<T> extends JsonRequest<T> {
     public static final Gson gson2 = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .create();
-
 
     public HeadersJsonObjectRequest(int method, String url, Map<String, String> headers, Object body, Response.Listener<T> listener, Response.ErrorListener errorListener, Class<T> clazz) {
         super(method, url, body == null ? null : gson.toJson(body), listener, errorListener);

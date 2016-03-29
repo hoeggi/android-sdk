@@ -2,15 +2,11 @@ package com.sensorberg.sdk.model.sugar;
 
 import android.test.AndroidTestCase;
 
-import com.orm.SugarRecord;
-import com.orm.query.Select;
-import com.sensorberg.sdk.action.InAppAction;
+import com.sensorbergorm.SugarRecord;
+import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
-import com.sensorberg.sdk.model.realm.RealmScan;
-import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
-import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.NoClock;
@@ -27,6 +23,7 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
 
     private SugarScan tested;
     private Clock clock;
+    private List<SugarScan> objects;
 
 
     @Override
@@ -56,22 +53,20 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
     }
 
     public void test_should_sugarscan_table_empty() {
-        //SugarScan.deleteAll(SugarScan.class);
+        SugarScan.deleteAll(SugarScan.class);
 
-        //List<SugarScan> objects = SugarRecord.find(SugarScan.class, "");
-       // Select.from(SugarScan.class).list();
+        objects = SugarRecord.find(SugarScan.class, "");
+        Select.from(SugarScan.class).list();
 
         //Assertions.assertThat(objects).isNullOrEmpty();
     }
 
     public void test_should_serialize_a_list_of_objects() throws Exception {
-        //RealmResults<RealmScan> objects = realm.allObjects(RealmScan.class);
 
-        //String objectsAsJson = HeadersJsonObjectRequest.gson.toJson(objects);
+        String objectsAsJson = HeadersJsonObjectRequest.gson.toJson(objects);
 
-       /* Assertions.assertThat(objectsAsJson)
+       Assertions.assertThat(objectsAsJson)
                 .isNotEmpty()
                 .isEqualToIgnoringCase("[{\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"trigger\":1,\"dt\":\"1970-01-01T01:00:00.100+01:00\"}]");
-        */
     }
 }

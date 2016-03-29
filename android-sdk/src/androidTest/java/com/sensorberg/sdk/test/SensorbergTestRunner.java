@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.multidex.MultiDex;
 
-import com.orm.SugarContext;
+import com.sensorbergorm.SugarContext;
 import com.sensorberg.sdk.internal.URLFactory;
 
 import net.danlew.android.joda.JodaTimeAndroid;

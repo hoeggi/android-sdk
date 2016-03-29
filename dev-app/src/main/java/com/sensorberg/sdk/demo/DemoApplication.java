@@ -42,7 +42,6 @@ public class DemoApplication extends Application
     @Override
 	public void onCreate() {
 		super.onCreate();
-        SugarContext.init(this);
         Log.d(TAG, "onCreate application");
 
         boot = new SensorbergApplicationBootstrapper(this, true){

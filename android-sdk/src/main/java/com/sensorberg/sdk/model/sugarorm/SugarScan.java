@@ -160,7 +160,6 @@ public class SugarScan extends SugarRecord {
                 .list();
     }
 
-    //TODO - fix for update.
     public static void maskAsSent(List<SugarScan> scans, long timeNow, long cacheTtl) {
         if (scans.size() > 0) {
             for (int i = scans.size() - 1; i >= 0; i--) {

@@ -158,32 +158,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         Logger.log.logError("resolution failed:"+ resolution.configuration.getScanEvent().getBeaconId().toTraditionalString() , cause);
     }
 
-    /*@Override
-    public void onResolutionsFinished(List<BeaconEvent> beaconEvents) {
-        final Realm realm = Realm.getInstance(platform.getContext(), BeaconActionHistoryPublisher.REALM_FILENAME);
-        List<BeaconEvent> events = ListUtils.filter(beaconEvents, new ListUtils.Filter<BeaconEvent>() {
-            @Override
-            public boolean matches(BeaconEvent beaconEvent) {
-                if (beaconEvent.getSuppressionTimeMillis() > 0) {
-                    long lastAllowedPresentationTime = platform.getClock().now() - beaconEvent.getSuppressionTimeMillis();
-                    if (RealmAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid(), realm)){
-                        return false;
-                    }
-                }
-                if (beaconEvent.sendOnlyOnce){
-                    if (RealmAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid(), realm)){
-                        return false;
-                    }
-
-                }
-                return true;
-            }
-        });
-        for (BeaconEvent event : events) {
-            presentBeaconEvent(event);
-        }
-    }*/
-
     @Override
     public void onResolutionsFinished(List<BeaconEvent> beaconEvents) {
         //final Realm realm = Realm.getInstance(platform.getContext(), BeaconActionHistoryPublisher.REALM_FILENAME);

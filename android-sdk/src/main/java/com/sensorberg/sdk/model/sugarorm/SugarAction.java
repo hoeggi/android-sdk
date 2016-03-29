@@ -43,8 +43,6 @@ public class SugarAction extends SugarRecord {
     public SugarAction() {
     }
 
-    //Do we need a non-default constructor.
-
     public String getActionId() {
         return actionId;
     }

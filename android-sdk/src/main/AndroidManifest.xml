@@ -15,11 +15,6 @@
         android:required="false" />
 
     <application>
-        <meta-data android:name="DATABASE" android:value="sensorberg.db" />
-        <meta-data android:name="VERSION" android:value="3" />
-        <meta-data android:name="QUERY_LOG" android:value="true" />
-        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.sensorberg.sdk.model.sugarorm" />
-
         <service android:name="com.sensorberg.sdk.SensorbergService"
             android:enabled="true"
             android:process=":sensorberg"

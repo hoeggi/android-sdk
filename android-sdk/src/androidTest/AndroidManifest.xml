@@ -5,8 +5,6 @@
 
     <application
         android:name="android.support.multidex.MultiDexApplication">
-
-
         <receiver android:name="com.sensorberg.sdk.internal.TestGenericBroadcastReceiver"
             android:enabled="true">
             <intent-filter>

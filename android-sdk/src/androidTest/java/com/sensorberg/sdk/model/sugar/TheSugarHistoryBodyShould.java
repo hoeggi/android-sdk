@@ -1,13 +1,10 @@
 package com.sensorberg.sdk.model.sugar;
 
 import android.test.AndroidTestCase;
-
-import com.orm.query.Select;
+import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
-import com.sensorberg.sdk.model.realm.RealmScan;
-import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
@@ -26,8 +23,6 @@ public class TheSugarHistoryBodyShould extends AndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        //Realm realm = Realm.getInstance(getContext(), "test" + System.currentTimeMillis());
-
         ScanEvent scanevent = new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())
                 .withBeaconId(TestConstants.ANY_BEACON_ID)
@@ -45,19 +40,16 @@ public class TheSugarHistoryBodyShould extends AndroidTestCase {
             }
         };
 
-        //beginTransaction();
         scans = SugarScan.from(scanevent, clock.now());
-        //commitTransaction();
-
 
         scans.save();
         tested = new HistoryBody(Select.from(SugarScan.class).list(), null, clock);
     }
 
     public void test_should_be_serializeable() throws Exception {
-        //String asJSONStrion = HeadersJsonObjectRequest.gson.toJson(tested);
+        String asJSONStrion = HeadersJsonObjectRequest.gson.toJson(tested);
 
-        //Assertions.assertThat(asJSONStrion).isNotEmpty();
+        Assertions.assertThat(asJSONStrion).isNotEmpty();
 
     }
 }
