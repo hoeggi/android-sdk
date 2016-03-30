@@ -27,7 +27,6 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private static final int MSG_ACTION = 4;
     private static final int MSG_MARK_ACTIONS_AS_SENT = 5;
     private static final int MSG_DELETE_ALL_DATA = 6;
-    public static String REALM_FILENAME = "scannerstorage.realm";
 
     private final RunLoop runloop;
     private final Context context;
@@ -63,7 +62,6 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
                 SugarScan.maskAsSent(scans, now, settings.getCacheTtl());
                 break;
             case MSG_MARK_ACTIONS_AS_SENT:
-
                 List<SugarAction> actions = (List<SugarAction>) queueEvent.obj;
                 SugarAction.markAsSent(actions, now, settings.getCacheTtl());
                 break;

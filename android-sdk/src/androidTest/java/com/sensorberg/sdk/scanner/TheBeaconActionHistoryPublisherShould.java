@@ -1,13 +1,11 @@
 package com.sensorberg.sdk.scanner;
 
-import com.orm.SugarContext;
+import com.sensorbergorm.SugarContext;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import util.TestConstants;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -35,6 +33,7 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
 
         testPlattform = new TestPlatform().setContext(getContext());
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());
@@ -69,5 +68,4 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
         tested.publishHistory();
         verify(transport).publishHistory(hasSize(1), hasSize(1), any(HistoryCallback.class));
     }
-
 }

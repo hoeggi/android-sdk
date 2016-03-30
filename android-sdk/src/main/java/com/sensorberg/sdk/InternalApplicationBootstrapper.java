@@ -3,6 +3,7 @@ package com.sensorberg.sdk;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.util.Log;
 
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
 
 public class InternalApplicationBootstrapper extends MinimalBootstrapper implements ScannerListener, ResolverListener, Settings.SettingsCallback, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
 
@@ -117,7 +117,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         }
     }
 
-    void presentBeaconEvent(BeaconEvent beaconEvent) {
+    public void presentBeaconEvent(BeaconEvent beaconEvent) {
         Action beaconEventAction = beaconEvent.getAction();
         if (beaconEventAction != null) {
             if(beaconEvent.deliverAt != null){
@@ -171,10 +171,11 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
                     }
                 }
                 if (beaconEvent.sendOnlyOnce){
+                    Log.i("this", "sendOnlyOnce");
+                    System.out.print("sendOnlyOnce");
                     if (SugarAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid())){
                         return false;
                     }
-
                 }
                 return true;
             }

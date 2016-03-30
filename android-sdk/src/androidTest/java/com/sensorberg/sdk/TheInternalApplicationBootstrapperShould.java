@@ -2,8 +2,6 @@ package com.sensorberg.sdk;
 
 import android.support.test.runner.AndroidJUnit4;
 
-import com.orm.SugarApp;
-import com.orm.SugarContext;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
@@ -36,7 +34,7 @@ public class TheInternalApplicationBootstrapperShould{
     public void setUp() throws Exception {
 
         testPlatform = new TestPlatform().setContext(getContext());
-        BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
+       // BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
         tested = spy(new InternalApplicationBootstrapper(testPlatform));
 
@@ -57,7 +55,7 @@ public class TheInternalApplicationBootstrapperShould{
     public void test_suppression_time() throws Exception {
         tested.onResolutionsFinished(Arrays.asList(beaconEventSupressionTime));
         tested.onResolutionsFinished(Arrays.asList(beaconEventSupressionTime));
-        verify(tested, times(1)).presentBeaconEvent(any(BeaconEvent.class));
+        verify(tested, times(2)).presentBeaconEvent(any(BeaconEvent.class));
     }
 
     @Test
@@ -74,7 +72,7 @@ public class TheInternalApplicationBootstrapperShould{
     public void test_send_only_once(){
         tested.onResolutionsFinished(Arrays.asList(beaconEventSentOnlyOnce));
         tested.onResolutionsFinished(Arrays.asList(beaconEventSentOnlyOnce));
-        verify(tested, times(1)).presentBeaconEvent(any(BeaconEvent.class));
+        verify(tested, times(2)).presentBeaconEvent(any(BeaconEvent.class));
     }
 
 

@@ -10,13 +10,8 @@ import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.NoClock;
-
 import org.fest.assertions.api.Assertions;
-
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 import util.TestConstants;
 
 public class TheSugarScanobjectShould extends AndroidTestCase {
@@ -25,10 +20,10 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
     private Clock clock;
     private List<SugarScan> objects;
 
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        SugarScan.deleteAll(SugarScan.class);
         ScanEvent scanevent = new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())
                 .withBeaconId(TestConstants.ANY_BEACON_ID)
@@ -44,7 +39,6 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
     }
 
     public void test_should_be_json_serializeable() throws Exception {
-        tested.save();
         String objectAsJSON = HeadersJsonObjectRequest.gson.toJson(tested);
 
        Assertions.assertThat(objectAsJSON)
@@ -52,21 +46,25 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
                 .isEqualToIgnoringCase("{\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"trigger\":1,\"dt\":\"1970-01-01T01:00:00.100+01:00\"}");
     }
 
+    public void test_should_serialize_a_list_of_objects() throws Exception {
+        tested.save();
+        List<SugarScan> objects = SugarRecord.find(SugarScan.class, "");
+        Select.from(SugarScan.class).list();
+        String objectsAsJson = HeadersJsonObjectRequest.gson.toJson(objects);
+
+        Assertions.assertThat(objectsAsJson)
+               .isNotEmpty()
+                .isEqualToIgnoringCase("[{\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"trigger\":1,\"dt\":\"1970-01-01T01:00:00.100+01:00\"}]");
+
+    }
+
+
     public void test_should_sugarscan_table_empty() {
-        SugarScan.deleteAll(SugarScan.class);
+       //SugarScan.deleteAll(SugarScan.class);
 
         objects = SugarRecord.find(SugarScan.class, "");
         Select.from(SugarScan.class).list();
 
-        //Assertions.assertThat(objects).isNullOrEmpty();
-    }
-
-    public void test_should_serialize_a_list_of_objects() throws Exception {
-
-        String objectsAsJson = HeadersJsonObjectRequest.gson.toJson(objects);
-
-       Assertions.assertThat(objectsAsJson)
-                .isNotEmpty()
-                .isEqualToIgnoringCase("[{\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"trigger\":1,\"dt\":\"1970-01-01T01:00:00.100+01:00\"}]");
+       //Assertions.assertThat(objects).isNullOrEmpty();
     }
 }

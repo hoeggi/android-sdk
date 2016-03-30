@@ -33,7 +33,6 @@ public abstract class SensorbergApplicationTest extends ApplicationTestCase<Appl
         super.setUp();
         createApplication();
         System.setProperty("dexmaker.dexcache", getApplication().getCacheDir().getPath());
-        BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
     }
 
     @Override
@@ -67,9 +66,9 @@ public abstract class SensorbergApplicationTest extends ApplicationTestCase<Appl
         return RawJSONMockResponse.fromRawResource(getContext().getResources().openRawResource(resourceID)) ;
     }
 
-    protected Realm getRealmInstance() {
+    /*protected Realm getRealmInstance() {
         return Realm.getInstance(getContext(), BeaconActionHistoryPublisher.REALM_FILENAME);
-    }
+    }*/
 
     protected List<RecordedRequest> waitForRequests(int i) throws InterruptedException {
         List<RecordedRequest> recordedRequests = new ArrayList<>();

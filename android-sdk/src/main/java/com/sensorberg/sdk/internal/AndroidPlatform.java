@@ -92,6 +92,7 @@ public class AndroidPlatform implements Platform {
             bluetoothAdapter = null;
         }
 
+       // SugarContext.initTest(context, "test.db", 3);
         SugarContext.init(context);
         JodaTimeAndroid.init(context);
         postToServiceCounter = new PersistentIntegerCounter(getSettingsSharedPrefs());

@@ -4,8 +4,6 @@ import android.util.Log;
 
 import com.android.sensorbergVolley.Network;
 import com.android.sensorbergVolley.VolleyError;
-import com.orm.SugarApp;
-import com.orm.SugarContext;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.internal.URLFactory;
@@ -70,7 +68,6 @@ public class TransportShould extends SensorbergApplicationTest {
 
         tested = new OkHttpClientTransport(testPlattform, settings);
         tested.setApiToken(TestConstants.API_TOKEN);
-
     }
 
     public void test_should_forward_the_layout_upload_interval_to_the_settings() throws Exception {

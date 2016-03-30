@@ -152,6 +152,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
                 .withEventMask(ScanEventType.ENTRY.getMask())
                 .build());
 
+        //TODO // FIXME: 16-03-30 
         waitForRequests(2);
 
         //we should have exactly one notification

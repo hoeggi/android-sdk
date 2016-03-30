@@ -1,5 +1,7 @@
 package com.sensorberg.sdk.internal;
 
+import android.util.Log;
+
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.EventEntry;
 
@@ -30,6 +32,9 @@ public class FileHelper {
         FileInputStream fis = null;
         ObjectInputStream ois = null;
         try {
+            if(!file.getName().isEmpty()){
+                Log.i("Empty", file.getName());
+            }
             fis = new FileInputStream(file);
             ois = new ObjectInputStream(fis);
             return ois.readObject();
