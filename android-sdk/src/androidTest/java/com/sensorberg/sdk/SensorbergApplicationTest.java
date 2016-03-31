@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
-
 public abstract class SensorbergApplicationTest extends ApplicationTestCase<Application> {
     protected MockWebServer server;
     private URLFactory.Conf previousConfiguration;
@@ -65,10 +63,6 @@ public abstract class SensorbergApplicationTest extends ApplicationTestCase<Appl
     protected MockResponse fromRaw(int resourceID) throws IOException, JSONException {
         return RawJSONMockResponse.fromRawResource(getContext().getResources().openRawResource(resourceID)) ;
     }
-
-    /*protected Realm getRealmInstance() {
-        return Realm.getInstance(getContext(), BeaconActionHistoryPublisher.REALM_FILENAME);
-    }*/
 
     protected List<RecordedRequest> waitForRequests(int i) throws InterruptedException {
         List<RecordedRequest> recordedRequests = new ArrayList<>();

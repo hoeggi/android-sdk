@@ -2,7 +2,6 @@ package com.sensorberg.sdk.model.sugar;
 
 import android.support.test.InstrumentationRegistry;
 import android.test.AndroidTestCase;
-
 import com.sensorbergorm.SugarRecord;
 import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.SensorbergApplicationTest;
@@ -13,9 +12,7 @@ import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.NoClock;
-
 import org.fest.assertions.api.Assertions;
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +45,6 @@ public class TheSugarActionObjectShould extends SensorbergApplicationTest {
     }
 
     public void test_should_be_json_serializeable() throws Exception {
-
         String objectAsJSON = HeadersJsonObjectRequest.gson.toJson(tested);
 
         Assertions.assertThat(objectAsJSON)
@@ -67,14 +63,5 @@ public class TheSugarActionObjectShould extends SensorbergApplicationTest {
         Assertions.assertThat(objectsAsJson)
                 .isNotEmpty()
                 .isEqualToIgnoringCase("[{\"eid\":\"6133172d-935f-437f-b932-a901265c24b0\",\"trigger\":1,\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"dt\":\"1970-01-01T01:00:01.337+01:00\"}]");
-    }
-
-    public void test_should_sugaraction_table_empty() {
-        //SugarAction.deleteAll(SugarAction.class);
-
-        List<SugarAction> objects = SugarRecord.find(SugarAction.class, "");
-        Select.from(SugarAction.class).list();
-
-        //Assertions.assertThat(objects).isNullOrEmpty();
     }
 }

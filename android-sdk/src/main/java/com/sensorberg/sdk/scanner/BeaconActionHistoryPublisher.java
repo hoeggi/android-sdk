@@ -54,6 +54,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
         long now = clock.now();
         switch (queueEvent.what){
             case MSG_SCAN_EVENT:
+                //start tramsaction?
                 SugarScan.from((ScanEvent) queueEvent.obj, clock.now());
                 break;
             case MSG_MARK_SCANS_AS_SENT:

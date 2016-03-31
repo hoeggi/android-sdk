@@ -8,7 +8,6 @@ import com.sensorbergorm.SugarRecord;
 import com.sensorbergorm.query.Condition;
 import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
-import com.sensorberg.sdk.model.realm.RealmFields;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import java.io.IOException;
@@ -144,7 +143,7 @@ public class SugarScan extends SugarRecord {
         value.setProximityUUID(scanEvent.getBeaconId().getUuid().toString());
         value.setProximityMajor(scanEvent.getBeaconId().getMajorId());
         value.setProximityMinor(scanEvent.getBeaconId().getMinorId());
-        value.setSentToServerTimestamp2(RealmFields.Scan.NO_DATE);
+        value.setSentToServerTimestamp2(SugarFields.Scan.NO_DATE);
         value.setCreatedAt(timeNow);
         return value;
     }
@@ -178,7 +177,7 @@ public class SugarScan extends SugarRecord {
     public static void removeAllOlderThan(long timeNow, long cacheTtl) {
         List<SugarScan> actionsToDelete = Select.from(SugarScan.class)
                 .where(Condition.prop("CREATED_AT").lt(timeNow - cacheTtl))
-                .and(Condition.prop(SugarFields.Scan.sentToServerTimestamp2Column).notEq(RealmFields.Action.NO_DATE))
+                .and(Condition.prop(SugarFields.Scan.sentToServerTimestamp2Column).notEq(SugarFields.Action.NO_DATE))
                 .list();
 
         if (actionsToDelete.size() > 0){

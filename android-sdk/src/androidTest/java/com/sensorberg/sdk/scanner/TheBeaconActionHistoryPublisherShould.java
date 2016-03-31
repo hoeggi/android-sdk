@@ -11,12 +11,8 @@ import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.testUtils.TestPlatform;
-
 import java.util.List;
 import java.util.UUID;
-
-import io.realm.RealmResults;
-
 import static util.Verfier.hasSize;
 import static org.fest.assertions.api.Assertions.*;
 import static org.mockito.Matchers.any;
@@ -33,7 +29,6 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
 
         testPlattform = new TestPlatform().setContext(getContext());
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());

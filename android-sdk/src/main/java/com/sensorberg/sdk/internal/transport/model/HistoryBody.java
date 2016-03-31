@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.internal.transport.model;
 
 import com.sensorberg.sdk.internal.Clock;
-import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 

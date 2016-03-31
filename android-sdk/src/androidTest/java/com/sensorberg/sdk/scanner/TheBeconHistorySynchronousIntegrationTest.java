@@ -4,7 +4,6 @@ import com.sensorberg.sdk.SensorbergApplicationTest;
 import util.TestConstants;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
 import com.sensorberg.sdk.internal.Transport;
-import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;

@@ -11,7 +11,6 @@ import com.sensorberg.sdk.scanner.ScanEventType;
 
 import org.fest.assertions.api.Assertions;
 
-import io.realm.Realm;
 import util.TestConstants;
 
 public class TheSugarHistoryBodyShould extends AndroidTestCase {

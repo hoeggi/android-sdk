@@ -31,7 +31,6 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
                 .build();
         clock = NoClock.CLOCK;
         tested = SugarScan.from(scanevent, 0);
-
     }
 
     public void test_should_generate_a_bid() throws Exception {
@@ -56,15 +55,5 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
                .isNotEmpty()
                 .isEqualToIgnoringCase("[{\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"trigger\":1,\"dt\":\"1970-01-01T01:00:00.100+01:00\"}]");
 
-    }
-
-
-    public void test_should_sugarscan_table_empty() {
-       //SugarScan.deleteAll(SugarScan.class);
-
-        objects = SugarRecord.find(SugarScan.class, "");
-        Select.from(SugarScan.class).list();
-
-       //Assertions.assertThat(objects).isNullOrEmpty();
     }
 }

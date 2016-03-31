@@ -10,7 +10,6 @@ import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.Transport;
-import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
@@ -31,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 
 public class InternalApplicationBootstrapper extends MinimalBootstrapper implements ScannerListener, ResolverListener, Settings.SettingsCallback, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
 
@@ -117,7 +115,8 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         }
     }
 
-    public void presentBeaconEvent(BeaconEvent beaconEvent) {
+    //TODO what is with this method having no access modifier.
+    void presentBeaconEvent(BeaconEvent beaconEvent) {
         Action beaconEventAction = beaconEvent.getAction();
         if (beaconEventAction != null) {
             if(beaconEvent.deliverAt != null){

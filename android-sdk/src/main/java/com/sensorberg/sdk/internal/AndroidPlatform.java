@@ -33,9 +33,7 @@ import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorbergorm.SugarContext;
-
 import net.danlew.android.joda.JodaTimeAndroid;
-
 import java.io.File;
 import java.io.Serializable;
 import java.net.URLEncoder;
@@ -45,7 +43,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 
 public class AndroidPlatform implements Platform {
@@ -93,7 +90,7 @@ public class AndroidPlatform implements Platform {
         }
 
        // SugarContext.initTest(context, "test.db", 3);
-        SugarContext.init(context);
+        //SugarContext.init(context);
         JodaTimeAndroid.init(context);
         postToServiceCounter = new PersistentIntegerCounter(getSettingsSharedPrefs());
         pendingIntentStorage = new PendingIntentStorage(this);
