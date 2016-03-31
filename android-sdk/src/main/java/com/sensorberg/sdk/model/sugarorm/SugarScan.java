@@ -172,7 +172,7 @@ public class SugarScan extends SugarRecord {
      * Remove older than specified scans.
      *
      * @param timeNow - Time now in milliseconds.
-     * @param cacheTtl - ?
+     * @param cacheTtl - Cache total.
      */
     public static void removeAllOlderThan(long timeNow, long cacheTtl) {
         List<SugarScan> actionsToDelete = Select.from(SugarScan.class)
