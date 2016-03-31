@@ -34,7 +34,6 @@ public class TheInternalApplicationBootstrapperShould{
     public void setUp() throws Exception {
 
         testPlatform = new TestPlatform().setContext(getContext());
-       // BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
         tested = spy(new InternalApplicationBootstrapper(testPlatform));
 

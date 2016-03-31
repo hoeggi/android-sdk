@@ -1,6 +1,7 @@
 package com.sensorberg.sdk;
 
 import android.content.IntentFilter;
+import android.util.Log;
 
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
@@ -152,7 +153,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
                 .withEventMask(ScanEventType.ENTRY.getMask())
                 .build());
 
-        // FIXME: 16-03-30
+        // TODO confirm amount. We definitely are only getting 1 back. Look at when fixing tests.
         waitForRequests(2);
 
         //we should have exactly one notification
