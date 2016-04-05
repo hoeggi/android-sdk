@@ -118,6 +118,8 @@ public class AndroidPlatform implements Platform {
             return URLEncoder.encode(myInfo.versionName) + "/" + myInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             return "<unknown>";
+        } catch (NullPointerException e) {
+            return "<unknown>";
         }
     }
 
