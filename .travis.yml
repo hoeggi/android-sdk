@@ -20,10 +20,10 @@ android:
 notifications:
   slack: sensorberg:bYfkpm6TExFzF5gdpQz2IHDh
 
-before_script:
-  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+# before_script:
+#  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
+#  - emulator -avd test -no-skin -no-audio -no-window &
+#  - android-wait-for-emulator
+#  - adb shell input keyevent 82 &
 
-script: ./gradlew assemble connectedAndroidTest
+# script: ./gradlew assemble connectedAndroidTest
