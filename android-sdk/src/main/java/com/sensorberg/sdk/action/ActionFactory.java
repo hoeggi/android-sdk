@@ -1,15 +1,24 @@
 package com.sensorberg.sdk.action;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import com.sensorberg.sdk.model.ISO8601TypeAdapter;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 
 import org.json.JSONException;
 
 import android.net.Uri;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class ActionFactory {
+
+    static Gson gson;
 
     public interface ServerType {
 
@@ -17,7 +26,6 @@ public class ActionFactory {
         int VISIT_WEBSITE = 2;
         int IN_APP = 3;
     }
-
 
     private static final String SUBJECT = "subject";
 
@@ -53,8 +61,8 @@ public class ActionFactory {
         }
         Action value = null;
         String payload = null;
-        if (!message.get(PAYLOAD).isJsonNull()) {
-            payload = message.get(PAYLOAD).getAsString();
+        if (message.get(PAYLOAD) != null && !message.get(PAYLOAD).isJsonNull()) {
+            payload = getGson().toJson(message.get(PAYLOAD));
         }
 
         String subject = message.get(SUBJECT) == null ? null : message.get(SUBJECT).getAsString();
@@ -95,5 +103,20 @@ public class ActionFactory {
             }
         }
         return value;
+    }
+
+    private static Gson getGson() {
+        //TODO see how to inject this statically with dagger!
+        if (gson == null) {
+            gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(Date.class, ISO8601TypeAdapter.DATE_ADAPTER)
+                    .registerTypeAdapter(SugarScan.class, new SugarScan.SugarScanObjectTypeAdapter())
+                    .registerTypeAdapter(SugarAction.class, new SugarAction.SugarActionTypeAdapter())
+                    .setLenient()
+                    .create();
+        }
+
+        return gson;
     }
 }
