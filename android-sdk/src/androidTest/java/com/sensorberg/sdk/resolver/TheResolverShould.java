@@ -80,10 +80,9 @@ public class TheResolverShould extends AndroidTestCase{
 
             @Override
             public void onResolutionsFinished(List<BeaconEvent> events) {
-                //TODO check server configuration and change this again.
+                //TODO check server configuration and change the events size to 1
                 //also, ideally, this test should use a mock request and not depend on server
                 Assertions.assertThat(events).hasSize(0);
-//                Assertions.assertThat(events).hasSize(1);
             }
 
         };
