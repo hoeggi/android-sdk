@@ -48,23 +48,16 @@ public class TheResolverShould extends AndroidTestCase{
         tested = new Resolver(realConfiguration, androidPlattform);
     }
 
-
     public void test_should_try_to_resolve_a_beacon(){
-        Resolution resolution = getResolution();
+        ResolutionConfiguration resolutionConiguration = new ResolutionConfiguration();
+        resolutionConiguration.setScanEvent(SCANEVENT_1);
+        Resolution resolution = testedWithFakeBackend.createResolution(resolutionConiguration);
         Resolution spyResolution = spy(resolution);
 
         testedWithFakeBackend.startResolution(spyResolution);
 
-
         verify(spyResolution).queryServer();
     }
-
-    private Resolution getResolution() {
-        ResolutionConfiguration resolutionConiguration = new ResolutionConfiguration();
-        resolutionConiguration.setScanEvent(SCANEVENT_1);
-        return testedWithFakeBackend.createResolution(resolutionConiguration);
-    }
-
 
     /**
      * account falko@sensorberg.com
