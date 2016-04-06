@@ -48,4 +48,42 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
         RecordedRequest request = waitForRequests(1).get(0);
         Assertions.assertThat(request.getHeader("User-Agent")).isEqualTo(plattform.getUserAgentString());
     }
+
+    public void testInstallationIdentifierIsSetInVolleyOkHttpHeader() throws Exception {
+
+        server.enqueue(new MockResponse().setBody("{}"));
+        transport.perform(getUrl("/layout").toString(), new com.android.sensorbergVolley.Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new com.android.sensorbergVolley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+
+        RecordedRequest request = waitForRequests(1).get(1);
+        Assertions.assertThat(request.getHeader("X-iid")).isEqualTo(plattform.getDeviceInstallationIdentifier());
+    }
+
+    public void testAdvertiserIdentifierIsSetInVolleyOkHttpHeader() throws Exception {
+
+        server.enqueue(new MockResponse().setBody("{}"));
+        transport.perform(getUrl("/layout").toString(), new com.android.sensorbergVolley.Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new com.android.sensorbergVolley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+
+        RecordedRequest request = waitForRequests(1).get(2);
+        Assertions.assertThat(request.getHeader("X-aid")).isEqualTo(plattform.getAdvertiserIdentifier());
+    }
 }

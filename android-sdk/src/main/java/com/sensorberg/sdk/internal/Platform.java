@@ -26,6 +26,8 @@ public interface Platform {
 
     String getDeviceInstallationIdentifier();
 
+    String getAdvertiserIdentifier();
+
     Transport getTransport();
 
     File getFile(String fileName);
@@ -84,7 +86,9 @@ public interface Platform {
 
     void removeStoredPendingIntent(int index);
 
+    void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 
+    void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener);
 
     interface ForegroundStateListener{
 
@@ -136,4 +140,19 @@ public interface Platform {
     RunLoop getResolverRunLoop(RunLoop.MessageHandlerCallback callback);
 
     RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback);
+
+    /**
+     * Interface for device installation identifier.
+     */
+    interface DeviceInstallationIdentifierChangeListener {
+        void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier);
+    }
+
+    /**
+     * Interface for advertising identifier.
+     */
+    interface AdvertiserIdentifierChangeListener {
+        void advertiserIdentifierChanged(String advertiserIdentifier);
+    }
+
 }
