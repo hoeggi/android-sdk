@@ -116,13 +116,15 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         }
     }
 
-    void presentBeaconEvent(BeaconEvent beaconEvent) {
-        Action beaconEventAction = beaconEvent.getAction();
-        if (beaconEventAction != null) {
-            if(beaconEvent.deliverAt != null){
+    public void presentBeaconEvent(BeaconEvent beaconEvent) {
+        if (beaconEvent != null && beaconEvent.getAction() != null) {
+            Action beaconEventAction = beaconEvent.getAction();
+
+            if (beaconEvent.deliverAt != null) {
                 platform.postDeliverAtOrUpdate(beaconEvent.deliverAt, beaconEvent);
-            } else if (beaconEventAction.getDelayTime() > 0){
-                platform.postToServiceDelayed(beaconEventAction.getDelayTime(), SensorbergService.GENERIC_TYPE_BEACON_ACTION, beaconEvent, SURVIVE_REBOOT);
+            } else if (beaconEventAction.getDelayTime() > 0) {
+                platform.postToServiceDelayed(beaconEventAction.getDelayTime(), SensorbergService.GENERIC_TYPE_BEACON_ACTION, beaconEvent,
+                        SURVIVE_REBOOT);
                 Logger.log.beaconResolveState(beaconEvent, "delaying the display of this BeaconEvent");
             } else {
                 presentEventDirectly(beaconEvent);
@@ -214,6 +216,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         beaconActionHistoryPublisher.publishHistory();
         if (resolver.configuration.setApiToken(apiToken)){
             unscheduleAllPendingActions();
+            beaconActionHistoryPublisher.deleteAllObjects();
         }
     }
 
