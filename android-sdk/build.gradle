@@ -2,6 +2,7 @@ apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'jacoco'
 
 dependencies {
     androidTestCompile 'com.squareup:fest-android:1.0.8'
@@ -41,6 +42,10 @@ if (resolverURL != null) {
     println("using custom resolver: ${resolverURL}")
 }
 
+jacoco {
+    toolVersion = "0.7.5.201505241946"
+}
+
 android {
     buildToolsVersion project.ext.buildToolsVersion
     compileSdkVersion project.ext.compileSdkVersion
@@ -68,10 +73,6 @@ android {
         encoding "UTF-8"
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
-    }
-
-    jacoco {
-        version = '0.6.2.201302030002'
     }
 
     buildTypes {
