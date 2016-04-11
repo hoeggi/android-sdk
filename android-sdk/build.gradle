@@ -2,6 +2,7 @@ apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'jacoco'
 
 dependencies {
     androidTestCompile 'com.squareup:fest-android:1.0.8@aar'
@@ -40,6 +41,10 @@ def resolverURL = System.getenv("RESOLVER_URL") ?: project.ext.has("resolver_url
 
 if (resolverURL != null) {
     println("using custom resolver: ${resolverURL}")
+}
+
+jacoco {
+    toolVersion = "0.7.5.201505241946"
 }
 
 android {
