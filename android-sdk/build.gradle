@@ -18,9 +18,10 @@ dependencies {
     androidTestCompile('com.squareup.okhttp:mockwebserver:2.1.0') {
         exclude group: 'com.squareup.okhttp'
     }
-    androidTestCompile ('com.android.support:multidex:1.0.0')
+    androidTestCompile ('com.android.support:multidex:1.0.1')
 
     compile 'net.danlew:android.joda:2.7.2'
+    compile ('com.android.support:multidex:1.0.1')
 
     compile project(':networkstate')
     compile project(':okvolley')
