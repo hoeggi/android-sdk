@@ -38,6 +38,9 @@ dependencies {
         exclude group: 'javax.annotation'
     }
     provided 'javax.annotation:jsr250-api:1.0'
+
+    apt "org.projectlombok:lombok:1.16.2"
+    provided "org.projectlombok:lombok:1.16.2"
 }
 
 group = "com.sensorberg.sdk"
