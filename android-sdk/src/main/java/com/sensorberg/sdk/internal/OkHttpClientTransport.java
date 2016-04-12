@@ -119,7 +119,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
                     return;
                 }
                 boolean reportImmediately = false;
-                final List<ResolveAction> resolveActions =  response.resolve(resolutionConfiguration.getScanEvent(), platform.getClock().now());
+                List<ResolveAction> resolveActions =  response.resolve(resolutionConfiguration.getScanEvent(), platform.getClock().now());
                 for (ResolveAction resolveAction : resolveActions) {
                     reportImmediately |= resolveAction.reportImmediately;
                 }
