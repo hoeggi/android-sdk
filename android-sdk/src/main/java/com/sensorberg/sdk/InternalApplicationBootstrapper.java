@@ -54,7 +54,10 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     @Inject
     Context context;
 
-    public InternalApplicationBootstrapper(Platform plattform){
+    @Inject
+    Clock clock;
+
+    public InternalApplicationBootstrapper(Platform plattform) {
         super(plattform);
         SensorbergApplication.getComponent().inject(this);
 
@@ -143,7 +146,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     private void presentEventDirectly(BeaconEvent beaconEvent) {
         if (beaconEvent.getAction() != null) {
-            beaconEvent.setPresentationTime(platform.getClock().now());
+            beaconEvent.setPresentationTime(clock.now());
             beaconActionHistoryPublisher.onActionPresented(beaconEvent);
             if (presentationDelegate == null) {
                 Intent broadcastIntent = new Intent(ManifestParser.actionString);
@@ -175,13 +178,13 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
             @Override
             public boolean matches(BeaconEvent beaconEvent) {
                 if (beaconEvent.getSuppressionTimeMillis() > 0) {
-                    long lastAllowedPresentationTime = platform.getClock().now() - beaconEvent.getSuppressionTimeMillis();
-                    if (RealmAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid(), realm)){
+                    long lastAllowedPresentationTime = clock.now() - beaconEvent.getSuppressionTimeMillis();
+                    if (RealmAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid(), realm)) {
                         return false;
                     }
                 }
-                if (beaconEvent.sendOnlyOnce){
-                    if (RealmAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid(), realm)){
+                if (beaconEvent.sendOnlyOnce) {
+                    if (RealmAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid(), realm)) {
                         return false;
                     }
 

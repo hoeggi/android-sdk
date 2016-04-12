@@ -19,7 +19,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.os.SystemClock;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -60,8 +59,11 @@ public class AndroidPlatform implements Platform {
     @Inject
     SharedPreferences settingsPreferences;
 
+    @Inject
+    Clock clock;
+
     private final Context context;
-    private final Clock clock;
+
 
     private CrashCallBackWrapper crashCallBackWrapper;
     private final BluetoothAdapter bluetoothAdapter;
@@ -87,7 +89,6 @@ public class AndroidPlatform implements Platform {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
-        this.clock = new AndroidClock();
         this.context = context;
         SensorbergApplication.getComponent().inject(this);
 
@@ -477,11 +478,6 @@ public class AndroidPlatform implements Platform {
         manager.cancel(pendingIntent);
     }
 
-    @Override
-    public Clock getClock() {
-        return clock;
-    }
-
     /**
      * Returns a flag indicating whether Bluetooth is enabled.
      *
@@ -570,15 +566,4 @@ public class AndroidPlatform implements Platform {
         return crashCallBackWrapper;
     }
 
-    private static class AndroidClock implements Clock {
-        @Override
-        public long now() {
-            return System.currentTimeMillis();
-        }
-
-        @Override
-        public long elapsedRealtime() {
-            return SystemClock.elapsedRealtime();
-        }
-    }
 }

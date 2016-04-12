@@ -294,11 +294,6 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public Clock getClock() {
-        return clock;
-    }
-
-    @Override
     public boolean isBluetoothLowEnergyDeviceTurnedOn() {
         return true;
     }

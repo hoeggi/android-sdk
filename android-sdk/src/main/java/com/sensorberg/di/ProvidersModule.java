@@ -5,6 +5,9 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.sensorberg.sdk.internal.AndroidClock;
+import com.sensorberg.sdk.internal.Clock;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -37,5 +40,11 @@ public class ProvidersModule {
     @Singleton
     public NotificationManager provideNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    public Clock provideClock() {
+        return new AndroidClock();
     }
 }

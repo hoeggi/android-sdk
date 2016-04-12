@@ -12,8 +12,12 @@ import javax.inject.Inject;
 public class PendingIntentStorage {
     private final Platform platform;
     private final SQLiteStore storage;
+
     @Inject
     Context context;
+
+    @Inject
+    Clock clock;
 
     public PendingIntentStorage(Platform platform) {
         this.platform = platform;
@@ -27,10 +31,10 @@ public class PendingIntentStorage {
     }
 
     public void restorePendingIntents() {
-        storage.deleteOlderThan(platform.getClock().now());
+        storage.deleteOlderThan(clock.now());
         ArrayList<SQLiteStore.Entry> entries = storage.loadRegistry();
         for (SQLiteStore.Entry entry : entries) {
-            long relativeFromNow = entry.timestamp - platform.getClock().now();
+            long relativeFromNow = entry.timestamp - clock.now();
             platform.scheduleIntent(entry.index, relativeFromNow, entry.bundle);
         }
     }

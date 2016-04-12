@@ -95,8 +95,6 @@ public interface Platform {
         void hostApplicationInForeground();
     }
 
-    Clock getClock();
-
     /**
      * Returns a flag indicating whether Bluetooth is enabled.
      *

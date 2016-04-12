@@ -8,7 +8,6 @@ import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.RunLoop;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.TimerTask;
 
