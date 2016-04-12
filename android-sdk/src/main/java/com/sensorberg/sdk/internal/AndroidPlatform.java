@@ -3,7 +3,6 @@ package com.sensorberg.sdk.internal;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -266,11 +265,6 @@ public class AndroidPlatform implements Platform {
     @Override
     public boolean useSyncClient() {
         return false;
-    }
-
-    @Override
-    public NotificationManager getNotificationManager() {
-        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

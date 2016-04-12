@@ -164,11 +164,6 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public NotificationManager getNotificationManager() {
-        return notificationManager;
-    }
-
-    @Override
     public boolean isSyncEnabled() {
         return true;
     }
@@ -390,10 +385,6 @@ public class TestPlatform implements Platform {
 
     public void setTransport(Transport transport) {
         this.transport = transport;
-    }
-
-    public void setNotificationManager(NotificationManager notificationManager) {
-        this.notificationManager = notificationManager;
     }
 
     public void cleanUp() {

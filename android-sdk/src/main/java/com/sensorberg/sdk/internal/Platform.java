@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.internal;
 
 import android.annotation.TargetApi;
-import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.os.Build;
@@ -31,8 +30,6 @@ public interface Platform {
     File getFile(String fileName);
 
     boolean useSyncClient();
-
-    NotificationManager getNotificationManager();
 
     boolean isSyncEnabled();
 
