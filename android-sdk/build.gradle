@@ -70,6 +70,7 @@ android {
     buildToolsVersion project.ext.buildToolsVersion
     compileSdkVersion project.ext.compileSdkVersion
     defaultConfig {
+        multiDexEnabled true
         versionCode 7
         versionName version
         minSdkVersion 9
@@ -108,7 +109,6 @@ android {
 
     buildTypes {
         debug {
-            multiDexEnabled true
             testCoverageEnabled true;
             buildConfigField "String", "RESOLVER_URL", resolverURL ? wrapInQuotes(resolverURL) : "null"
         }

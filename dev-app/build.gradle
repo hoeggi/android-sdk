@@ -5,6 +5,7 @@ android {
     buildToolsVersion project.ext.buildToolsVersion
 
     defaultConfig {
+        multiDexEnabled true
         minSdkVersion 18
         targetSdkVersion 21
         manifestPlaceholders = [
@@ -39,7 +40,6 @@ android {
 
     buildTypes {
         debug {
-            multiDexEnabled true
             applicationIdSuffix ".debug"
             versionNameSuffix "ø"
             manifestPlaceholders = [
