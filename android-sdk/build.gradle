@@ -68,6 +68,7 @@ android {
     lintOptions {
         disable 'InvalidPackage', 'CommitPrefEdits', 'DefaultLocale', 'SameParameterValue'
         lintConfig file("realm-lint.xml")
+        abortOnError false
 
     }
     packagingOptions {
