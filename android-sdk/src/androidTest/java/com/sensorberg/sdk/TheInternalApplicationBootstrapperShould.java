@@ -13,9 +13,7 @@ import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 
-import static android.support.test.InstrumentationRegistry.getContext;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -33,7 +31,7 @@ public class TheInternalApplicationBootstrapperShould{
     @Before
     public void setUp() throws Exception {
 
-        testPlatform = new TestPlatform().setContext(getContext());
+        testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
         tested = spy(new InternalApplicationBootstrapper(testPlatform));

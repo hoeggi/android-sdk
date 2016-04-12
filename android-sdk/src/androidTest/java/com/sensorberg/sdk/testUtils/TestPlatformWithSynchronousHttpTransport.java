@@ -7,12 +7,12 @@ import com.sensorberg.sdk.internal.Transport;
 
 import util.TestConstants;
 
-public class TestPlatformWithSyncchonousHttpTransport extends TestPlatform {
+public class TestPlatformWithSynchronousHttpTransport extends TestPlatform {
     private final Context context;
     private final Transport transport;
 
 
-    public TestPlatformWithSyncchonousHttpTransport(Context context) {
+    public TestPlatformWithSynchronousHttpTransport(Context context) {
         super();
         this.context = context;
         transport = new OkHttpClientTransport(this, null);
@@ -22,11 +22,6 @@ public class TestPlatformWithSyncchonousHttpTransport extends TestPlatform {
     @Override
     public Transport getTransport() {
         return transport;
-    }
-
-    @Override
-    public Context getContext() {
-        return context;
     }
 
     @Override

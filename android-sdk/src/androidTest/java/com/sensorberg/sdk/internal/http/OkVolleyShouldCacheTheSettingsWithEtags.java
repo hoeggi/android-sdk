@@ -10,6 +10,7 @@ import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.test.R;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -18,8 +19,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
-
-import com.sensorberg.sdk.test.R;
 
 import util.TestConstants;
 
@@ -53,7 +52,7 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
     public void setUp() throws Exception {
         super.setUp();
 
-        testPlattform = spy(new TestPlatform().setContext(getApplication()));
+        testPlattform = spy(new TestPlatform());
 
         stack = spy(new OkHttpStack());
 

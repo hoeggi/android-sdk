@@ -5,11 +5,12 @@ import android.test.AndroidTestCase;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
-import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isEntryEvent;
-import static org.mockito.Mockito.*;
 import org.mockito.Mockito;
 
+import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isEntryEvent;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 
 public class TheBackgroundScannerShould extends AndroidTestCase{
@@ -29,7 +30,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform, null), platform);
+        tested = new UIScanner(new Settings(platform), platform);
     }
 
     public void test_be_in_background_mode(){

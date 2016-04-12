@@ -4,7 +4,6 @@ import com.android.sensorbergVolley.RequestQueue;
 import com.android.sensorbergVolley.VolleyError;
 import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
-import com.android.sensorbergVolley.toolbox.Volley;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.Transport;
@@ -30,7 +29,7 @@ public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        testPlattform = spy(new TestPlatform().setContext(getApplication()));
+        testPlattform = spy(new TestPlatform());
 
         BasicNetwork network = new BasicNetwork(new OkHttpStackWithFailures(2));
 

@@ -2,7 +2,6 @@ package com.sensorberg.sdk.resolver;
 
 import android.test.AndroidTestCase;
 
-import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.model.BeaconId;
@@ -20,7 +19,10 @@ import java.util.UUID;
 
 import util.TestConstants;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class TheResolverShould extends AndroidTestCase{
 
@@ -38,7 +40,6 @@ public class TheResolverShould extends AndroidTestCase{
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
         androidPlattform = spy(new TestPlatform());
-        androidPlattform.setContext(getContext());
         androidPlattform.setTransport(new OkHttpClientTransport(androidPlattform, null));
         androidPlattform.getTransport().setApiToken(TestConstants.API_TOKEN);
         androidPlattform.clock.setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());

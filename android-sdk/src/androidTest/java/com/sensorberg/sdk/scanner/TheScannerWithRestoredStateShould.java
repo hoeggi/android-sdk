@@ -1,13 +1,10 @@
 package com.sensorberg.sdk.scanner;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
-
-import org.fest.assertions.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +30,13 @@ public class TheScannerWithRestoredStateShould {
 
     @Before
     public void setUp() throws Exception {
-        platform = new TestPlatform().setContext(InstrumentationRegistry.getContext());
+        platform = new TestPlatform();
         platform  = spy(platform);
         File testFile = platform.getFile("enteredBeaconsCache");
         when(platform.getFile("enteredBeaconsCache")).thenReturn(testFile);
 
 
-        settings = new Settings(platform, platform.getSettingsSharedPrefs());
+        settings = new Settings(platform);
         platform.setSettings(settings);
 
         listener = mock(ScannerListener.class);

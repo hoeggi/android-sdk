@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergApplicationTest;
-import util.TestConstants;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
@@ -14,12 +13,13 @@ import com.sensorberg.sdk.testUtils.TestPlatform;
 import java.util.UUID;
 
 import io.realm.RealmResults;
+import util.TestConstants;
 
-import static util.Verfier.hasSize;
-import static org.fest.assertions.api.Assertions.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static util.Verfier.hasSize;
 
 public class TheBeaconActionHistoryPublisherShould extends SensorbergApplicationTest {
     private BeaconActionHistoryPublisher tested;
@@ -32,7 +32,7 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
     public void setUp() throws Exception {
         super.setUp();
 
-        testPlattform = new TestPlatform().setContext(getContext());
+        testPlattform = new TestPlatform();
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());
         transport = mock(Transport.class);
         testPlattform.setTransport(transport);

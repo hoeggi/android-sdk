@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -15,12 +14,14 @@ import com.android.sensorbergVolley.RequestQueue;
 import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
-import com.sensorberg.sdk.model.BeaconId;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.FileHelper;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
 
@@ -33,15 +34,17 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import util.Utils;
 
-import static util.Utils.hexStringToByteArray;
 import static org.mockito.Mockito.spy;
+import static util.Utils.hexStringToByteArray;
 import static util.Utils.wrapWithZeroBytes;
 
 public class TestPlatform implements Platform {
 
-    public static final String TAG = "TestPlattform";
+    public static final String TAG = "TestPlatform";
 
     public static final UUID deviceInstallationIdentifier = UUID.randomUUID();
     public static final String googleAdertiserIdentifier = "google" + UUID.randomUUID();
@@ -110,9 +113,11 @@ public class TestPlatform implements Platform {
     public static final BeaconId EXPECTED_ALIEN_1 = new BeaconId(Utils.hexStringToByteArray(ALIEN_ID_1));
     public static final BeaconId EXPECTED_ESTIMOTE_ID = new BeaconId(Utils.hexStringToByteArray(ESTIMOTE_ID));
 
+    @Inject
+    Context context;
+
     public CustomClock clock = new CustomClock();
     private BluetoothAdapter.LeScanCallback scanCallback;
-    private Context context;
     private Transport transport = new DumbSucessTransport();
     private Settings settings;
     private boolean spyOnScannerRunLoop;
@@ -120,6 +125,9 @@ public class TestPlatform implements Platform {
     private NotificationManager notificationManager;
     private List<NonThreadedRunLoopForTesting> runLoops = new ArrayList<>();
 
+    public TestPlatform() {
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+    }
 
     @Override
     public String getUserAgentString() {
@@ -161,11 +169,6 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public Context getContext() {
-        return context;
-    }
-
-    @Override
     public boolean isSyncEnabled() {
         return true;
     }
@@ -173,11 +176,6 @@ public class TestPlatform implements Platform {
     @Override
     public boolean hasMinimumAndroidRequirements() {
         return true;
-    }
-
-    @Override
-    public SharedPreferences getSettingsSharedPrefs() {
-        return getContext().getSharedPreferences(String.valueOf(System.currentTimeMillis()), Context.MODE_PRIVATE);
     }
 
     @Override
@@ -388,11 +386,6 @@ public class TestPlatform implements Platform {
         for (NonThreadedRunLoopForTesting runLoop : runLoops) {
             runLoop.loop();
         }
-    }
-
-    public TestPlatform setContext(Context context) {
-        this.context = context;
-        return this;
     }
 
     public void setTransport(Transport transport) {

@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergApplicationTest;
-import util.TestConstants;
 import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.Platform;
@@ -9,6 +8,8 @@ import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
+
+import util.TestConstants;
 
 import static com.sensorberg.sdk.scanner.RecordedRequestAssert.assertThat;
 import static org.mockito.Mockito.spy;
@@ -37,7 +38,7 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
             }
         });
 
-        Settings settings = new Settings(platform, platform.getSettingsSharedPrefs());
+        Settings settings = new Settings(platform);
         tested = new BeaconActionHistoryPublisher(platform, ResolverListener.NONE, settings);
 
         startWebserver();

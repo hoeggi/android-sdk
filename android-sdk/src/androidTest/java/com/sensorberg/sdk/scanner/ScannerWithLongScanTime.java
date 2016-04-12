@@ -6,7 +6,6 @@ import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -22,7 +21,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         spyPlatform = spy(new TestPlatform());
-        modifiedSettings = spy(new Settings(spyPlatform, null));
+        modifiedSettings = spy(new Settings(spyPlatform));
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
         when(modifiedSettings.getForeGroundWaitTime()).thenReturn(Constants.Time.ONE_SECOND);

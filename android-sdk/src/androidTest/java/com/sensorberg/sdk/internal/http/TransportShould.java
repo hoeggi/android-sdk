@@ -6,14 +6,14 @@ import com.android.sensorbergVolley.Network;
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergApplicationTest;
-import com.sensorberg.sdk.internal.URLFactory;
-import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.internal.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
+import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -55,7 +55,7 @@ public class TransportShould extends SensorbergApplicationTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        testPlattform = spy(new TestPlatform().setContext(getApplication()));
+        testPlattform = spy(new TestPlatform());
         testPlattform.clock.setNowInMillis(new DateTime(2015, 7, 10, 1, 1, 1).getMillis());
 
         scanEvent = new ScanEvent.Builder()

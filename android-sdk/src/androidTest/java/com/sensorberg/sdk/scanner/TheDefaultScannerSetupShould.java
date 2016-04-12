@@ -4,12 +4,10 @@ import android.test.AndroidTestCase;
 
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+
 import util.Utils;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
 
 
 public class TheDefaultScannerSetupShould extends AndroidTestCase{
@@ -21,7 +19,7 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     public void setUp() throws Exception {
         super.setUp();
         plattform = new TestPlatform();
-        settings = new Settings(plattform, null);
+        settings = new Settings(plattform);
         tested = new UIScanner(settings, plattform);
 
         tested.scanTime = Long.MAX_VALUE;

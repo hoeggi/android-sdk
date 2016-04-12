@@ -5,12 +5,13 @@ import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
 import com.sensorberg.sdk.Constants;
-import util.TestConstants;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
+
+import util.TestConstants;
 
 public class TheSettingsShould extends AndroidTestCase {
 
@@ -23,14 +24,14 @@ public class TheSettingsShould extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        platform = new TestPlatform().setContext(getContext());
+        platform = new TestPlatform();
         platform.setTransport(new OkHttpClientTransport(platform, null));
         platform.getTransport().setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        tested = new Settings(platform, testedSharedPreferences);
+        tested = new Settings(platform);
 
         untouchedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        untouched = new Settings(platform, untouchedSharedPreferences);
+        untouched = new Settings(platform);
     }
 
     public void test_initial_values_should_be_identical() throws Exception {

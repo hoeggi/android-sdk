@@ -46,7 +46,7 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
     protected void setUp() throws Exception {
         createApplication();
 
-        testPlattform = spy(new TestPlatform().setContext(getApplication()));
+        testPlattform = spy(new TestPlatform());
 
         stack = spy(new OkHttpStack());
 

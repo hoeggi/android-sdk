@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.scanner;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.AndroidTestCase;
 
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -33,7 +32,7 @@ public class TheBluetoothChangesShould {
 
         platform = new TestPlatform();
 
-        settings = new Settings(platform, null);
+        settings = new Settings(platform);
         tested = new Scanner(settings, platform, false);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;

@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.sdk.action.TestTheUriMessageAction;
 import com.sensorberg.sdk.settings.Settings;
 
 import org.mockito.Mockito;
@@ -26,7 +25,7 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(plattform, null), plattform);
+        tested = new UIScanner(new Settings(plattform), plattform);
     }
 
     public void test_scanner_waits_to_the_edge_of_second_pause() {

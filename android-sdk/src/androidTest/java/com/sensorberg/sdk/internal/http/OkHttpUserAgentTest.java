@@ -23,7 +23,6 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
         super.setUp();
 
         plattform = spy(new TestPlatform());
-        plattform.setContext(getContext());
 
         when(plattform.useSyncClient()).thenReturn(true);
 

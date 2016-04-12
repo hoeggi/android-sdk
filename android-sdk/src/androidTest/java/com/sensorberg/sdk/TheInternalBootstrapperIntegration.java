@@ -81,7 +81,8 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        TestPlatform platform = new TestPlatform().setContext(getContext());
+
+        TestPlatform platform = new TestPlatform();
         platform.setTransport(new OkHttpClientTransport(platform, null));
         tested = new InternalApplicationBootstrapper(platform);
 

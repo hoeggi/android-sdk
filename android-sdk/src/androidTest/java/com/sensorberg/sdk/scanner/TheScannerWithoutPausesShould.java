@@ -4,9 +4,10 @@ import android.test.AndroidTestCase;
 
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
-import util.Utils;
 
 import org.mockito.Mockito;
+
+import util.Utils;
 
 import static com.sensorberg.sdk.testUtils.SensorbergMatcher.hasBeaconId;
 import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isEntryEvent;
@@ -37,7 +38,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(plattform, null), plattform, false);
+        tested = new Scanner(new Settings(plattform), plattform, false);
     }
 
     public void test_scanner_detects_exit() {
