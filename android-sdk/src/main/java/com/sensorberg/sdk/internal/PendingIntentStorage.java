@@ -1,16 +1,24 @@
 package com.sensorberg.sdk.internal;
 
+import android.content.Context;
 import android.os.Bundle;
+
+import com.sensorberg.SensorbergApplication;
 
 import java.util.ArrayList;
 
-class PendingIntentStorage {
+import javax.inject.Inject;
+
+public class PendingIntentStorage {
     private final Platform platform;
     private final SQLiteStore storage;
+    @Inject
+    Context context;
 
     public PendingIntentStorage(Platform platform) {
         this.platform = platform;
-        storage = new SQLiteStore("pendingIntentStorage.sqlite", platform.getContext());
+        SensorbergApplication.getComponent().inject(this);
+        storage = new SQLiteStore("pendingIntentStorage.sqlite", context);
     }
 
     public void add(int index, long timestamp, int identifier, Bundle bundle) {

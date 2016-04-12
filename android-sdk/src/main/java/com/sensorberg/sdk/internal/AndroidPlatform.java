@@ -274,11 +274,6 @@ public class AndroidPlatform implements Platform {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    @Override
-    public Context getContext() {
-        return context;
-    }
-
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean isSyncEnabled() {
@@ -483,13 +478,13 @@ public class AndroidPlatform implements Platform {
 
     @Override
     public List<BroadcastReceiver> getBroadcastReceiver() {
-        return ManifestParser.findBroadcastReceiver(getContext());
+        return ManifestParser.findBroadcastReceiver(context);
     }
 
     @Override
     public void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver) {
         for (BroadcastReceiver receiver : broadcastReceiver) {
-            LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, new IntentFilter(ManifestParser.actionString));
+            LocalBroadcastManager.getInstance(context).registerReceiver(receiver, new IntentFilter(ManifestParser.actionString));
         }
     }
 

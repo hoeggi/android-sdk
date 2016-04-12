@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,8 +34,6 @@ public interface Platform {
     boolean useSyncClient();
 
     NotificationManager getNotificationManager();
-
-    Context getContext();
 
     boolean isSyncEnabled();
 

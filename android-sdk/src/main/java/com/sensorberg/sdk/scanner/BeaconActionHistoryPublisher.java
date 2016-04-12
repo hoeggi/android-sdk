@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Message;
 
 import com.android.sensorbergVolley.VolleyError;
+import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.Platform;
@@ -20,6 +21,8 @@ import com.sensorberg.sdk.settings.Settings;
 import java.io.File;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.exceptions.RealmMigrationNeededException;
@@ -34,8 +37,10 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private static final int MSG_DELETE_ALL_DATA = 6;
     public static String REALM_FILENAME = "scannerstorage.realm";
 
+    @Inject
+    Context context;
+
     private final RunLoop runloop;
-    private final Context context;
     private final Transport transport;
     private final Clock clock;
     private final ResolverListener resolverListener;
@@ -47,10 +52,10 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     public BeaconActionHistoryPublisher(Platform plattform, ResolverListener resolverListener, Settings settings) {
         this.resolverListener = resolverListener;
         this.settings = settings;
+        SensorbergApplication.getComponent().inject(this);
         transport = plattform.getTransport();
         clock = plattform.getClock();
         runloop = plattform.getBeaconPublisherRunLoop(this);
-        context = plattform.getContext();
     }
 
     @Override
