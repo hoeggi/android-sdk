@@ -36,7 +36,7 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());
         transport = mock(Transport.class);
         testPlattform.setTransport(transport);
-        tested = new BeaconActionHistoryPublisher(testPlattform, ResolverListener.NONE, null);
+        tested = new BeaconActionHistoryPublisher(testPlattform, transport, ResolverListener.NONE, null, testPlattform.clock);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

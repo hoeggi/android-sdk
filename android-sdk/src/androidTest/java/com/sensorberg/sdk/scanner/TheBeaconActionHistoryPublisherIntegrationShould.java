@@ -2,10 +2,10 @@ package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.internal.AndroidPlatform;
-import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.NoClock;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -13,7 +13,6 @@ import util.TestConstants;
 
 import static com.sensorberg.sdk.scanner.RecordedRequestAssert.assertThat;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class TheBeaconActionHistoryPublisherIntegrationShould extends SensorbergApplicationTest{
 
@@ -26,20 +25,8 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
         super.setUp();
 
         Platform platform = spy(new AndroidPlatform(getContext()));
-        when(platform.getClock()).thenReturn(new Clock() {
-            @Override
-            public long now() {
-                return 0;
-            }
-
-            @Override
-            public long elapsedRealtime() {
-                return 0;
-            }
-        });
-
         Settings settings = new Settings(platform);
-        tested = new BeaconActionHistoryPublisher(platform, ResolverListener.NONE, settings);
+        tested = new BeaconActionHistoryPublisher(platform, platform.getTransport(), ResolverListener.NONE, settings, NoClock.CLOCK);
 
         startWebserver();
         server.enqueue(new MockResponse().setBody("{}"));

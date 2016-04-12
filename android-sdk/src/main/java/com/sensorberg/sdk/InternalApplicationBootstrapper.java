@@ -64,7 +64,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
         plattform.setSettings(settings);
 
-        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform, this, settings);
+        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform, plattform.getTransport(), this, settings, clock);
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
 

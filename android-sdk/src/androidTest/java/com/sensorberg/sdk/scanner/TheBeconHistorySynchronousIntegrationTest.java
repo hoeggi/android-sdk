@@ -34,7 +34,7 @@ public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplica
         transport = spy(new DumbSucessTransport());
         testPlattform.setTransport(transport);
         Settings settings = mock(Settings.class);
-        tested = new BeaconActionHistoryPublisher(testPlattform, ResolverListener.NONE, settings);
+        tested = new BeaconActionHistoryPublisher(testPlattform, transport, ResolverListener.NONE, settings, testPlattform.clock);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

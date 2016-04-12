@@ -6,10 +6,10 @@ import android.os.Message;
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
@@ -40,22 +40,22 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     @Inject
     Context context;
 
+    Clock clock;
+
     private final RunLoop runloop;
     private final Transport transport;
-    private final Clock clock;
+
     private final ResolverListener resolverListener;
     private final Settings settings;
     private Realm realm;
 
-
-
-    public BeaconActionHistoryPublisher(Platform plattform, ResolverListener resolverListener, Settings settings) {
+    public BeaconActionHistoryPublisher(Platform platform, Transport transport, ResolverListener resolverListener, Settings settings, Clock clock) {
+        SensorbergApplication.getComponent().inject(this);
         this.resolverListener = resolverListener;
         this.settings = settings;
-        SensorbergApplication.getComponent().inject(this);
-        transport = plattform.getTransport();
-        clock = plattform.getClock();
-        runloop = plattform.getBeaconPublisherRunLoop(this);
+        this.transport = transport;
+        this.clock = clock;
+        runloop = platform.getBeaconPublisherRunLoop(this);
     }
 
     @Override
