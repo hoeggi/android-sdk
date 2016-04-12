@@ -78,9 +78,4 @@ public class TheAndroidPlatformShould extends SensorbergApplicationTest {
         Assertions.assertThat(list).hasSize(2);
     }
 
-    public void test_get_installation_identifier() {
-        AndroidPlatform androidPlatform = new AndroidPlatform(getContext());
-        Assertions.assertThat(androidPlatform.getDeviceInstallationIdentifier()).isEqualTo("aeab158c3ea449589dd31272cb24bfaf");
-    }
-
 }
