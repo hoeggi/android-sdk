@@ -7,8 +7,10 @@ import android.os.Build;
 import android.os.Message;
 import android.util.Pair;
 
+import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.model.BeaconId;
@@ -29,6 +31,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
    
     private final Settings settings;
 
+    Clock clock;
 
     private final ScanCallback scanCallback = new ScanCallback();
     private final Object listenersMonitor = new Object();
@@ -47,9 +50,11 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private RssiListener rssiListener = RssiListener.NONE;
 
-    AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates) {
+    AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock) {
+        SensorbergApplication.getComponent().inject(this);
         this.platform = platform;
         this.settings = settings;
+        this.clock = clock;
         scanning = false;
         runLoop = platform.getScannerRunLoop(this);
 
@@ -70,7 +75,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     }
 
     private void checkAndExitEnteredBeacons() {
-        final long now = platform.getClock().now();
+        final long now = clock.now();
         lastExitCheckTimestamp = now;
         synchronized (enteredBeaconsMonitor) {
             if (enteredBeacons.size() > 0) {
@@ -115,7 +120,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
         if (beacon != null) {
             BeaconId beaconId = beacon.first;
             synchronized (enteredBeaconsMonitor) {
-                long now = platform.getClock().now();
+                long now = clock.now();
                 EventEntry entry = enteredBeacons.get(beaconId);
                 if (entry == null) {
                     int calRssi = beacon.second;
@@ -143,12 +148,12 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
         switch (queueEvent.type) {
             case ScannerEvent.LOGICAL_SCAN_START_REQUESTED: {
                 if (!scanning) {
-                    lastExitCheckTimestamp = platform.getClock().now();
+                    lastExitCheckTimestamp = clock.now();
                     if (lastStopTimestamp != NEVER_STOPPED && lastExitCheckTimestamp - lastStopTimestamp > settings.getCleanBeaconMapRestartTimeout()) {
                         clearCache();
                         Logger.log.scannerStateChange("clearing the currently seen beacon, since we were turned off too long.");
                     }
-                    started = platform.getClock().now();
+                    started = clock.now();
                     scanning = true;
                     runLoop.sendMessage(ScannerEvent.UN_PAUSE_SCAN);
                 }
@@ -162,8 +167,8 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 break;
             }
             case ScannerEvent.UN_PAUSE_SCAN: {
-                lastScanStart = platform.getClock().now();
-                lastBreakLength = platform.getClock().now() - lastExitCheckTimestamp;
+                lastScanStart = clock.now();
+                lastBreakLength = clock.now() - lastExitCheckTimestamp;
                 Logger.log.scannerStateChange("starting to scan again, scan break was " + lastBreakLength + "millis");
                 if (scanning) {
                     Logger.log.scannerStateChange("scanning for" + scanTime + "millis");
@@ -184,7 +189,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 scanning = false;
                 clearScheduledExecutions();
                 platform.stopLeScan();
-                lastStopTimestamp = platform.getClock().now();
+                lastStopTimestamp = clock.now();
                 runLoop.cancelFixedRateExecution();
                 Logger.log.scannerStateChange("scan stopped");
                 break;
@@ -214,7 +219,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     protected abstract void clearScheduledExecutions();
 
     private void loop() {
-        if (platform.getClock().now() > (started + settings.getExitTimeout())) {
+        if (clock.now() > (started + settings.getExitTimeout())) {
             if (platform.isLeScanRunning()) {
                 checkAndExitEnteredBeacons();
             }
@@ -269,7 +274,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
             waitTime = settings.getForeGroundWaitTime();
             scanTime = settings.getForeGroundScanTime();
             if (scanning) {
-                long lastWaitTime = platform.getClock().now() - lastExitCheckTimestamp;
+                long lastWaitTime = clock.now() - lastExitCheckTimestamp;
                 clearScheduledExecutions();
                 if (lastWaitTime > waitTime) {
                     Logger.log.scannerStateChange("We have been waiting longer than the foreground wait time, so we´e going to scan right away");
@@ -293,7 +298,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     public void hostApplicationInBackground() {
         waitTime = settings.getBackgroundWaitTime();
         scanTime = settings.getBackgroundScanTime();
-        if ((platform.getClock().now() - lastScanStart) > scanTime){
+        if ((clock.now() - lastScanStart) > scanTime){
             Logger.log.scannerStateChange("We have been scanning longer than the background scan, so we´e going to pause right away");
             clearScheduledExecutions();
             runLoop.sendMessage(ScannerEvent.PAUSE_SCAN);

@@ -43,7 +43,7 @@ public class TheScannerWithRestoredStateShould {
 
         platform.clock.setNowInMillis(1000);
 
-        tested = new Scanner(settings, platform, true);
+        tested = new Scanner(settings, platform, true, platform.clock);
 
         tested.start();
         platform.fakeIBeaconSighting();
@@ -56,7 +56,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime =  settings.getCleanBeaconMapRestartTimeout() / 2 ;
 
         platform.clock.setNowInMillis(startTime);
-        tested = new Scanner(settings, platform, true);
+        tested = new Scanner(settings, platform, true, platform.clock);
         tested.addScannerListener(listener);
         tested.start();
 
@@ -73,7 +73,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime =  settings.getCleanBeaconMapRestartTimeout() + 1;
 
         platform.clock.setNowInMillis(startTime);
-        tested = new Scanner(settings, platform, true);
+        tested = new Scanner(settings, platform, true, platform.clock);
         tested.addScannerListener(listener);
         tested.start();
 
@@ -90,7 +90,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime =  settings.getCleanBeaconMapRestartTimeout() - 1 ;
 
         platform.clock.setNowInMillis(startTime);
-        tested = new Scanner(settings, platform, true);
+        tested = new Scanner(settings, platform, true, platform.clock);
         tested.addScannerListener(listener);
         tested.start();
 

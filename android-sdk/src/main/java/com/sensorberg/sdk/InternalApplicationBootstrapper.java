@@ -11,6 +11,7 @@ import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
@@ -70,7 +71,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         plattform.getTransport().setBeaconReportHandler(this);
         plattform.getTransport().setProximityUUIDUpdateHandler(this);
 
-        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates());
+        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock);
         resolver = new Resolver(resolverConfiguration, plattform);
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);

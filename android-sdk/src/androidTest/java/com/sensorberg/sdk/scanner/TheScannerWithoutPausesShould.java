@@ -38,7 +38,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(plattform), plattform, false);
+        tested = new Scanner(new Settings(plattform), plattform, false, plattform.clock);
     }
 
     public void test_scanner_detects_exit() {

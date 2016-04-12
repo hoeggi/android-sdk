@@ -15,7 +15,7 @@ public class TheDefaultScanner extends AndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
         platform = new TestPlatform();
-        tested = new Scanner(new Settings(platform), platform, false);
+        tested = new Scanner(new Settings(platform), platform, false, platform.clock);
 
         tested.start();
     }

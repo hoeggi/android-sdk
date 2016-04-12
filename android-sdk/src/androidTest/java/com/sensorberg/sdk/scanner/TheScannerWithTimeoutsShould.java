@@ -10,7 +10,6 @@ import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isExitEvent;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-
 public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould{
 
     @Override
@@ -25,7 +24,7 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(plattform), plattform);
+        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock);
     }
 
     public void test_scanner_waits_to_the_edge_of_second_pause() {

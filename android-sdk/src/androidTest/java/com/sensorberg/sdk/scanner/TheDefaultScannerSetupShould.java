@@ -20,7 +20,7 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
         super.setUp();
         plattform = new TestPlatform();
         settings = new Settings(plattform);
-        tested = new UIScanner(settings, plattform);
+        tested = new UIScanner(settings, plattform, plattform.clock);
 
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0;

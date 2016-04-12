@@ -30,7 +30,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform);
+        tested = new UIScanner(new Settings(platform), platform, platform.clock);
     }
 
     public void test_be_in_background_mode(){
