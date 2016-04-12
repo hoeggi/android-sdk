@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;
@@ -20,7 +21,7 @@ import com.sensorberg.sdk.testApp.BuildConfig;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 
 @SuppressWarnings("javadoc")
-public class DemoApplication extends Application
+public class DemoApplication extends SensorbergApplication
 {
     private static final String TAG = "DemoApplication";
 

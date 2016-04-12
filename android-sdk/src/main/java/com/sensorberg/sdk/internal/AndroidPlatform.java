@@ -26,6 +26,7 @@ import com.android.sensorbergVolley.RequestQueue;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.BuildConfig;
@@ -86,6 +87,7 @@ public class AndroidPlatform implements Platform {
     public AndroidPlatform(Context context) {
         this.clock = new AndroidClock();
         this.context = context;
+        SensorbergApplication.getComponent().inject(this);
 
         permissionChecker = new PermissionChecker(context);
 
