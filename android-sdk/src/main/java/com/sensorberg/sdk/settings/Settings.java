@@ -3,12 +3,15 @@ package com.sensorberg.sdk.settings;
 import android.content.SharedPreferences;
 
 import com.android.sensorbergVolley.VolleyError;
+import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 
 import org.json.JSONObject;
+
+import javax.inject.Inject;
 
 public class Settings implements SettingsCallback {
 
@@ -69,7 +72,9 @@ public class Settings implements SettingsCallback {
     private static final int DEFAULT_MAX_RETRIES = 3;
 
     private final Platform platform;
-    private final SharedPreferences preferences;
+
+    @Inject
+    SharedPreferences preferences;
 
     private long layoutUpdateInterval = DEFAULT_LAYOUT_UPDATE_INTERVAL;
 
@@ -96,9 +101,9 @@ public class Settings implements SettingsCallback {
 
     private SettingsCallback callback = SettingsCallback.NONE;
 
-    public Settings(Platform platform, SharedPreferences preferences){
+    public Settings(Platform platform){
         this.platform = platform;
-        this.preferences = preferences;
+        SensorbergApplication.getComponent().inject(this);
     }
 
     public void restoreValuesFromPreferences(){

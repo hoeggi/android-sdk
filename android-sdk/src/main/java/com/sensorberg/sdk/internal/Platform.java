@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -38,8 +37,6 @@ public interface Platform {
     boolean isSyncEnabled();
 
     boolean hasMinimumAndroidRequirements();
-
-    SharedPreferences getSettingsSharedPrefs();
 
     void scheduleRepeating(int MSG_index, long value, TimeUnit timeUnit);
 

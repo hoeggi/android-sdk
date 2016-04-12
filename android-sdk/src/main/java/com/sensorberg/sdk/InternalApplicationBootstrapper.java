@@ -1,9 +1,11 @@
 package com.sensorberg.sdk;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 
+import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import io.realm.Realm;
 
 public class InternalApplicationBootstrapper extends MinimalBootstrapper implements ScannerListener, ResolverListener, Settings.SettingsCallback, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
@@ -46,10 +50,14 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     private SensorbergService.MessengerList presentationDelegate;
     final Set<String> proximityUUIDs = new HashSet<>();
 
+    @Inject
+    Context context;
+
     public InternalApplicationBootstrapper(Platform plattform){
         super(plattform);
+        SensorbergApplication.getComponent().inject(this);
 
-        settings = new Settings(plattform, plattform.getSettingsSharedPrefs());
+        settings = new Settings(plattform);
         settings.restoreValuesFromPreferences();
         settings.setCallback(this);
 
@@ -70,15 +78,15 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
         plattform.restorePendingIntents();
 
-        ScannerBroadcastReceiver.setManifestReceiverEnabled(true, plattform.getContext());
-        GenericBroadcastReceiver.setManifestReceiverEnabled(true, plattform.getContext());
+        ScannerBroadcastReceiver.setManifestReceiverEnabled(true, context);
+        GenericBroadcastReceiver.setManifestReceiverEnabled(true, context);
 
         setUpAlarmsForSettings();
         setUpAlarmForBeaconActionHistoryPublisher();
         updateAlarmsForActionLayoutFetch();
 
         //cache the current network state
-        NetworkInfoBroadcastReceiver.triggerListenerWithCurrentState(plattform.getContext());
+        NetworkInfoBroadcastReceiver.triggerListenerWithCurrentState(context);
         ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this);
     }
 
@@ -139,7 +147,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
             if (presentationDelegate == null) {
                 Intent broadcastIntent = new Intent(ManifestParser.actionString);
                 broadcastIntent.putExtra(Action.INTENT_KEY, beaconEvent.getAction());
-                LocalBroadcastManager.getInstance(platform.getContext()).sendBroadcast(broadcastIntent);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
             } else {
                 Logger.log.beaconResolveState(beaconEvent, "delegating the display of the beacon event to the application");
                 presentationDelegate.send(beaconEvent);
@@ -161,7 +169,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     @Override
     public void onResolutionsFinished(List<BeaconEvent> beaconEvents) {
-        final Realm realm = Realm.getInstance(platform.getContext(), BeaconActionHistoryPublisher.REALM_FILENAME);
+        final Realm realm = Realm.getInstance(context, BeaconActionHistoryPublisher.REALM_FILENAME);
         List<BeaconEvent> events = ListUtils.filter(beaconEvents, new ListUtils.Filter<BeaconEvent>() {
             @Override
             public boolean matches(BeaconEvent beaconEvent) {

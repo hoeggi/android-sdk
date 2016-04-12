@@ -50,13 +50,17 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 
 public class AndroidPlatform implements Platform {
 
-    private static final String SENSORBERG_PREFERENCE_IDENTIFIER = "com.sensorberg.preferences";
     private static final String SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER = "com.sensorberg.preferences.installationUuidIdentifier";
     private static final String SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER = "com.sensorberg.preferences.advertiserIdentifier";
+
+    @Inject
+    SharedPreferences settingsPreferences;
 
     private final Context context;
     private final Clock clock;
@@ -95,26 +99,23 @@ public class AndroidPlatform implements Platform {
             BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
             bluetoothAdapter = bluetoothManager.getAdapter();
             bluetoothLowEnergySupported = true;
-        }
-        else{
+        } else {
             bluetoothLowEnergySupported = false;
             bluetoothAdapter = null;
         }
 
-        postToServiceCounter = new PersistentIntegerCounter(getSettingsSharedPrefs());
+        postToServiceCounter = new PersistentIntegerCounter();
         pendingIntentStorage = new PendingIntentStorage(this);
     }
 
 
     private String getOrCreateInstallationIdentifier() {
         String value;
-        SharedPreferences preferences = getSettingsSharedPrefs();
 
-        String uuidString = preferences.getString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, null);
-        if (uuidString != null){
+        String uuidString = settingsPreferences.getString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, null);
+        if (uuidString != null) {
             value = uuidString;
-        }
-        else {
+        } else {
             value = uuidWithoutDashesString(UUID.randomUUID());
             persistInstallationIdentifier(value);
         }
@@ -127,9 +128,8 @@ public class AndroidPlatform implements Platform {
      * @param value - Value to save.
      */
     @SuppressLint("CommitPrefEdits")
-    private void persistInstallationIdentifier(String value){
-        SharedPreferences preferences = getSettingsSharedPrefs();
-        SharedPreferences.Editor editor = preferences.edit();
+    private void persistInstallationIdentifier(String value) {
+        SharedPreferences.Editor editor = settingsPreferences.edit();
         editor.putString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, value);
         editor.commit();
     }
@@ -140,9 +140,8 @@ public class AndroidPlatform implements Platform {
      * @param value - Value to save.
      */
     @SuppressLint("CommitPrefEdits")
-    private void persistAdvertiserIdentifier(String value){
-        SharedPreferences preferences = getSettingsSharedPrefs();
-        SharedPreferences.Editor editor = preferences.edit();
+    private void persistAdvertiserIdentifier(String value) {
+        SharedPreferences.Editor editor = settingsPreferences.edit();
         editor.putString(SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER, value);
         editor.commit();
     }
@@ -290,12 +289,7 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public SharedPreferences getSettingsSharedPrefs() {
-        return context.getSharedPreferences(SENSORBERG_PREFERENCE_IDENTIFIER, Context.MODE_PRIVATE);
-    }
-
-    @Override
-    public void scheduleRepeating(int MSG_type, long value, TimeUnit timeUnit){
+    public void scheduleRepeating(int MSG_type, long value, TimeUnit timeUnit) {
         long millis = TimeUnit.MILLISECONDS.convert(value, timeUnit);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = getPendingIntent(MSG_type);
