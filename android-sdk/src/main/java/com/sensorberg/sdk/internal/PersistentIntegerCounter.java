@@ -2,25 +2,21 @@ package com.sensorberg.sdk.internal;
 
 import android.content.SharedPreferences;
 
-import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
-
-import javax.inject.Inject;
 
 /**
  * a class that represents a long value that is restored from @{SharedPreferences}. It is thread safe.
  */
 public class PersistentIntegerCounter {
 
-    @Inject
     SharedPreferences settingsSharedPrefs;
 
     private int postToServiceCounter;
     private final Object postToServiceCounterMonitor = new Object();
 
-    public PersistentIntegerCounter() {
-        SensorbergApplication.getComponent().inject(this);
+    public PersistentIntegerCounter(SharedPreferences prefs) {
+        settingsSharedPrefs = prefs;
 
         if (settingsSharedPrefs.contains(Constants.SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER)) {
             try {

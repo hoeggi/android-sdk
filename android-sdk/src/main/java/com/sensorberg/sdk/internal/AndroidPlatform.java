@@ -104,7 +104,7 @@ public class AndroidPlatform implements Platform {
             bluetoothAdapter = null;
         }
 
-        postToServiceCounter = new PersistentIntegerCounter();
+        postToServiceCounter = new PersistentIntegerCounter(settingsPreferences);
         pendingIntentStorage = new PendingIntentStorage(this);
     }
 

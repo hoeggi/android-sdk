@@ -5,7 +5,6 @@ import android.app.Application;
 import com.sensorberg.sdk.InternalApplicationBootstrapper;
 import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.PendingIntentStorage;
-import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 import com.sensorberg.sdk.settings.Settings;
 
@@ -23,8 +22,6 @@ public interface Component {
     void inject(Settings beaconActionHistoryPublisher);
 
     void inject(PendingIntentStorage pendingIntentStorage);
-
-    void inject(PersistentIntegerCounter persistentIntegerCounter);
 
     void inject(AndroidPlatform androidPlatform);
 
