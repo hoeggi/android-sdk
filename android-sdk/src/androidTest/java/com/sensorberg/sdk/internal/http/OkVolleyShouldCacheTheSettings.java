@@ -56,9 +56,9 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
         RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
         queue.start();
 
-        when(testPlattform.getVolleyQueue()).thenReturn(queue);
+        when(testPlattform.getCachedVolleyQueue()).thenReturn(queue);
 
-        tested = new OkHttpClientTransport(testPlattform, null);
+        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), testPlattform.clock);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 

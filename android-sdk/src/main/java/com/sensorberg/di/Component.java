@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.sensorberg.sdk.InternalApplicationBootstrapper;
 import com.sensorberg.sdk.internal.AndroidPlatform;
+import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.PendingIntentStorage;
 import com.sensorberg.sdk.scanner.AbstractScanner;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
@@ -29,6 +30,8 @@ public interface Component {
     void inject(AndroidPlatform androidPlatform);
 
     void inject(BeaconActionHistoryPublisher beaconActionHistoryPublisher);
+
+    void inject(OkHttpClientTransport okHttpClientTransport);
 
     void inject(AbstractScanner abstractScanner);
 

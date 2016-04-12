@@ -15,7 +15,7 @@ public class TestPlatformWithSynchronousHttpTransport extends TestPlatform {
     public TestPlatformWithSynchronousHttpTransport(Context context) {
         super();
         this.context = context;
-        transport = new OkHttpClientTransport(this, null);
+        transport = new OkHttpClientTransport(this, null, getCachedVolleyQueue(), clock);
         transport.setApiToken(TestConstants.API_TOKEN);
     }
 

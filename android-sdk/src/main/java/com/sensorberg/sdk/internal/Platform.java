@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.android.sensorbergVolley.RequestQueue;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
 
@@ -59,15 +58,11 @@ public interface Platform {
 
     void cancelServiceMessage(int index);
 
-    RequestQueue getVolleyQueue();
-
     List<BroadcastReceiver> getBroadcastReceiver();
 
     boolean registerBroadcastReceiver();
 
     void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver);
-
-    void setShouldUseHttpCache(boolean shouldUseHttpCache);
 
     void postDeliverAtOrUpdate(Date deliverAt, BeaconEvent beaconEvent);
 

@@ -26,7 +26,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         when(plattform.useSyncClient()).thenReturn(true);
 
-        transport = new OkHttpClientTransport(plattform, null);
+        transport = new OkHttpClientTransport(plattform, null, plattform.getCachedVolleyQueue(), plattform.clock);
         startWebserver();
     }
 

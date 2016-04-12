@@ -25,7 +25,7 @@ public class TheSettingsShould extends AndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
         platform = new TestPlatform();
-        platform.setTransport(new OkHttpClientTransport(platform, null));
+        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), platform.clock));
         platform.getTransport().setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
         tested = new Settings(platform);

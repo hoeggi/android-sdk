@@ -61,12 +61,12 @@ public class TransportShould extends SensorbergApplicationTest {
         scanEvent = new ScanEvent.Builder()
                 .withBeaconId(new BeaconId(BEACON_ID, MAJOR, MINOR))
                 .withEventMask(ScanEventType.ENTRY.getMask())
-                .withEventTime(testPlattform.getClock().now())
+                .withEventTime(testPlattform.clock.now())
                 .build();
 
         settings = mock(Settings.class);
 
-        tested = new OkHttpClientTransport(testPlattform, settings);
+        tested = new OkHttpClientTransport(testPlattform, settings, testPlattform.getCachedVolleyQueue(), testPlattform.clock);
         tested.setApiToken(TestConstants.API_TOKEN);
 
     }

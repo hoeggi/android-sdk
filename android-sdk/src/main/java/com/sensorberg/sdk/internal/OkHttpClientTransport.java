@@ -1,11 +1,14 @@
 package com.sensorberg.sdk.internal;
 
+import android.content.Context;
+
 import com.android.sensorbergVolley.DefaultRetryPolicy;
 import com.android.sensorbergVolley.Request;
 import com.android.sensorbergVolley.RequestQueue;
 import com.android.sensorbergVolley.Response;
 import com.android.sensorbergVolley.VolleyError;
 import com.android.sensorbergVolley.toolbox.RequestFuture;
+import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
@@ -35,6 +38,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.inject.Inject;
+
 import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
@@ -43,9 +48,14 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
+    @Inject
+    Context context;
+
+    Clock clock;
+
     private final Map<String, String> headers = new HashMap<>();
 
-    private final RequestQueue queue;
+    private RequestQueue queue;
     private final Platform platform;
     private final Settings settings;
     private BeaconReportHandler beaconReportHandler;
@@ -55,10 +65,13 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     private static final String INSTALLATION_IDENTIFIER = "X-iid";
     private static final String ADVERTISER_IDENTIFIER = "X-aid";
 
-    public OkHttpClientTransport(Platform platform, Settings settings) {
+    public OkHttpClientTransport(Platform platform, Settings settings, RequestQueue volleyQueue, Clock clock) {
+        SensorbergApplication.getComponent().inject(this);
         this.platform = platform;
         this.settings = settings;
-        this.queue = platform.getVolleyQueue();
+        queue = volleyQueue;
+        this.clock = clock;
+
         this.headers.put("User-Agent", platform.getUserAgentString());
         this.headers.put(INSTALLATION_IDENTIFIER, platform.getDeviceInstallationIdentifier());
         this.headers.put(ADVERTISER_IDENTIFIER, platform.getAdvertiserIdentifier());
@@ -95,7 +108,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
         Response.Listener<BaseResolveResponse> listener = new Response.Listener<BaseResolveResponse>() {
             @Override
             public void onResponse(BaseResolveResponse response) {
-                if ( response != null ) {
+                if (response != null) {
                     proximityUUIDUpdateHandler.proximityUUIDListUpdated(response.getAccountProximityUUIDs());
                 } else {
                     //noinspection unchecked not returning null
@@ -114,12 +127,12 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
         Response.Listener<ResolveResponse> listener = new Response.Listener<ResolveResponse>() {
             @Override
             public void onResponse(ResolveResponse response) {
-                if (response == null){
+                if (response == null) {
                     beaconResponseHandler.onFailure(new VolleyError("No Content, Invalid Api Key"));
                     return;
                 }
                 boolean reportImmediately = false;
-                final List<ResolveAction> resolveActions =  response.resolve(resolutionConfiguration.getScanEvent(), platform.getClock().now());
+                final List<ResolveAction> resolveActions = response.resolve(resolutionConfiguration.getScanEvent(), clock.now());
                 for (ResolveAction resolveAction : resolveActions) {
                     reportImmediately |= resolveAction.reportImmediately;
                 }
@@ -128,11 +141,11 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
                     beaconEvent.setBeaconId(resolutionConfiguration.getScanEvent().getBeaconId());
                 }
                 beaconResponseHandler.onSuccess(beaconEvents);
-                if (reportImmediately){
+                if (reportImmediately) {
                     beaconReportHandler.reportImmediately();
                 }
                 proximityUUIDUpdateHandler.proximityUUIDListUpdated(response.getAccountProximityUUIDs());
-                if (response.reportTriggerSeconds != null){
+                if (response.reportTriggerSeconds != null) {
                     settings.historyUploadIntervalChanged(TimeUnit.SECONDS.toMillis(response.reportTriggerSeconds));
                 }
 
@@ -152,7 +165,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     private Map<String, String> beaconHeader(ScanEvent scanEvent) {
         Map<String, String> map = new HashMap<>();
         map.put("X-pid", scanEvent.getBeaconId().getBid());
-        if (NetworkInfoBroadcastReceiver.latestNetworkInfo != null){
+        if (NetworkInfoBroadcastReceiver.latestNetworkInfo != null) {
             map.put("X-qos", NetworkInfoBroadcastReceiver.getNetworkInfoString());
         }
 
@@ -162,6 +175,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     public void perform(String url, Response.Listener<JSONObject> listener, Response.ErrorListener errorlistener) {
         perform(Request.Method.GET, url, null, listener, errorlistener);
     }
+
     private void perform(int method, String url, Object body, Response.Listener<JSONObject> listener, Response.ErrorListener errorlistener) {
         //noinspection unchecked
         perform(method, url, body, listener, errorlistener, JSONObject.class, Collections.EMPTY_MAP, false);
@@ -171,7 +185,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
         Map<String, String> requestHeaders = new HashMap<>(headers);
         requestHeaders.putAll(this.headers);
 
-        if (platform.useSyncClient()){
+        if (platform.useSyncClient()) {
             RequestFuture<T> future = RequestFuture.newFuture();
             HeadersJsonObjectRequest<T> request = new HeadersJsonObjectRequest<>(method, url, requestHeaders, body, future, future, clazz)
                     .setShouldAlwaysTryWithNetwork(shouldAlwaysTryWithNetwork);
@@ -205,8 +219,8 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
 
     @Override
     public void setApiToken(String apiToken) {
-        if (!Objects.equals(this.apiToken, apiToken)){
-            this.queue.getCache().clear();
+        if (!Objects.equals(this.apiToken, apiToken)) {
+            queue.getCache().clear();
         }
         this.apiToken = apiToken;
         if (apiToken != null) {
@@ -269,7 +283,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
         Response.Listener<ResolveResponse> responseListener = new Response.Listener<ResolveResponse>() {
             @Override
             public void onResponse(ResolveResponse response) {
-                if (response == null){
+                if (response == null) {
                     callback.onFailure(new VolleyError("No Content, Invalid Api Key"));
                     return;
                 }
@@ -284,7 +298,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
             }
         };
 
-        HistoryBody body = new HistoryBody(scans, actions, platform.getClock());
+        HistoryBody body = new HistoryBody(scans, actions, clock);
 
         //noinspection unchecked
         perform(Request.Method.POST, getResolveURLString(), body, responseListener, errorListener, ResolveResponse.class, Collections.EMPTY_MAP, false);

@@ -237,8 +237,7 @@ public class TestPlatform implements Platform {
         return network;
     }
 
-    @Override
-    public RequestQueue getVolleyQueue() {
+    public RequestQueue getCachedVolleyQueue() {
         network = spy(new BasicNetwork(new OkHttpStack()));
 
         File cacheDir = new File(context.getCacheDir(), "volley-test-" + String.valueOf(System.currentTimeMillis()));
@@ -263,11 +262,6 @@ public class TestPlatform implements Platform {
 
     @Override
     public void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void setShouldUseHttpCache(boolean shouldUseHttpCache) {
         android.util.Log.e(TAG, "NOT IMPLEMENTED");
     }
 

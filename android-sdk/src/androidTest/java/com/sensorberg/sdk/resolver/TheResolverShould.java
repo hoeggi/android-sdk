@@ -40,7 +40,7 @@ public class TheResolverShould extends AndroidTestCase{
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
         androidPlattform = spy(new TestPlatform());
-        androidPlattform.setTransport(new OkHttpClientTransport(androidPlattform, null));
+        androidPlattform.setTransport(new OkHttpClientTransport(androidPlattform, null, androidPlattform.getCachedVolleyQueue(), androidPlattform.clock));
         androidPlattform.getTransport().setApiToken(TestConstants.API_TOKEN);
         androidPlattform.clock.setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
 

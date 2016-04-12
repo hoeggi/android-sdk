@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.SystemClock;
 
-import com.android.sensorbergVolley.RequestQueue;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -251,8 +250,8 @@ public class AndroidPlatform implements Platform {
 
     @Override
     public Transport getTransport() {
-        if(asyncTransport == null){
-            asyncTransport = new OkHttpClientTransport(this, settings);
+        if (asyncTransport == null) {
+            asyncTransport = new OkHttpClientTransport(this, settings, OkVolley.newRequestQueue(context, shouldUseHttpCache), clock);
         }
         return asyncTransport;
     }
@@ -460,11 +459,6 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public RequestQueue getVolleyQueue() {
-        return OkVolley.newRequestQueue(context, shouldUseHttpCache);
-    }
-
-    @Override
     public List<BroadcastReceiver> getBroadcastReceiver() {
         return ManifestParser.findBroadcastReceiver(context);
     }
@@ -574,11 +568,6 @@ public class AndroidPlatform implements Platform {
             }
         }
         return crashCallBackWrapper;
-    }
-
-    @Override
-    public void setShouldUseHttpCache(boolean shouldUseHttpCache) {
-        this.shouldUseHttpCache = shouldUseHttpCache;
     }
 
     private static class AndroidClock implements Clock {
