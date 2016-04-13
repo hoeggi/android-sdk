@@ -22,6 +22,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import com.android.sensorbergVolley.RequestQueue;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.BuildConfig;
@@ -35,8 +38,10 @@ import com.sensorberg.sdk.settings.Settings;
 import com.sensorbergorm.SugarContext;
 import net.danlew.android.joda.JodaTimeAndroid;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +53,8 @@ import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 public class AndroidPlatform implements Platform {
 
     private static final String SENSORBERG_PREFERENCE_IDENTIFIER = "com.sensorberg.preferences";
-    private static final String SENSORBERG_PREFERENCE_UUID = "com.sensorberg.preferences.installationUUID";
+    private static final String SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER = "com.sensorberg.preferences.installationUuidIdentifier";
+    private static final String SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER = "com.sensorberg.preferences.advertiserIdentifier";
 
     private final Context context;
     private final Clock clock;
@@ -60,6 +66,7 @@ public class AndroidPlatform implements Platform {
     private Transport asyncTransport;
 
     private String deviceInstallationIdentifier;
+    private String advertiserIdentifier;
 
     private boolean leScanRunning = false;
     private final Set<Integer> repeatingPendingIntents = new HashSet<>();
@@ -71,6 +78,8 @@ public class AndroidPlatform implements Platform {
     private boolean shouldUseHttpCache = true;
     private static boolean actionBroadcastReceiversRegistered;
     private final PermissionChecker permissionChecker;
+    private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
+    private  final ArrayList<AdvertiserIdentifierChangeListener> advertiserIdentifierChangeListener = new ArrayList<>();
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
@@ -95,22 +104,46 @@ public class AndroidPlatform implements Platform {
         pendingIntentStorage = new PendingIntentStorage(this);
     }
 
-    @SuppressLint("CommitPrefEdits")
-    private String getOrCreatInstallationIdentifier() {
+
+    private String getOrCreateInstallationIdentifier() {
         String value;
         SharedPreferences preferences = getSettingsSharedPrefs();
 
-        String uuidString = preferences.getString(SENSORBERG_PREFERENCE_UUID, null);
+        String uuidString = preferences.getString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, null);
         if (uuidString != null){
             value = uuidString;
         }
         else {
             value = uuidWithoutDashesString(UUID.randomUUID());
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(SENSORBERG_PREFERENCE_UUID, value);
-            editor.commit();
+            persistInstallationIdentifier(value);
         }
         return value;
+    }
+
+    /**
+     * Persists the installation identifier value to preferences.
+     *
+     * @param value - Value to save.
+     */
+    @SuppressLint("CommitPrefEdits")
+    private void persistInstallationIdentifier(String value){
+        SharedPreferences preferences = getSettingsSharedPrefs();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, value);
+        editor.commit();
+    }
+
+    /**
+     * Persists the advertiser identifier value to preferences.
+     *
+     * @param value - Value to save.
+     */
+    @SuppressLint("CommitPrefEdits")
+    private void persistAdvertiserIdentifier(String value){
+        SharedPreferences preferences = getSettingsSharedPrefs();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER, value);
+        editor.commit();
     }
 
     private static String getAppVersionString(Context context) {
@@ -156,9 +189,65 @@ public class AndroidPlatform implements Platform {
     @Override
     public String getDeviceInstallationIdentifier() {
         if (deviceInstallationIdentifier == null) {
-            deviceInstallationIdentifier = getOrCreatInstallationIdentifier();
+            deviceInstallationIdentifier = getOrCreateInstallationIdentifier();
         }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long timeBefore = System.currentTimeMillis();
+
+                persistInstallationIdentifier(deviceInstallationIdentifier);
+                for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
+                    listener.deviceInstallationIdentifierChanged(deviceInstallationIdentifier);
+                }
+
+                Logger.log.verbose("Fetching installation ID took " + (System.currentTimeMillis() - timeBefore) + " millis");
+            }
+        }).start();
+
         return deviceInstallationIdentifier;
+    }
+
+    @Override
+    public String getAdvertiserIdentifier() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                long timeBefore = System.currentTimeMillis();
+
+                try {
+                    AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
+                    if (info == null || info.getId() == null){
+                        Logger.log.logError("AdvertisingIdClient.getAdvertisingIdInfo returned null");
+                        return;
+                    }
+                    if (info.isLimitAdTrackingEnabled()) {
+                        return;
+                    }
+
+                    advertiserIdentifier = "google:" + info.getId();
+                    persistAdvertiserIdentifier(advertiserIdentifier);
+
+                    for (AdvertiserIdentifierChangeListener listener : advertiserIdentifierChangeListener) {
+                        listener.advertiserIdentifierChanged((!info.isLimitAdTrackingEnabled()) ? advertiserIdentifier : "");
+                    }
+
+                } catch (IOException e) {
+                    Logger.log.logError("Could not fetch the advertising identifier because of an IO Exception" , e);
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    Logger.log.logError("Play services are not available", e);
+                } catch (GooglePlayServicesRepairableException e) {
+                    Logger.log.logError("Play services are in need of repairs", e);
+                } catch (Exception e){
+                    Logger.log.logError("Could not fetch the advertising identifier because of an unknown error" , e);
+                }
+                Logger.log.verbose("Fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
+            }
+        }).start();
+
+        return advertiserIdentifier;
     }
 
     @Override
@@ -302,6 +391,16 @@ public class AndroidPlatform implements Platform {
     @Override
     public void removeStoredPendingIntent(int index) {
         pendingIntentStorage.removeStoredPendingIntent(index);
+    }
+
+    @Override
+    public void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener) {
+        this.deviceInstallationIdentifierChangeListener.add(listener);
+    }
+
+    @Override
+    public void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener) {
+        this.advertiserIdentifierChangeListener.add(listener);
     }
 
     @Override

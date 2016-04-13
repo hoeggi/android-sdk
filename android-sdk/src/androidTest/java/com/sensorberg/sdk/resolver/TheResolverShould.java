@@ -84,7 +84,6 @@ public class TheResolverShould extends AndroidTestCase{
                 //also, ideally, this test should use a mock request and not depend on server
                 Assertions.assertThat(events).hasSize(0);
             }
-
         };
         tested.addResolverListener(mockListener);
         ResolutionConfiguration conf = new ResolutionConfiguration();
