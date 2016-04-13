@@ -2,8 +2,8 @@ package com.sensorberg.sdk.internal.http;
 
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.SensorbergApplicationTest;
-import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
+import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -16,13 +16,14 @@ import static org.mockito.Mockito.when;
 public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
     private OkHttpClientTransport transport;
-    AndroidPlatform plattform;
+    TestPlatform plattform;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        plattform = spy(new AndroidPlatform(getApplication().getApplicationContext()));
+        plattform = spy(new TestPlatform());
+        plattform.setContext(getContext());
 
         when(plattform.useSyncClient()).thenReturn(true);
 
