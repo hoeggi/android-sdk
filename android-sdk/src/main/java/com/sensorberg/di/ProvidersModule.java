@@ -97,8 +97,9 @@ public class ProvidersModule {
     }
 
     @Provides
+    @Named("realHandlerManager")
     @Singleton
-    public HandlerManager provideHandlerManager() {
+    public HandlerManager provideAndroidHandlerManager() {
         return new AndroidHandlerManager();
     }
 }

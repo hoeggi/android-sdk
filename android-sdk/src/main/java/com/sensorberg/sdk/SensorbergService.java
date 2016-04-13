@@ -76,6 +76,7 @@ public class SensorbergService extends Service {
     ServiceScheduler serviceScheduler;
 
     @Inject
+    @Named("realHandlerManager")
     HandlerManager handlerManager;
 
     @Inject
