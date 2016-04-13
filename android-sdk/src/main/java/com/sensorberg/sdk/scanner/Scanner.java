@@ -5,6 +5,7 @@ import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.settings.Settings;
 
@@ -14,8 +15,8 @@ public class Scanner extends AbstractScanner {
     private static final String SCANNER_EVENT = "com.sensorberg.sdk.scanner.SDKScanner.SCANNER_EVENT";
 
     public Scanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager,
-            ServiceScheduler scheduler) {
-        super(settings, platform, shouldRestoreBeaconStates, clock, fileManager, scheduler);
+            ServiceScheduler scheduler, HandlerManager handlerManager) {
+        super(settings, platform, shouldRestoreBeaconStates, clock, fileManager, scheduler, handlerManager);
     }
 
     @Override

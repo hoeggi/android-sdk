@@ -6,6 +6,7 @@ import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.Settings;
@@ -65,13 +66,13 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     private RssiListener rssiListener = RssiListener.NONE;
 
     AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager,
-            ServiceScheduler scheduler) {
+            ServiceScheduler scheduler, HandlerManager handlerManager) {
         this.platform = platform;
         this.settings = settings;
         this.clock = clock;
         serviceScheduler = scheduler;
         scanning = false;
-        runLoop = platform.getScannerRunLoop(this);
+        runLoop = handlerManager.getScannerRunLoop(this);
 
         File beaconFile = shouldRestoreBeaconStates ? fileManager.getFile("enteredBeaconsCache") : null;
         enteredBeacons = new BeaconMap(fileManager, beaconFile);

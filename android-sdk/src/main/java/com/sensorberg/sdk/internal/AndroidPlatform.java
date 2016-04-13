@@ -378,19 +378,4 @@ public class AndroidPlatform implements Platform {
         return bluetoothLowEnergySupported && bluetoothAdapter.isEnabled();
     }
 
-    @Override
-    public RunLoop getScannerRunLoop(RunLoop.MessageHandlerCallback callback) {
-        return new AndroidHandler(callback);
-    }
-
-    @Override
-    public RunLoop getResolverRunLoop(RunLoop.MessageHandlerCallback callback) {
-        return new AndroidHandler(callback);
-    }
-
-    @Override
-    public RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback) {
-        return new AndroidHandler(callback);
-    }
-
 }

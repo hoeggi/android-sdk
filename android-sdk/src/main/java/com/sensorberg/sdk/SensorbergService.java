@@ -6,6 +6,7 @@ import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
@@ -71,6 +72,9 @@ public class SensorbergService extends Service {
 
     @Inject
     ServiceScheduler serviceScheduler;
+
+    @Inject
+    HandlerManager handlerManager;
 
     Platform platform;
 
@@ -179,7 +183,7 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler);
+                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper);
                         bootstrapper.startScanning();
@@ -386,7 +390,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 platform.getTransport().setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler);
+                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager);
             } else{
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }

@@ -11,6 +11,7 @@ import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.Settings;
 
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.spy;
 import static util.Utils.hexStringToByteArray;
 import static util.Utils.wrapWithZeroBytes;
 
-public class TestPlatform implements Platform {
+public class TestPlatform implements Platform, HandlerManager {
 
     public static final String TAG = "TestPlatform";
 

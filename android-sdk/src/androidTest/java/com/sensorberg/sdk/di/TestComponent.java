@@ -8,6 +8,7 @@ import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
 import com.sensorberg.sdk.scanner.ScannerWithLongScanTime;
 import com.sensorberg.sdk.scanner.TheBackgroundScannerShould;
+import com.sensorberg.sdk.scanner.TheBeaconActionHistoryPublisherIntegrationShould;
 import com.sensorberg.sdk.scanner.TheBeaconMapShould;
 import com.sensorberg.sdk.scanner.TheBluetoothChangesShould;
 import com.sensorberg.sdk.scanner.TheDefaultScanner;
@@ -62,6 +63,8 @@ public interface TestComponent extends Component {
     void inject(TheIntentSchedulingBeUpdateable theIntentSchedulingBeUpdateable);
 
     void inject(TheIntentSchedulingShould theIntentSchedulingShould);
+
+    void inject(TheBeaconActionHistoryPublisherIntegrationShould theBeaconActionHistoryPublisherIntegrationShould);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

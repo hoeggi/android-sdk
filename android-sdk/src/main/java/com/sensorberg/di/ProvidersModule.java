@@ -3,11 +3,13 @@ package com.sensorberg.di;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.internal.AndroidClock;
 import com.sensorberg.sdk.internal.AndroidFileManager;
+import com.sensorberg.sdk.internal.AndroidHandlerManager;
 import com.sensorberg.sdk.internal.AndroidServiceScheduler;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 
 import android.app.AlarmManager;
@@ -90,5 +92,11 @@ public class ProvidersModule {
     @Singleton
     public CrashCallBackWrapper provideCrashCallBackWrapper(Context context) {
         return new CrashCallBackWrapper(context);
+    }
+
+    @Provides
+    @Singleton
+    public HandlerManager provideHandlerManager() {
+        return new AndroidHandlerManager();
     }
 }

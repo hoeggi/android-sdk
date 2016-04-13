@@ -1,15 +1,12 @@
 package com.sensorberg.sdk.scanner;
 
-import android.content.Context;
-import android.os.Message;
-
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
@@ -17,6 +14,9 @@ import com.sensorberg.sdk.realm.migrations.Version0to1Migration;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
+
+import android.content.Context;
+import android.os.Message;
 
 import java.io.File;
 import java.util.List;
@@ -49,13 +49,13 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private final Settings settings;
     private Realm realm;
 
-    public BeaconActionHistoryPublisher(Platform platform, Transport transport, ResolverListener resolverListener, Settings settings, Clock clock) {
+    public BeaconActionHistoryPublisher(Transport transport, ResolverListener resolverListener, Settings settings, Clock clock, HandlerManager handlerManager) {
         SensorbergApplication.getComponent().inject(this);
         this.resolverListener = resolverListener;
         this.settings = settings;
         this.transport = transport;
         this.clock = clock;
-        runloop = platform.getBeaconPublisherRunLoop(this);
+        runloop = handlerManager.getBeaconPublisherRunLoop(this);
     }
 
     @Override

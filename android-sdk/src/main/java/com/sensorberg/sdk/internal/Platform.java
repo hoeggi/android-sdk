@@ -82,12 +82,6 @@ public interface Platform {
 
     boolean isBluetoothEnabled();
 
-    RunLoop getScannerRunLoop(RunLoop.MessageHandlerCallback callback);
-
-    RunLoop getResolverRunLoop(RunLoop.MessageHandlerCallback callback);
-
-    RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback);
-
     /**
      * Interface for device installation identifier.
      */

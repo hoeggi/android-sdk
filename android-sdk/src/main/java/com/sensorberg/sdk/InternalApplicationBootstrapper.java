@@ -8,6 +8,7 @@ import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
@@ -62,7 +63,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     @Inject
     FileManager fileManager;
 
-    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler) {
+    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager) {
         super(plattform, scheduler);
         SensorbergApplication.getComponent().inject(this);
 
@@ -72,15 +73,15 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
         plattform.setSettings(settings);
 
-        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform, plattform.getTransport(), this, settings, clock);
+        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform.getTransport(), this, settings, clock, handlerManager);
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
 
         plattform.getTransport().setBeaconReportHandler(this);
         plattform.getTransport().setProximityUUIDUpdateHandler(this);
 
-        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock, fileManager, scheduler);
-        resolver = new Resolver(resolverConfiguration, plattform);
+        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager);
+        resolver = new Resolver(resolverConfiguration, handlerManager, plattform.getTransport());
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);
 
