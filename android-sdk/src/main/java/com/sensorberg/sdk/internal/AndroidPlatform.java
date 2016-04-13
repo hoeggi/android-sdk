@@ -59,7 +59,8 @@ public class AndroidPlatform implements Platform {
 
     private final Context context;
 
-    private CrashCallBackWrapper crashCallBackWrapper;
+    @Inject
+    CrashCallBackWrapper crashCallBackWrapper;
 
     private final BluetoothAdapter bluetoothAdapter;
 
@@ -343,8 +344,8 @@ public class AndroidPlatform implements Platform {
         if (bluetoothLowEnergySupported) {
             if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
                 //noinspection deprecation old API compatability
-                bluetoothAdapter.startLeScan(getCrashCallBackWrapper());
-                getCrashCallBackWrapper().setCallback(scanCallback);
+                bluetoothAdapter.startLeScan(crashCallBackWrapper);
+                crashCallBackWrapper.setCallback(scanCallback);
                 leScanRunning = true;
             }
         }
@@ -356,12 +357,12 @@ public class AndroidPlatform implements Platform {
         if (bluetoothLowEnergySupported) {
             try {
                 //noinspection deprecation old API compatability
-                bluetoothAdapter.stopLeScan(getCrashCallBackWrapper());
+                bluetoothAdapter.stopLeScan(crashCallBackWrapper);
             } catch (NullPointerException sentBySysteminternally) {
                 Logger.log.logError("System bug throwing a NullPointerException internally.", sentBySysteminternally);
             } finally {
                 leScanRunning = false;
-                getCrashCallBackWrapper().setCallback(null);
+                crashCallBackWrapper.setCallback(null);
             }
         }
     }
@@ -390,17 +391,6 @@ public class AndroidPlatform implements Platform {
     @Override
     public RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback) {
         return new AndroidHandler(callback);
-    }
-
-    private CrashCallBackWrapper getCrashCallBackWrapper() {
-        if (crashCallBackWrapper == null) {
-            if (bluetoothLowEnergySupported) {
-                crashCallBackWrapper = new CrashCallBackWrapper(context);
-            } else {
-                crashCallBackWrapper = new CrashCallBackWrapper();
-            }
-        }
-        return crashCallBackWrapper;
     }
 
 }

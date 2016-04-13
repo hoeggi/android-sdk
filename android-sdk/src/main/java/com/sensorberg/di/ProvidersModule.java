@@ -1,5 +1,6 @@
 package com.sensorberg.di;
 
+import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.internal.AndroidClock;
 import com.sensorberg.sdk.internal.AndroidFileManager;
 import com.sensorberg.sdk.internal.AndroidServiceScheduler;
@@ -83,5 +84,11 @@ public class ProvidersModule {
     @Singleton
     public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, Clock clock, PersistentIntegerCounter persistentIntegerCounter) {
         return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
+    }
+
+    @Provides
+    @Singleton
+    public CrashCallBackWrapper provideCrashCallBackWrapper(Context context) {
+        return new CrashCallBackWrapper(context);
     }
 }
