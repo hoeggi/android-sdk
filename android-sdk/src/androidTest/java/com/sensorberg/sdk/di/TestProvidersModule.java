@@ -4,6 +4,7 @@ import com.sensorberg.di.ProvidersModule;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.testUtils.NoClock;
+import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
@@ -24,18 +25,18 @@ public class TestProvidersModule extends ProvidersModule {
         super(app);
     }
 
-//    @Provides
-//    @Singleton
-//    public Clock provideClock() {
-    //TODO use this in tests, extract from TestPlatform
-//        return new CustomClock();
-//    }
-
     @Provides
     @Named("noClock")
     @Singleton
     public Clock provideNoClock() {
         return NoClock.CLOCK;
+    }
+
+    @Provides
+    @Named("testClock")
+    @Singleton
+    public TestClock provideTestClock() {
+        return new TestClock();
     }
 
     @Provides

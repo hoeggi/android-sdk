@@ -1,15 +1,15 @@
 package com.sensorberg.sdk.internal.http;
 
-import android.util.Log;
-
 import com.android.sensorbergVolley.Network;
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergApplicationTest;
-import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
-import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
@@ -21,16 +21,22 @@ import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -47,6 +53,10 @@ public class TransportShould extends SensorbergApplicationTest {
     private static final int MAJOR = 1337;
     private static final int MINOR = 1337;
 
+    @Inject
+    @Named("testClock")
+    TestClock clock;
+
     protected Transport tested;
     protected TestPlatform testPlattform;
     private ScanEvent scanEvent;
@@ -55,18 +65,20 @@ public class TransportShould extends SensorbergApplicationTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
         testPlattform = spy(new TestPlatform());
-        testPlattform.clock.setNowInMillis(new DateTime(2015, 7, 10, 1, 1, 1).getMillis());
+        clock.setNowInMillis(new DateTime(2015, 7, 10, 1, 1, 1).getMillis());
 
         scanEvent = new ScanEvent.Builder()
                 .withBeaconId(new BeaconId(BEACON_ID, MAJOR, MINOR))
                 .withEventMask(ScanEventType.ENTRY.getMask())
-                .withEventTime(testPlattform.clock.now())
+                .withEventTime(clock.now())
                 .build();
 
         settings = mock(Settings.class);
 
-        tested = new OkHttpClientTransport(testPlattform, settings, testPlattform.getCachedVolleyQueue(), testPlattform.clock);
+        tested = new OkHttpClientTransport(testPlattform, settings, testPlattform.getCachedVolleyQueue(), clock);
         tested.setApiToken(TestConstants.API_TOKEN);
 
     }
