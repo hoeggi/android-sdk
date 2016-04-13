@@ -1,16 +1,24 @@
 package com.sensorberg.sdk.testUtils;
 
+import com.sensorberg.sdk.internal.OkHttpClientTransport;
+import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.Transport;
+
 import android.content.Context;
 
-import com.sensorberg.sdk.internal.OkHttpClientTransport;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
 public class TestPlatformWithSynchronousHttpTransport extends TestPlatform {
+
+    @Inject
+    @Named("realClock")
+    Clock clock;
+
     private final Context context;
     private final Transport transport;
-
 
     public TestPlatformWithSynchronousHttpTransport(Context context) {
         super();

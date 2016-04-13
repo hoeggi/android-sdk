@@ -1,19 +1,27 @@
 package com.sensorberg.sdk.settings;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.test.AndroidTestCase;
-
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.test.AndroidTestCase;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import util.TestConstants;
 
 public class TheSettingsShould extends AndroidTestCase {
+
+    @Inject
+    @Named("realClock")
+    Clock clock;
 
     Settings tested;
     Settings untouched;
@@ -25,7 +33,7 @@ public class TheSettingsShould extends AndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
         platform = new TestPlatform();
-        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), platform.clock));
+        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), clock));
         platform.getTransport().setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
         tested = new Settings(platform);

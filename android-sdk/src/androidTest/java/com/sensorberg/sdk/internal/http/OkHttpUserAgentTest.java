@@ -3,6 +3,7 @@ package com.sensorberg.sdk.internal.http;
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -10,10 +11,17 @@ import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
+
+    @Inject
+    @Named("realClock")
+    Clock clock;
 
     private OkHttpClientTransport transport;
     TestPlatform plattform;
@@ -26,7 +34,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         when(plattform.useSyncClient()).thenReturn(true);
 
-        transport = new OkHttpClientTransport(plattform, null, plattform.getCachedVolleyQueue(), plattform.clock);
+        transport = new OkHttpClientTransport(plattform, null, plattform.getCachedVolleyQueue(), clock);
         startWebserver();
     }
 

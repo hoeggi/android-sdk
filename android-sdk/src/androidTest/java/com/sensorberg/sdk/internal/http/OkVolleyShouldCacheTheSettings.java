@@ -1,8 +1,5 @@
 package com.sensorberg.sdk.internal.http;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
 import com.android.sensorbergVolley.Request;
 import com.android.sensorbergVolley.RequestQueue;
 import com.android.sensorbergVolley.VolleyError;
@@ -10,6 +7,7 @@ import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -17,7 +15,13 @@ import com.sensorberg.sdk.testUtils.TestPlatform;
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
 
+import android.app.Application;
+import android.test.ApplicationTestCase;
+
 import java.io.File;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -32,6 +36,10 @@ import static org.mockito.Mockito.when;
  * Created by falkorichter on 14/01/15.
  */
 public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Application> {
+
+    @Inject
+    @Named("realClock")
+    Clock clock;
 
     protected Transport tested;
     protected TestPlatform testPlattform;
@@ -58,7 +66,7 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
 
         when(testPlattform.getCachedVolleyQueue()).thenReturn(queue);
 
-        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), testPlattform.clock);
+        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), clock);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 
