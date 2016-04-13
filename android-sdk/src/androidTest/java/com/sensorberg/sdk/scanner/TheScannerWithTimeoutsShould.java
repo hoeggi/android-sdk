@@ -4,9 +4,12 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
+
+import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
 
@@ -16,7 +19,7 @@ import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isExitEvent;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould {
+public class TheScannerWithTimeoutsShould extends AndroidTestCase {
 
     @Inject
     TestFileManager testFileManager;
@@ -24,21 +27,22 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    private TestPlatform plattform;
+
+    private UIScanner tested;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
+        plattform = new TestPlatform();
         plattform.clock.setNowInMillis(0);
-
-        setUpScanner();
+        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager, testServiceScheduler, plattform);
 
         tested.start();
     }
 
-    private void setUpScanner() {
-        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager, testServiceScheduler, plattform);
-    }
 
     public void test_scanner_waits_to_the_edge_of_second_pause() {
         this.plattform.clock.setNowInMillis(0);
