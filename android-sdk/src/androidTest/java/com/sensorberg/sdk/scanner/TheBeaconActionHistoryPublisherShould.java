@@ -1,5 +1,7 @@
 package com.sensorberg.sdk.scanner;
 
+import android.util.Log;
+
 import com.sensorbergorm.SugarContext;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import util.TestConstants;
@@ -29,7 +31,8 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
+        SugarAction.deleteAll(SugarAction.class);
+        SugarScan.deleteAll(SugarScan.class);
         testPlattform = new TestPlatform().setContext(getContext());
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());
 
@@ -51,10 +54,15 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
 
     public void test_should_persist_scans_that_need_queing() throws Exception {
         List<SugarScan> notSentObjects = SugarScan.notSentScans();
+        for (SugarScan thing: notSentObjects) {
+            Log.i("things", Long.toString(thing.getId()));
+        }
         assertThat(notSentObjects).hasSize(1);
+
     }
 
     public void test_should_persist_actions_that_need_queing() throws Exception {
+        //SugarAction.deleteAll(SugarAction.class);
         List<SugarAction> notSentObjects = SugarAction.notSentScans();
         assertThat(notSentObjects).hasSize(1);
     }

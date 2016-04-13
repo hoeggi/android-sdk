@@ -1,6 +1,8 @@
 package com.sensorberg.sdk.scanner;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Message;
 
 import com.android.sensorbergVolley.VolleyError;
@@ -15,8 +17,10 @@ import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorbergorm.SugarContext;
 
 import java.io.File;
+import java.sql.SQLClientInfoException;
 import java.util.List;
 
 public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.MessageHandlerCallback {
@@ -55,7 +59,11 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
         switch (queueEvent.what){
             case MSG_SCAN_EVENT:
                 //start tramsaction?
-                SugarScan.from((ScanEvent) queueEvent.obj, clock.now());
+                //database.beginTransaction();
+                SugarScan scan = SugarScan.from((ScanEvent) queueEvent.obj, clock.now());
+                scan.save();
+                //database.setTransactionSuccessful();
+                //database.endTransaction();
                 break;
             case MSG_MARK_SCANS_AS_SENT:
                 //noinspection unchecked -> see useage of MSG_MARK_SCANS_AS_SENT
@@ -70,7 +78,8 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
                 publishHistorySynchronously();
                 break;
             case MSG_ACTION:
-                SugarAction.from((BeaconEvent) queueEvent.obj, clock);
+                SugarAction sugarAction = SugarAction.from((BeaconEvent) queueEvent.obj, clock);
+                sugarAction.save();
                 break;
             case MSG_DELETE_ALL_DATA:
                 SugarAction.deleteAll(SugarAction.class);

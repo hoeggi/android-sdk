@@ -54,6 +54,5 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
         Assertions.assertThat(objectsAsJson)
                .isNotEmpty()
                 .isEqualToIgnoringCase("[{\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"trigger\":1,\"dt\":\"1970-01-01T01:00:00.100+01:00\"}]");
-
     }
 }

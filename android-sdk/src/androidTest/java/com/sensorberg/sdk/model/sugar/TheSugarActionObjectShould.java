@@ -30,6 +30,7 @@ public class TheSugarActionObjectShould extends SensorbergApplicationTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        SugarAction.deleteAll(SugarAction.class);
         BeaconEvent beaconEvent = new BeaconEvent.Builder()
                 .withAction(new InAppAction(uuid, null, null, null, null, 0))
                 .withPresentationTime(1337)
@@ -63,5 +64,6 @@ public class TheSugarActionObjectShould extends SensorbergApplicationTest {
         Assertions.assertThat(objectsAsJson)
                 .isNotEmpty()
                 .isEqualToIgnoringCase("[{\"eid\":\"6133172d-935f-437f-b932-a901265c24b0\",\"trigger\":1,\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"dt\":\"1970-01-01T01:00:01.337+01:00\"}]");
+        SugarAction.deleteAll(SugarAction.class);
     }
 }

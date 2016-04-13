@@ -40,7 +40,7 @@ public class SugarScan extends SugarRecord {
     /**
      * Default constructor as required by SugarORM.
      */
-    public SugarScan(){
+    public SugarScan() {
     }
 
     //Getters and Setters
@@ -155,7 +155,7 @@ public class SugarScan extends SugarRecord {
      */
     public static List<SugarScan> notSentScans(){
         return Select.from(SugarScan.class)
-                .where(Condition.prop("SENT_TO_SERVER_TIMESTAMP2").eq(SugarFields.Scan.NO_DATE))
+                .where(Condition.prop(SugarFields.Scan.sentToServerTimestamp2Column).eq(SugarFields.Scan.NO_DATE))
                 .list();
     }
 
@@ -163,6 +163,7 @@ public class SugarScan extends SugarRecord {
         if (scans.size() > 0) {
             for (int i = scans.size() - 1; i >= 0; i--) {
                 scans.get(i).setSentToServerTimestamp2(timeNow);
+                scans.get(i).save();
             }
         }
         removeAllOlderThan(timeNow, cacheTtl);
@@ -176,8 +177,8 @@ public class SugarScan extends SugarRecord {
      */
     public static void removeAllOlderThan(long timeNow, long cacheTtl) {
         List<SugarScan> actionsToDelete = Select.from(SugarScan.class)
-                .where(Condition.prop("CREATED_AT").lt(timeNow - cacheTtl))
-                .and(Condition.prop(SugarFields.Scan.sentToServerTimestamp2Column).notEq(SugarFields.Action.NO_DATE))
+                .where(Condition.prop(SugarFields.Scan.createdAtColumn).lt(timeNow - cacheTtl))
+                .and(Condition.prop(SugarFields.Scan.sentToServerTimestamp2Column).notEq(SugarFields.Scan.NO_DATE))
                 .list();
 
         if (actionsToDelete.size() > 0){

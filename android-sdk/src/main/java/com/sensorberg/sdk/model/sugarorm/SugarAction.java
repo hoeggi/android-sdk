@@ -152,7 +152,7 @@ public class SugarAction extends SugarRecord {
      */
     public static List<SugarAction> notSentScans(){
         return Select.from(SugarAction.class)
-                .where(Condition.prop(SugarFields.Action.sentToServerTimestamp2Column).eq(SugarFields.Scan.NO_DATE))
+                .where(Condition.prop(SugarFields.Action.sentToServerTimestamp2Column).eq(SugarFields.Action.NO_DATE))
                 .list();
     }
 
@@ -199,6 +199,7 @@ public class SugarAction extends SugarRecord {
         if (actions.size() > 0) {
             for (int i = actions.size() - 1; i >= 0; i--) {
                 actions.get(i).setSentToServerTimestamp2(now);
+                actions.get(i).save();
             }
         }
         removeAllOlderThan(now, actionCacheTtl);

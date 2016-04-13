@@ -44,7 +44,6 @@ public class TheSugarHistoryBodyShould extends AndroidTestCase {
     }
 
     public void test_should_be_serializeable() throws Exception {
-        scans.save();
         String asJSONStrion = HeadersJsonObjectRequest.gson.toJson(tested);
 
         Assertions.assertThat(asJSONStrion).isNotEmpty();
