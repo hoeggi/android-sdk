@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.testUtils;
 
-import com.sensorberg.sdk.internal.BeaconResponseHandler;
-import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;

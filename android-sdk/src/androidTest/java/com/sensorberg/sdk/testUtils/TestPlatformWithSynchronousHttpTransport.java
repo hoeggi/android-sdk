@@ -3,7 +3,7 @@ package com.sensorberg.sdk.testUtils;
 import android.content.Context;
 
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
-import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 
 import util.TestConstants;
 

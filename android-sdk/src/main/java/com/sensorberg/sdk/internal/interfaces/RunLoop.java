@@ -1,4 +1,4 @@
-package com.sensorberg.sdk.internal;
+package com.sensorberg.sdk.internal.interfaces;
 
 import android.os.Message;
 

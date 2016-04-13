@@ -10,7 +10,7 @@ import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
-import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 

@@ -1,6 +1,7 @@
 package com.sensorberg.sdk.internal;
 
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
+import com.sensorberg.sdk.internal.interfaces.RunLoop;
 
 public class AndroidHandlerManager implements HandlerManager {
 

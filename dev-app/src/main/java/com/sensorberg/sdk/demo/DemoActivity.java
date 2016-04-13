@@ -15,7 +15,6 @@ import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.internal.AndroidPlatform;
-import com.sensorberg.sdk.internal.Platform;
 
 import java.io.IOException;
 

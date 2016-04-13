@@ -1,4 +1,4 @@
-package com.sensorberg.sdk.internal;
+package com.sensorberg.sdk.internal.interfaces;
 
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
