@@ -6,6 +6,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.test.AndroidTestCase;
 
@@ -21,6 +22,9 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     private TestPlatform spyPlatform;
     private Settings modifiedSettings;
     private UIScanner tested;
@@ -34,7 +38,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
         when(modifiedSettings.getForeGroundWaitTime()).thenReturn(Constants.Time.ONE_SECOND);
-        tested = new UIScanner(modifiedSettings, spyPlatform, spyPlatform.clock, testFileManager);
+        tested = new UIScanner(modifiedSettings, spyPlatform, spyPlatform.clock, testFileManager, testServiceScheduler);
     }
 
     public void test_should_pause_when_going_to_the_background_and_scanning_was_running() throws Exception {

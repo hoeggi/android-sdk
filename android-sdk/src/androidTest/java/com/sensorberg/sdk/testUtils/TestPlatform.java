@@ -7,12 +7,11 @@ import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.model.BeaconId;
-import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.TargetApi;
@@ -21,15 +20,11 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -162,53 +157,13 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public void scheduleRepeating(int MSG_index, long value, TimeUnit timeUnit) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void postToServiceDelayed(long delay, int type, Parcelable what, boolean surviveReboot) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void postToServiceDelayed(long delay, int type, Parcelable what, boolean surviveReboot, int index) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void cancelIntent(int message) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void scheduleIntent(long key, long delayInMillis, Bundle content) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
     public void setSettings(Settings settings) {
         this.settings = settings;
     }
 
     @Override
-    public void unscheduleIntent(int index) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void cancelAllScheduledTimer() {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
     public String getHostApplicationId() {
         return null;
-    }
-
-    @Override
-    public void cancelServiceMessage(int index) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
     }
 
     public Network getSpyNetwork(){
@@ -240,26 +195,6 @@ public class TestPlatform implements Platform {
 
     @Override
     public void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void postDeliverAtOrUpdate(Date deliverAt, BeaconEvent beaconEvent) {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void clearAllPendingIntents() {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void restorePendingIntents() {
-        android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void removeStoredPendingIntent(int index) {
         android.util.Log.e(TAG, "NOT IMPLEMENTED");
     }
 

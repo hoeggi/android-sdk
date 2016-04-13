@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.test.AndroidTestCase;
 
@@ -17,6 +18,9 @@ public class TheDefaultScanner extends AndroidTestCase {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     private TestPlatform platform;
     private Scanner tested;
 
@@ -25,7 +29,7 @@ public class TheDefaultScanner extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         platform = new TestPlatform();
-        tested = new Scanner(new Settings(platform), platform, false, platform.clock, testFileManager);
+        tested = new Scanner(new Settings(platform), platform, false, platform.clock, testFileManager, testServiceScheduler);
 
         tested.start();
     }

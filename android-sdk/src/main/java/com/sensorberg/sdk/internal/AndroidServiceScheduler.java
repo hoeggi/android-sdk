@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 public class AndroidServiceScheduler implements ServiceScheduler {
 
     private final Context context;
@@ -127,9 +125,8 @@ public class AndroidServiceScheduler implements ServiceScheduler {
     @Override
     public void scheduleRepeating(int MSG_type, long value, TimeUnit timeUnit) {
         long millis = TimeUnit.MILLISECONDS.convert(value, timeUnit);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = getPendingIntent(MSG_type);
-        manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + millis, millis, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + millis, millis, pendingIntent);
         repeatingPendingIntents.add(MSG_type);
     }
 

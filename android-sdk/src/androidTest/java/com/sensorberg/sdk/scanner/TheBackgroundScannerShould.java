@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
 
@@ -23,6 +24,9 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     private TestPlatform platform;
     private UIScanner tested;
 
@@ -40,7 +44,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager);
+        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler);
     }
 
     public void test_be_in_background_mode(){

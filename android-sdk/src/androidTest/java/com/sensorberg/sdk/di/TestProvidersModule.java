@@ -1,8 +1,12 @@
 package com.sensorberg.sdk.di;
 
 import com.sensorberg.di.ProvidersModule;
+import com.sensorberg.sdk.internal.PersistentIntegerCounter;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
+import android.app.AlarmManager;
 import android.app.Application;
 import android.content.Context;
 
@@ -29,6 +33,13 @@ public class TestProvidersModule extends ProvidersModule {
     @Singleton
     public TestFileManager provideTestFileManager(Context context) {
         return new TestFileManager(context);
+    }
+
+    @Provides
+    @Singleton
+    public TestServiceScheduler provideTestServiceScheduler(Context context, AlarmManager alarmManager, Clock clock,
+            PersistentIntegerCounter persistentIntegerCounter) {
+        return new TestServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
     }
 
 }

@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,9 @@ public class TheBluetoothChangesShould {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     Scanner tested;
     private TestPlatform platform;
     private long RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY = Utils.THIRTY_SECONDS;
@@ -41,7 +45,7 @@ public class TheBluetoothChangesShould {
         platform = new TestPlatform();
 
         settings = new Settings(platform);
-        tested = new Scanner(settings, platform, false, platform.clock, testFileManager);
+        tested = new Scanner(settings, platform, false, platform.clock, testFileManager, testServiceScheduler);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;
         tested.start();

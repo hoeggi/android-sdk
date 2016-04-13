@@ -1,17 +1,21 @@
 package com.sensorberg.sdk;
 
-import android.support.test.runner.AndroidJUnit4;
-
 import com.sensorberg.sdk.action.InAppAction;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.support.test.runner.AndroidJUnit4;
+
 import java.util.Arrays;
+
+import javax.inject.Inject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
@@ -23,6 +27,10 @@ public class TheInternalApplicationBootstrapperShould{
 
     private static final java.util.UUID UUID = java.util.UUID.randomUUID();
     private static final long SUPPRESSION_TIME = 10000;
+
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     InternalApplicationBootstrapper tested;
     private BeaconEvent beaconEventSupressionTime;
     private BeaconEvent beaconEventSentOnlyOnce;
@@ -30,11 +38,11 @@ public class TheInternalApplicationBootstrapperShould{
 
     @Before
     public void setUp() throws Exception {
-
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
-        tested = spy(new InternalApplicationBootstrapper(testPlatform));
+        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
                 .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null ,null, 0))

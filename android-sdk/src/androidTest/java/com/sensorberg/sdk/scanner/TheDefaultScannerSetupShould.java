@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.test.AndroidTestCase;
 
@@ -20,6 +21,9 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     protected UIScanner tested;
     protected Settings settings;
     protected TestPlatform plattform;
@@ -30,7 +34,7 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         plattform = new TestPlatform();
         settings = new Settings(plattform);
-        tested = new UIScanner(settings, plattform, plattform.clock, testFileManager);
+        tested = new UIScanner(settings, plattform, plattform.clock, testFileManager, testServiceScheduler);
 
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0;

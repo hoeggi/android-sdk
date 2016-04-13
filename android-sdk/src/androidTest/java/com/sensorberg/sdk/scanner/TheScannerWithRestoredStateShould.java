@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,9 @@ public class TheScannerWithRestoredStateShould {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     private Settings settings;
 
     private TestPlatform platform;
@@ -48,7 +52,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() / 2;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager);
+        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();
@@ -66,7 +70,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() + 1;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager);
+        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();
@@ -84,7 +88,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() - 1;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager);
+        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();

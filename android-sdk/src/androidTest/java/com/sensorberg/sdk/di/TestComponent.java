@@ -1,7 +1,11 @@
 package com.sensorberg.sdk.di;
 
 import com.sensorberg.di.Component;
+import com.sensorberg.sdk.TheInternalApplicationBootstrapperShould;
+import com.sensorberg.sdk.TheInternalBootstrapperIntegration;
 import com.sensorberg.sdk.TheSensorbergServiceShould;
+import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
+import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
 import com.sensorberg.sdk.scanner.ScannerWithLongScanTime;
 import com.sensorberg.sdk.scanner.TheBackgroundScannerShould;
 import com.sensorberg.sdk.scanner.TheBeaconMapShould;
@@ -50,6 +54,14 @@ public interface TestComponent extends Component {
     void inject(TheBeaconMapShould theBeaconMapShould);
 
     void inject(TheServiceConfiguration theServiceConfiguration);
+
+    void inject(TheInternalApplicationBootstrapperShould theInternalApplicationBootstrapperShould);
+
+    void inject(TheInternalBootstrapperIntegration theInternalBootstrapperIntegration);
+
+    void inject(TheIntentSchedulingBeUpdateable theIntentSchedulingBeUpdateable);
+
+    void inject(TheIntentSchedulingShould theIntentSchedulingShould);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

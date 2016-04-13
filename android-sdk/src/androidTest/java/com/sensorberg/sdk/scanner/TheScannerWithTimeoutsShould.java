@@ -4,6 +4,7 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
 
@@ -20,6 +21,9 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -33,7 +37,7 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould {
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager);
+        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager, testServiceScheduler);
     }
 
     public void test_scanner_waits_to_the_edge_of_second_pause() {

@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
 
@@ -29,6 +30,9 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     private TestPlatform plattform = null;
     private Scanner tested;
 
@@ -47,7 +51,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(plattform), plattform, false, plattform.clock, testFileManager);
+        tested = new Scanner(new Settings(plattform), plattform, false, plattform.clock, testFileManager, testServiceScheduler);
     }
 
     public void test_scanner_detects_exit() {

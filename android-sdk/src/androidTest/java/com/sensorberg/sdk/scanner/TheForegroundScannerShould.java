@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
 
@@ -25,6 +26,9 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
     private TestPlatform platform;
     private UIScanner tested;
 
@@ -38,7 +42,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager);
+        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler);
         tested.waitTime = Settings.DEFAULT_FOREGROUND_WAIT_TIME;
         tested.scanTime = Settings.DEFAULT_FOREGROUND_SCAN_TIME;
     }

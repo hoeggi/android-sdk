@@ -1,8 +1,7 @@
 package com.sensorberg.sdk;
 
-import android.content.IntentFilter;
-
 import com.sensorberg.sdk.action.ActionFactory;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
@@ -13,6 +12,7 @@ import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 import com.squareup.okhttp.CacheControl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -21,14 +21,21 @@ import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.IntentFilter;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import util.TestConstants;
 
 public class TheInternalBootstrapperIntegration extends SensorbergApplicationTest {
+
+    @Inject
+    TestServiceScheduler testServiceScheduler;
 
     InternalApplicationBootstrapper tested;
 
@@ -81,10 +88,11 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform platform = new TestPlatform();
         platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), platform.clock));
-        tested = new InternalApplicationBootstrapper(platform);
+        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler);
 
         broadcastReceiver = new TestGenericBroadcastReceiver();
 

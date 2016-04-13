@@ -1,37 +1,53 @@
 package com.sensorberg.sdk.internal;
 
+import com.sensorberg.sdk.Constants;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
+
+import org.fest.assertions.api.Assertions;
+
+import android.app.AlarmManager;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.FlakyTest;
 import android.util.Log;
 
-import com.sensorberg.sdk.Constants;
-import com.sensorberg.sdk.settings.Settings;
-
-import org.fest.assertions.api.Assertions;
-
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
 
-    AndroidPlatform tested;
+    @Inject
+    AlarmManager alarmManager;
+
+    @Inject
+    Clock androidClock;
+
+    @Inject
+    PersistentIntegerCounter persistentIntegerCounter;
+
+    TestServiceScheduler testServiceScheduler;
+
     private Bundle INTENT_BUNDLE;
 
     private Bundle INTENT_BUNDLE_2;
 
     @Override
     public void setUp() throws Exception {
-
         super.setUp();
-        tested = new AndroidPlatform(getContext());
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
+        testServiceScheduler = new TestServiceScheduler(getContext(), alarmManager, androidClock, persistentIntegerCounter);
         Settings mockSettings = mock(Settings.class);
         when(mockSettings.getMessageDelayWindowLength()).thenReturn(Constants.Time.ONE_SECOND / 10);
-        tested.setSettings(mockSettings);
-        tested.genericBroadcastReceiverClass = TestGenericBroadcastReceiver.class;
-//        GenericBroadcastReceiver.setManifestReceiverEnabled(true, getContext());
+        testServiceScheduler.setSettings(mockSettings);
         INTENT_BUNDLE = new Bundle();
         INTENT_BUNDLE.putString("foo", "bar");
 
@@ -45,8 +61,8 @@ public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
     public void testShouldUpdateAnIntent() throws InterruptedException {
         long time = System.currentTimeMillis();
         long index = System.currentTimeMillis();
-        tested.scheduleIntent(index, 500L, INTENT_BUNDLE);
-        tested.scheduleIntent(index, 500L, INTENT_BUNDLE_2);
+        testServiceScheduler.scheduleIntent(index, 500L, INTENT_BUNDLE);
+        testServiceScheduler.scheduleIntent(index, 500L, INTENT_BUNDLE_2);
 
         boolean intentFired = TestGenericBroadcastReceiver.getLatch().await(10, TimeUnit.SECONDS);
         Assertions.assertThat(intentFired)
