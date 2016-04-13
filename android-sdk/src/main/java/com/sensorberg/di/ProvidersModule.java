@@ -2,11 +2,14 @@ package com.sensorberg.di;
 
 import com.sensorberg.sdk.internal.AndroidClock;
 import com.sensorberg.sdk.internal.AndroidFileManager;
+import com.sensorberg.sdk.internal.AndroidServiceScheduler;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 
+import android.app.AlarmManager;
 import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -68,5 +71,17 @@ public class ProvidersModule {
     @Singleton
     public PersistentIntegerCounter providePersistentIntegerCounter(SharedPreferences sharedPreferences) {
         return new PersistentIntegerCounter(sharedPreferences);
+    }
+
+    @Provides
+    @Singleton
+    public AlarmManager provideAlarmManager(Context context) {
+        return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, Clock clock, PersistentIntegerCounter persistentIntegerCounter) {
+        return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
     }
 }

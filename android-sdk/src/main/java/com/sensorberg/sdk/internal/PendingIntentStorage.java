@@ -1,17 +1,20 @@
 package com.sensorberg.sdk.internal;
 
-import android.content.Context;
-import android.os.Bundle;
-
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
+
+import android.content.Context;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 public class PendingIntentStorage {
-    private final Platform platform;
+
+    private final ServiceScheduler serviceScheduler;
+
     private final SQLiteStore storage;
 
     @Inject
@@ -20,8 +23,8 @@ public class PendingIntentStorage {
     @Inject
     Clock clock;
 
-    public PendingIntentStorage(Platform platform) {
-        this.platform = platform;
+    public PendingIntentStorage(ServiceScheduler serviceScheduler) {
+        this.serviceScheduler = serviceScheduler;
         SensorbergApplication.getComponent().inject(this);
         storage = new SQLiteStore("pendingIntentStorage.sqlite", context);
     }
@@ -36,18 +39,19 @@ public class PendingIntentStorage {
         ArrayList<SQLiteStore.Entry> entries = storage.loadRegistry();
         for (SQLiteStore.Entry entry : entries) {
             long relativeFromNow = entry.timestamp - clock.now();
-            platform.scheduleIntent(entry.index, relativeFromNow, entry.bundle);
+            serviceScheduler.scheduleIntent(entry.index, relativeFromNow, entry.bundle);
         }
     }
 
     public void clearAllPendingIntents() {
         ArrayList<SQLiteStore.Entry> entries = storage.loadRegistry();
         for (SQLiteStore.Entry entry : entries) {
-            platform.unscheduleIntent(entry.index);
+            serviceScheduler.unscheduleIntent(entry.index);
         }
         storage.clear();
     }
-    public void removeStoredPendingIntent(int index){
+
+    public void removeStoredPendingIntent(int index) {
         storage.delete(index);
     }
 }

@@ -177,7 +177,7 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public void cancel(int message) {
+    public void cancelIntent(int message) {
         android.util.Log.e(TAG, "NOT IMPLEMENTED");
     }
 

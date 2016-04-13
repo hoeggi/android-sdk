@@ -8,44 +8,32 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.BuildConfig;
-import com.sensorberg.sdk.GenericBroadcastReceiver;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
-import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -54,6 +42,7 @@ import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 public class AndroidPlatform implements Platform {
 
     private static final String SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER = "com.sensorberg.preferences.installationUuidIdentifier";
+
     private static final String SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER = "com.sensorberg.preferences.advertiserIdentifier";
 
     @Inject
@@ -66,31 +55,35 @@ public class AndroidPlatform implements Platform {
     PermissionChecker permissionChecker;
 
     @Inject
-    PersistentIntegerCounter postToServiceCounter;
+    ServiceScheduler mServiceScheduler;
 
     private final Context context;
 
     private CrashCallBackWrapper crashCallBackWrapper;
+
     private final BluetoothAdapter bluetoothAdapter;
+
     private final boolean bluetoothLowEnergySupported;
+
     private String userAgentString;
+
     private Transport asyncTransport;
 
     private String deviceInstallationIdentifier;
+
     private String advertiserIdentifier;
 
     private boolean leScanRunning = false;
-    private final Set<Integer> repeatingPendingIntents = new HashSet<>();
 
-    private final PendingIntentStorage pendingIntentStorage;
     private Settings settings;
-    Class<? extends BroadcastReceiver> genericBroadcastReceiverClass = GenericBroadcastReceiver.class;
+
     private boolean shouldUseHttpCache = true;
+
     private static boolean actionBroadcastReceiversRegistered;
 
+    private final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
 
-    private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
-    private  final ArrayList<AdvertiserIdentifierChangeListener> advertiserIdentifierChangeListener = new ArrayList<>();
+    private final ArrayList<AdvertiserIdentifierChangeListener> advertiserIdentifierChangeListener = new ArrayList<>();
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
@@ -105,8 +98,6 @@ public class AndroidPlatform implements Platform {
             bluetoothLowEnergySupported = false;
             bluetoothAdapter = null;
         }
-
-        pendingIntentStorage = new PendingIntentStorage(this);
     }
 
 
@@ -168,7 +159,7 @@ public class AndroidPlatform implements Platform {
     @SuppressWarnings({"StringConcatenationInsideStringBufferAppend", "StringBufferReplaceableByString"})
     @Override
     public String getUserAgentString() {
-        if (userAgentString == null){
+        if (userAgentString == null) {
             String packageName = context.getPackageName();
             String appLabel = URLEncoder.encode(getAppLabel(context));
             String appVersion = getAppVersionString(context);
@@ -177,9 +168,9 @@ public class AndroidPlatform implements Platform {
             userAgent.append(appLabel + "/" + packageName + "/" + appVersion);
             userAgent.append(" ");
             //noinspection deprecation old API compatability
-            userAgent.append("(Android " + Build.VERSION.RELEASE + " "+  Build.CPU_ABI +")");
+            userAgent.append("(Android " + Build.VERSION.RELEASE + " " + Build.CPU_ABI + ")");
             userAgent.append(" ");
-            userAgent.append("(" + Build.MANUFACTURER+ ":" + android.os.Build.MODEL + ":" + android.os.Build.PRODUCT + ")");
+            userAgent.append("(" + Build.MANUFACTURER + ":" + android.os.Build.MODEL + ":" + android.os.Build.PRODUCT + ")");
             userAgent.append(" ");
             userAgent.append("Sensorberg SDK " + BuildConfig.VERSION_NAME);
             userAgentString = userAgent.toString();
@@ -220,7 +211,7 @@ public class AndroidPlatform implements Platform {
 
                 try {
                     AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
-                    if (info == null || info.getId() == null){
+                    if (info == null || info.getId() == null) {
                         Logger.log.logError("AdvertisingIdClient.getAdvertisingIdInfo returned null");
                         return;
                     }
@@ -236,13 +227,13 @@ public class AndroidPlatform implements Platform {
                     }
 
                 } catch (IOException e) {
-                    Logger.log.logError("Could not fetch the advertising identifier because of an IO Exception" , e);
+                    Logger.log.logError("Could not fetch the advertising identifier because of an IO Exception", e);
                 } catch (GooglePlayServicesNotAvailableException e) {
                     Logger.log.logError("Play services are not available", e);
                 } catch (GooglePlayServicesRepairableException e) {
                     Logger.log.logError("Play services are in need of repairs", e);
-                } catch (Exception e){
-                    Logger.log.logError("Could not fetch the advertising identifier because of an unknown error" , e);
+                } catch (Exception e) {
+                    Logger.log.logError("Could not fetch the advertising identifier because of an unknown error", e);
                 }
                 Logger.log.verbose("Fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
             }
@@ -280,101 +271,6 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public void scheduleRepeating(int MSG_type, long value, TimeUnit timeUnit) {
-        long millis = TimeUnit.MILLISECONDS.convert(value, timeUnit);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = getPendingIntent(MSG_type);
-        manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + millis, millis, pendingIntent);
-        repeatingPendingIntents.add(MSG_type);
-    }
-
-    private PendingIntent getPendingIntent(int MSG_type) {
-        Intent intent = new Intent(context, GenericBroadcastReceiver.class);
-        intent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, MSG_type);
-        intent.setAction("broadcast_repeating:///message_" + MSG_type);
-
-        return PendingIntent.getBroadcast(context,
-                -1,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-
-
-    @Override
-    public void postToServiceDelayed(long delay, int type, Parcelable what, boolean surviveReboot) {
-        int index = postToServiceCounter.next();
-        postToServiceDelayed(delay, type, what, surviveReboot, index);
-    }
-
-
-    @Override
-    public void postToServiceDelayed(long delayMillis, int type, Parcelable what, boolean surviveReboot, int index) {
-        Bundle bundle = getScheduleBundle(index, type, what);
-        scheduleIntent(index, delayMillis, bundle);
-
-        if (surviveReboot){
-            pendingIntentStorage.add(index, clock.now() + delayMillis, 0, bundle);
-        }
-    }
-
-    private Bundle getScheduleBundle(int index, int type, Parcelable what) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(SensorbergService.EXTRA_GENERIC_TYPE, type);
-        bundle.putParcelable(SensorbergService.EXTRA_GENERIC_WHAT, what);
-        bundle.putInt(SensorbergService.EXTRA_GENERIC_INDEX, index);
-        return bundle;
-    }
-
-    @SuppressLint("NewApi")
-    @Override
-    public void scheduleIntent(long index, long delayInMillis, Bundle content) {
-        PendingIntent pendingIntent = getPendingIntent(index, content);
-        scheduleAlarm(delayInMillis, pendingIntent);
-    }
-
-    @Override
-    public void postDeliverAtOrUpdate(Date deliverAt, BeaconEvent beaconEvent) {
-        long delayInMillis = deliverAt.getTime() - clock.now();
-        if (delayInMillis < 0){
-            Logger.log.beaconResolveState(beaconEvent, "scheduled time is in the past, dropping event.");
-            return;
-        }
-        int index  = postToServiceCounter.next();
-        int hashcode = beaconEvent.hashCode();
-
-        Bundle bundle = getScheduleBundle(index, SensorbergService.GENERIC_TYPE_BEACON_ACTION, beaconEvent);
-        PendingIntent pendingIntent = getPendingIntent(hashcode, bundle, "DeliverAt");
-
-        scheduleAlarm(delayInMillis, pendingIntent);
-        pendingIntentStorage.add(index, deliverAt.getTime(), hashcode, bundle);
-    }
-
-    @SuppressLint("NewApi")
-    private void scheduleAlarm(long delayInMillis, PendingIntent pendingIntent) {
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            manager.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, settings.getMessageDelayWindowLength(), pendingIntent);
-        } else {
-            manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, pendingIntent);
-        }
-    }
-
-    @Override
-    public void clearAllPendingIntents() {
-        pendingIntentStorage.clearAllPendingIntents();
-    }
-
-    @Override
-    public void restorePendingIntents() {
-        pendingIntentStorage.restorePendingIntents();
-    }
-
-    @Override
-    public void removeStoredPendingIntent(int index) {
-        pendingIntentStorage.removeStoredPendingIntent(index);
-    }
-
-    @Override
     public void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener) {
         this.deviceInstallationIdentifierChangeListener.add(listener);
     }
@@ -397,52 +293,15 @@ public class AndroidPlatform implements Platform {
         return true;
     }
 
-    private PendingIntent getPendingIntent(long index, Bundle extras) {
-        return getPendingIntent(index, extras, "");
-    }
-
-    private PendingIntent getPendingIntent(long index, Bundle extras, String prefix) {
-        Intent intent = new Intent(context, genericBroadcastReceiverClass);
-        if(extras != null){
-            intent.putExtras(extras);
-        }
-        intent.setData(Uri.parse("sensorberg" + prefix + ":" + index));
-
-        return PendingIntent.getBroadcast(context,
-                -1,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-
     @Override
     public void setSettings(Settings settings) {
         this.settings = settings;
-    }
-
-    @Override
-    public void unscheduleIntent(int index) {
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.cancel(getPendingIntent(index, null));
-    }
-
-    @Override
-    public void cancelAllScheduledTimer() {
-        for (Integer messageType: repeatingPendingIntents) {
-            cancel(messageType);
-        }
-        repeatingPendingIntents.clear();
+        mServiceScheduler.setSettings(settings);
     }
 
     @Override
     public String getHostApplicationId() {
         return context.getPackageName();
-    }
-
-    @Override
-    public void cancelServiceMessage(int index) {
-        PendingIntent pendingIntent = getPendingIntent(index, new Bundle());
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.cancel(pendingIntent);
     }
 
     @Override
@@ -455,13 +314,6 @@ public class AndroidPlatform implements Platform {
         for (BroadcastReceiver receiver : broadcastReceiver) {
             LocalBroadcastManager.getInstance(context).registerReceiver(receiver, new IntentFilter(ManifestParser.actionString));
         }
-    }
-
-    @Override
-    public void cancel(int message){
-        PendingIntent pendingIntent = getPendingIntent(message);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.cancel(pendingIntent);
     }
 
     /**
@@ -501,7 +353,7 @@ public class AndroidPlatform implements Platform {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void stopLeScan() {
-        if(bluetoothLowEnergySupported) {
+        if (bluetoothLowEnergySupported) {
             try {
                 //noinspection deprecation old API compatability
                 bluetoothAdapter.stopLeScan(getCrashCallBackWrapper());
@@ -536,7 +388,7 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback){
+    public RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback) {
         return new AndroidHandler(callback);
     }
 
@@ -544,8 +396,7 @@ public class AndroidPlatform implements Platform {
         if (crashCallBackWrapper == null) {
             if (bluetoothLowEnergySupported) {
                 crashCallBackWrapper = new CrashCallBackWrapper(context);
-            }
-            else{
+            } else {
                 crashCallBackWrapper = new CrashCallBackWrapper();
             }
         }

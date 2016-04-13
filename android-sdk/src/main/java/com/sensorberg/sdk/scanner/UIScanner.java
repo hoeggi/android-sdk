@@ -1,16 +1,15 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.SensorbergApplication;
-import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.settings.Settings;
 
 public class UIScanner extends AbstractScanner {
 
-    public UIScanner(Settings settings, Platform platform, Clock clock, FileManager fileManager) {
-        super(settings, platform, false, clock, fileManager);
-        SensorbergApplication.getComponent().inject(this);
+    public UIScanner(Settings settings, Platform platform, Clock clock, FileManager fileManager, ServiceScheduler scheduler) {
+        super(settings, platform, false, clock, fileManager, scheduler);
     }
 
     @Override

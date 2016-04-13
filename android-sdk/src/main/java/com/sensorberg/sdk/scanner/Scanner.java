@@ -1,11 +1,11 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
-import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.settings.Settings;
 
 import android.os.Bundle;
@@ -13,22 +13,22 @@ import android.os.Bundle;
 public class Scanner extends AbstractScanner {
     private static final String SCANNER_EVENT = "com.sensorberg.sdk.scanner.SDKScanner.SCANNER_EVENT";
 
-    public Scanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager) {
-        super(settings, platform, shouldRestoreBeaconStates, clock, fileManager);
-        SensorbergApplication.getComponent().inject(this);
+    public Scanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager,
+            ServiceScheduler scheduler) {
+        super(settings, platform, shouldRestoreBeaconStates, clock, fileManager, scheduler);
     }
 
     @Override
     protected void clearScheduledExecutions() {
-        platform.cancelServiceMessage(indexFor(ScannerEvent.PAUSE_SCAN));
-        platform.cancelServiceMessage(indexFor(ScannerEvent.UN_PAUSE_SCAN));
+        serviceScheduler.cancelServiceMessage(indexFor(ScannerEvent.PAUSE_SCAN));
+        serviceScheduler.cancelServiceMessage(indexFor(ScannerEvent.UN_PAUSE_SCAN));
     }
 
     @Override
     protected void scheduleExecution(int type, long delay) {
         Bundle bundle = new Bundle();
         bundle.putInt(Scanner.SCANNER_EVENT, type);
-        platform.postToServiceDelayed(delay, SensorbergService.MSG_SDK_SCANNER_MESSAGE, bundle, false, indexFor(type));
+        serviceScheduler.postToServiceDelayed(delay, SensorbergService.MSG_SDK_SCANNER_MESSAGE, bundle, false, indexFor(type));
     }
 
     private int indexFor(int type) {

@@ -4,10 +4,11 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
-import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
@@ -61,8 +62,8 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     @Inject
     FileManager fileManager;
 
-    public InternalApplicationBootstrapper(Platform plattform) {
-        super(plattform);
+    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler) {
+        super(plattform, scheduler);
         SensorbergApplication.getComponent().inject(this);
 
         settings = new Settings(plattform);
@@ -78,13 +79,12 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         plattform.getTransport().setBeaconReportHandler(this);
         plattform.getTransport().setProximityUUIDUpdateHandler(this);
 
-        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock, fileManager);
+        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock, fileManager, scheduler);
         resolver = new Resolver(resolverConfiguration, plattform);
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);
 
-
-        plattform.restorePendingIntents();
+        serviceScheduler.restorePendingIntents();
 
         ScannerBroadcastReceiver.setManifestReceiverEnabled(true, context);
         GenericBroadcastReceiver.setManifestReceiverEnabled(true, context);
@@ -99,18 +99,18 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     }
 
     private void setUpAlarmForBeaconActionHistoryPublisher() {
-        platform.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, settings.getHistoryUploadInterval(), TimeUnit.MILLISECONDS);
+        serviceScheduler.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, settings.getHistoryUploadInterval(), TimeUnit.MILLISECONDS);
     }
 
     private void setUpAlarmsForSettings(){
-        platform.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settings.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
+        serviceScheduler.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settings.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
     }
 
     private void updateAlarmsForActionLayoutFetch(){
         if (platform.isSyncEnabled()) {
-            platform.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settings.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
+            serviceScheduler.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settings.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
         } else{
-            platform.cancel(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
+            serviceScheduler.cancelIntent(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
         }
     }
 
@@ -137,9 +137,9 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
             Action beaconEventAction = beaconEvent.getAction();
 
             if (beaconEvent.deliverAt != null) {
-                platform.postDeliverAtOrUpdate(beaconEvent.deliverAt, beaconEvent);
+                serviceScheduler.postDeliverAtOrUpdate(beaconEvent.deliverAt, beaconEvent);
             } else if (beaconEventAction.getDelayTime() > 0) {
-                platform.postToServiceDelayed(beaconEventAction.getDelayTime(), SensorbergService.GENERIC_TYPE_BEACON_ACTION, beaconEvent,
+                serviceScheduler.postToServiceDelayed(beaconEventAction.getDelayTime(), SensorbergService.GENERIC_TYPE_BEACON_ACTION, beaconEvent,
                         SURVIVE_REBOOT);
                 Logger.log.beaconResolveState(beaconEvent, "delaying the display of this BeaconEvent");
             } else {
@@ -164,7 +164,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     }
 
     public void presentEventDirectly(BeaconEvent beaconEvent, int index) {
-        platform.removeStoredPendingIntent(index);
+        serviceScheduler.removeStoredPendingIntent(index);
         if (beaconEvent != null) {
             presentEventDirectly(beaconEvent);
         }
@@ -242,20 +242,20 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     @Override
     public void onSettingsUpdateIntervalChange(Long updateIntervalMillies) {
-        this.platform.cancel(SensorbergService.MSG_SETTINGS_UPDATE);
-        this.platform.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, updateIntervalMillies, TimeUnit.MILLISECONDS);
+        serviceScheduler.cancelIntent(SensorbergService.MSG_SETTINGS_UPDATE);
+        serviceScheduler.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, updateIntervalMillies, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void onSettingsBeaconLayoutUpdateIntervalChange(long newLayoutUpdateInterval) {
-        this.platform.cancel(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
-        this.platform.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, newLayoutUpdateInterval, TimeUnit.MILLISECONDS);
+        serviceScheduler.cancelIntent(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
+        serviceScheduler.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, newLayoutUpdateInterval, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void onHistoryUploadIntervalChange(long newHistoryUploadInterval) {
-        this.platform.cancel(SensorbergService.MSG_UPLOAD_HISTORY);
-        this.platform.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, newHistoryUploadInterval, TimeUnit.MILLISECONDS);
+        serviceScheduler.cancelIntent(SensorbergService.MSG_UPLOAD_HISTORY);
+        serviceScheduler.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, newHistoryUploadInterval, TimeUnit.MILLISECONDS);
     }
 
     public void retryScanEventResolve(ResolutionConfiguration retry) {

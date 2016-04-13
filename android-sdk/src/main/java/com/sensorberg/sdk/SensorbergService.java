@@ -6,6 +6,7 @@ import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
@@ -67,6 +68,9 @@ public class SensorbergService extends Service {
 
     @Inject
     FileManager fileManager;
+
+    @Inject
+    ServiceScheduler serviceScheduler;
 
     Platform platform;
 
@@ -175,7 +179,7 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(platform);
+                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper);
                         bootstrapper.startScanning();
@@ -358,7 +362,7 @@ public class SensorbergService extends Service {
             switch (type){
                 case MSG_SHUTDOWN:{
                     Logger.log.serviceHandlesMessage(MSG.stringFrom(type));
-                    MinimalBootstrapper minimalBootstrapper = bootstrapper != null ? bootstrapper : new MinimalBootstrapper(platform);
+                    MinimalBootstrapper minimalBootstrapper = bootstrapper != null ? bootstrapper : new MinimalBootstrapper(platform, serviceScheduler);
                     fileManager.removeFile(SERVICE_CONFIGURATION);
                     ScannerBroadcastReceiver.setManifestReceiverEnabled(false, this);
                     GenericBroadcastReceiver.setManifestReceiverEnabled(false, this);
@@ -382,7 +386,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 platform.getTransport().setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(platform);
+                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler);
             } else{
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }

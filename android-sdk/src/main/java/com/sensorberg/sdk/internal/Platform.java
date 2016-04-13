@@ -1,18 +1,13 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
 
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public interface Platform {
 
@@ -24,46 +19,21 @@ public interface Platform {
 
     Transport getTransport();
 
-
     boolean useSyncClient();
 
     boolean isSyncEnabled();
 
     boolean hasMinimumAndroidRequirements();
 
-    void scheduleRepeating(int MSG_index, long value, TimeUnit timeUnit);
-
-    void postToServiceDelayed(long delay, int type, Parcelable what, boolean surviveReboot);
-
-    void postToServiceDelayed(long delay, int type, Parcelable what, boolean surviveReboot, int index);
-
-    void cancel(int message);
-
-    void scheduleIntent(long key, long delayInMillis, Bundle content);
-
     void setSettings(Settings settings);
 
-    void unscheduleIntent(int index);
-
-    void cancelAllScheduledTimer();
-
     String getHostApplicationId();
-
-    void cancelServiceMessage(int index);
 
     List<BroadcastReceiver> getBroadcastReceiver();
 
     boolean registerBroadcastReceiver();
 
     void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver);
-
-    void postDeliverAtOrUpdate(Date deliverAt, BeaconEvent beaconEvent);
-
-    void clearAllPendingIntents();
-
-    void restorePendingIntents();
-
-    void removeStoredPendingIntent(int index);
 
     void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 

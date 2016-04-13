@@ -1,20 +1,25 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 
 class MinimalBootstrapper {
 
+    final ServiceScheduler serviceScheduler;
+
     final Platform platform;
 
-    public MinimalBootstrapper(Platform platform) {
+    public MinimalBootstrapper(Platform platform, ServiceScheduler scheduler) {
         this.platform = platform;
+        serviceScheduler = scheduler;
     }
+
     public void unscheduleAllPendingActions() {
-        platform.clearAllPendingIntents();
+        serviceScheduler.clearAllPendingIntents();
     }
 
     public void stopAllScheduledOperations() {
-        platform.cancelAllScheduledTimer();
+        serviceScheduler.cancelAllScheduledTimer();
     }
 
     public void stopScanning() {
