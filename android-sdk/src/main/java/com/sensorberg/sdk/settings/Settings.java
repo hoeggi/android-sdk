@@ -6,7 +6,7 @@ import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.interfaces.Platform;
+import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 
 import org.json.JSONObject;

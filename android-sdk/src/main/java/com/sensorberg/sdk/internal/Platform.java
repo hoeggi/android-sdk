@@ -1,5 +1,6 @@
-package com.sensorberg.sdk.internal.interfaces;
+package com.sensorberg.sdk.internal;
 
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.TargetApi;
