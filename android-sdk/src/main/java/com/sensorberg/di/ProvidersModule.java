@@ -2,6 +2,8 @@ package com.sensorberg.di;
 
 import com.sensorberg.sdk.internal.AndroidClock;
 import com.sensorberg.sdk.internal.AndroidFileManager;
+import com.sensorberg.sdk.internal.PermissionChecker;
+import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 
@@ -54,5 +56,17 @@ public class ProvidersModule {
     @Singleton
     public FileManager provideFileManager(Context context) {
         return new AndroidFileManager(context);
+    }
+
+    @Provides
+    @Singleton
+    public PermissionChecker providePermissionChecker(Context context) {
+        return new PermissionChecker(context);
+    }
+
+    @Provides
+    @Singleton
+    public PersistentIntegerCounter providePersistentIntegerCounter(SharedPreferences sharedPreferences) {
+        return new PersistentIntegerCounter(sharedPreferences);
     }
 }

@@ -62,8 +62,13 @@ public class AndroidPlatform implements Platform {
     @Inject
     Clock clock;
 
-    private final Context context;
+    @Inject
+    PermissionChecker permissionChecker;
 
+    @Inject
+    PersistentIntegerCounter postToServiceCounter;
+
+    private final Context context;
 
     private CrashCallBackWrapper crashCallBackWrapper;
     private final BluetoothAdapter bluetoothAdapter;
@@ -77,13 +82,13 @@ public class AndroidPlatform implements Platform {
     private boolean leScanRunning = false;
     private final Set<Integer> repeatingPendingIntents = new HashSet<>();
 
-    private final PersistentIntegerCounter postToServiceCounter;
     private final PendingIntentStorage pendingIntentStorage;
     private Settings settings;
     Class<? extends BroadcastReceiver> genericBroadcastReceiverClass = GenericBroadcastReceiver.class;
     private boolean shouldUseHttpCache = true;
     private static boolean actionBroadcastReceiversRegistered;
-    private final PermissionChecker permissionChecker;
+
+
     private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
     private  final ArrayList<AdvertiserIdentifierChangeListener> advertiserIdentifierChangeListener = new ArrayList<>();
 
@@ -91,8 +96,6 @@ public class AndroidPlatform implements Platform {
     public AndroidPlatform(Context context) {
         this.context = context;
         SensorbergApplication.getComponent().inject(this);
-
-        permissionChecker = new PermissionChecker(context);
 
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -103,7 +106,6 @@ public class AndroidPlatform implements Platform {
             bluetoothAdapter = null;
         }
 
-        postToServiceCounter = new PersistentIntegerCounter(settingsPreferences);
         pendingIntentStorage = new PendingIntentStorage(this);
     }
 
