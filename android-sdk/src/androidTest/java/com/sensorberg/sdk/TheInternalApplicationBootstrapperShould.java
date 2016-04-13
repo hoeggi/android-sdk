@@ -4,6 +4,7 @@ import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
@@ -16,6 +17,7 @@ import android.support.test.runner.AndroidJUnit4;
 import java.util.Arrays;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
@@ -31,6 +33,10 @@ public class TheInternalApplicationBootstrapperShould{
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
+
     InternalApplicationBootstrapper tested;
     private BeaconEvent beaconEventSupressionTime;
     private BeaconEvent beaconEventSentOnlyOnce;
@@ -42,7 +48,7 @@ public class TheInternalApplicationBootstrapperShould{
         testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
-        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testPlatform, testPlatform.clock));
+        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock()));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
                 .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null ,null, 0))
@@ -68,7 +74,7 @@ public class TheInternalApplicationBootstrapperShould{
     public void test_end_of_supression_time(){
         tested.onResolutionsFinished(Arrays.asList(beaconEventSupressionTime));
 
-        testPlatform.clock.setNowInMillis(SUPPRESSION_TIME + 1);
+        testHandlerManager.getCustomClock().setNowInMillis(SUPPRESSION_TIME + 1);
 
         tested.onResolutionsFinished(Arrays.asList(beaconEventSupressionTime));
         verify(tested, times(2)).presentBeaconEvent(any(BeaconEvent.class));

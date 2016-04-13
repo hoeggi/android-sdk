@@ -6,6 +6,7 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.testUtils.NoClock;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.app.AlarmManager;
@@ -52,4 +53,10 @@ public class TestProvidersModule extends ProvidersModule {
         return new TestServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
     }
 
+    @Provides
+    @Named("testHandlerWithCustomClock")
+    @Singleton
+    public TestHandlerManager provideTestHandlerManagerWithCustomClock() {
+        return new TestHandlerManager();
+    }
 }

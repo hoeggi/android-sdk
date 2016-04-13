@@ -23,6 +23,7 @@ import static org.mockito.Mockito.spy;
 public class TheBeaconActionHistoryPublisherIntegrationShould extends SensorbergApplicationTest {
 
     @Inject
+    @Named("realHandlerManager")
     HandlerManager testHandleManager;
 
     @Inject

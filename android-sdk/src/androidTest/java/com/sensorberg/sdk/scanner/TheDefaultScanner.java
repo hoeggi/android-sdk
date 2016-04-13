@@ -4,12 +4,14 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -21,6 +23,10 @@ public class TheDefaultScanner extends AndroidTestCase {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
+
     private TestPlatform platform;
     private Scanner tested;
 
@@ -29,7 +35,8 @@ public class TheDefaultScanner extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         platform = new TestPlatform();
-        tested = new Scanner(new Settings(platform), platform, false, platform.clock, testFileManager, testServiceScheduler, platform);
+        tested = new Scanner(new Settings(platform), platform, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+                testHandlerManager);
 
         tested.start();
     }

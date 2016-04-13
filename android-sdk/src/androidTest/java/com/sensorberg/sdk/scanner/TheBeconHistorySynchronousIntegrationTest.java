@@ -1,16 +1,22 @@
 package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergApplicationTest;
+import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -20,6 +26,10 @@ import static org.mockito.Mockito.spy;
 
 public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplicationTest {
 
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
+
     private BeaconActionHistoryPublisher tested;
 
     private Transport transport;
@@ -27,12 +37,13 @@ public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplica
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform testPlattform = new TestPlatform();
-        testPlattform.clock.setNowInMillis(System.currentTimeMillis());
+        testHandlerManager.getCustomClock().setNowInMillis(System.currentTimeMillis());
         transport = spy(new DumbSucessTransport());
         Settings settings = mock(Settings.class);
-        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, settings, testPlattform.clock, testPlattform);
+        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, settings, testHandlerManager.getCustomClock(), testHandlerManager);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

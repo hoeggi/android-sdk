@@ -4,6 +4,7 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
@@ -12,6 +13,7 @@ import org.mockito.Mockito;
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.Utils;
 
@@ -27,6 +29,10 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
+
     private TestPlatform plattform;
 
     private UIScanner tested;
@@ -37,15 +43,16 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         plattform = new TestPlatform();
-        plattform.clock.setNowInMillis(0);
-        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager, testServiceScheduler, plattform);
+        testHandlerManager.getCustomClock().setNowInMillis(0);
+        tested = new UIScanner(new Settings(plattform), plattform, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+                testHandlerManager);
 
         tested.start();
     }
 
 
     public void test_scanner_waits_to_the_edge_of_second_pause() {
-        this.plattform.clock.setNowInMillis(0);
+        this.testHandlerManager.getCustomClock().setNowInMillis(0);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
 
@@ -54,25 +61,25 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
         long shouldNotSeeBeaconExitUntil = beaconSighting + Utils.EXIT_TIME + tested.waitTime;
         long shouldSeeExitEvent = shouldNotSeeBeaconExitUntil + tested.waitTime;
 
-        while (plattform.clock.now() < Utils.ONE_MINUTE * 2) {
-            if (plattform.clock.now() == beaconSighting) {
+        while (testHandlerManager.getCustomClock().now() < Utils.ONE_MINUTE * 2) {
+            if (testHandlerManager.getCustomClock().now() == beaconSighting) {
                 plattform.fakeIBeaconSighting();
                 tested.addScannerListener(mockListener);
             }
 
-            if (plattform.clock.now() < shouldNotSeeBeaconExitUntil) {
+            if (testHandlerManager.getCustomClock().now() < shouldNotSeeBeaconExitUntil) {
                 verifyNoMoreInteractions(mockListener);
             }
-            if (plattform.clock.now() > shouldSeeExitEvent) {
+            if (testHandlerManager.getCustomClock().now() > shouldSeeExitEvent) {
                 verify(mockListener).onScanEventDetected(isExitEvent());
             }
 
-            plattform.clock.increaseTimeInMillis(Utils.ONE_SECOND);
+            testHandlerManager.getCustomClock().increaseTimeInMillis(Utils.ONE_SECOND);
         }
     }
 
     public void test_scanner_waits_one_pause() {
-        this.plattform.clock.setNowInMillis(0);
+        this.testHandlerManager.getCustomClock().setNowInMillis(0);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
 
@@ -81,20 +88,20 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
         long shouldNotSeeBeaconExitUntil = beaconSighting + Utils.EXIT_TIME + tested.waitTime;
         long shouldSeeExitEvent = shouldNotSeeBeaconExitUntil + tested.waitTime;
 
-        while (plattform.clock.now() < Utils.ONE_MINUTE * 2) {
-            if (plattform.clock.now() == beaconSighting) {
+        while (testHandlerManager.getCustomClock().now() < Utils.ONE_MINUTE * 2) {
+            if (testHandlerManager.getCustomClock().now() == beaconSighting) {
                 plattform.fakeIBeaconSighting();
                 tested.addScannerListener(mockListener);
             }
 
-            if (plattform.clock.now() < shouldNotSeeBeaconExitUntil) {
+            if (testHandlerManager.getCustomClock().now() < shouldNotSeeBeaconExitUntil) {
                 verifyNoMoreInteractions(mockListener);
             }
-            if (plattform.clock.now() > shouldSeeExitEvent) {
+            if (testHandlerManager.getCustomClock().now() > shouldSeeExitEvent) {
                 verify(mockListener).onScanEventDetected(isExitEvent());
             }
 
-            plattform.clock.increaseTimeInMillis(Utils.ONE_SECOND);
+            testHandlerManager.getCustomClock().increaseTimeInMillis(Utils.ONE_SECOND);
         }
     }
 }

@@ -8,10 +8,13 @@ import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
 import com.sensorberg.sdk.internal.http.TransportShould;
 import com.sensorberg.sdk.model.realm.TheRealmActionObjectShould;
+import com.sensorberg.sdk.resolver.TheResolverShould;
 import com.sensorberg.sdk.scanner.ScannerWithLongScanTime;
 import com.sensorberg.sdk.scanner.TheBackgroundScannerShould;
 import com.sensorberg.sdk.scanner.TheBeaconActionHistoryPublisherIntegrationShould;
+import com.sensorberg.sdk.scanner.TheBeaconActionHistoryPublisherShould;
 import com.sensorberg.sdk.scanner.TheBeaconMapShould;
+import com.sensorberg.sdk.scanner.TheBeconHistorySynchronousIntegrationTest;
 import com.sensorberg.sdk.scanner.TheBluetoothChangesShould;
 import com.sensorberg.sdk.scanner.TheDefaultScanner;
 import com.sensorberg.sdk.scanner.TheDefaultScannerSetupShould;
@@ -69,6 +72,12 @@ public interface TestComponent extends Component {
     void inject(TheBeaconActionHistoryPublisherIntegrationShould theBeaconActionHistoryPublisherIntegrationShould);
 
     void inject(TheRealmActionObjectShould theRealmActionObjectShould);
+
+    void inject(TheResolverShould theResolverShould);
+
+    void inject(TheBeaconActionHistoryPublisherShould theBeaconActionHistoryPublisherShould);
+
+    void inject(TheBeconHistorySynchronousIntegrationTest theBeconHistorySynchronousIntegrationTest);
 
     void inject(TransportShould transportShould);
 

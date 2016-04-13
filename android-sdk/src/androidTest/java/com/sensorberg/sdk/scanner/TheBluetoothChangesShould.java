@@ -4,6 +4,7 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.Utils;
 
@@ -34,6 +36,10 @@ public class TheBluetoothChangesShould {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
+
     Scanner tested;
     private TestPlatform platform;
     private long RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY = Utils.THIRTY_SECONDS;
@@ -45,11 +51,11 @@ public class TheBluetoothChangesShould {
         platform = new TestPlatform();
 
         settings = new Settings(platform);
-        tested = new Scanner(settings, platform, false, platform.clock, testFileManager, testServiceScheduler, platform);
+        tested = new Scanner(settings, platform, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;
         tested.start();
-        platform.clock.setNowInMillis(0);
+        testHandlerManager.getCustomClock().setNowInMillis(0);
     }
 
     @Test
@@ -68,19 +74,20 @@ public class TheBluetoothChangesShould {
 
         tested.stop();
         reset(mockScannerListener);
-        platform.clock.increaseTimeInMillis(RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY);
+        testHandlerManager.getCustomClock().increaseTimeInMillis(
+                RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY);
         tested.start();
 
         verify(mockScannerListener, never()).onScanEventDetected(isEntryEvent());
         verify(mockScannerListener, never()).onScanEventDetected(isExitEvent());
 
-        long start = platform.clock.now();
-        while (platform.clock.now() < start + Utils.EXIT_TIME) {
-            platform.clock.increaseTimeInMillis(Utils.ONE_ADVERTISEMENT_INTERVAL);
+        long start = testHandlerManager.getCustomClock().now();
+        while (testHandlerManager.getCustomClock().now() < start + Utils.EXIT_TIME) {
+            testHandlerManager.getCustomClock().increaseTimeInMillis(Utils.ONE_ADVERTISEMENT_INTERVAL);
         }
         verify(mockScannerListener, never()).onScanEventDetected(isExitEvent());
 
-        platform.clock.increaseTimeInMillis(1);
+        testHandlerManager.getCustomClock().increaseTimeInMillis(1);
         verify(mockScannerListener).onScanEventDetected(isExitEvent());
 
         verify(mockScannerListener, never()).onScanEventDetected(isEntryEvent());
@@ -96,21 +103,21 @@ public class TheBluetoothChangesShould {
 
         tested.stop();
         reset(mockScannerListener);
-        platform.clock.increaseTimeInMillis(Utils.VERY_LONG_TIME);
+        testHandlerManager.getCustomClock().increaseTimeInMillis(Utils.VERY_LONG_TIME);
         tested.start();
 
         verify(mockScannerListener, never()).onScanEventDetected(isEntryEvent());
         verify(mockScannerListener, never()).onScanEventDetected(isExitEvent());
 
-        long start = platform.clock.now();
-        while (platform.clock.now() < start + Utils.EXIT_TIME * 2) {
-            platform.clock.increaseTimeInMillis(Utils.ONE_ADVERTISEMENT_INTERVAL);
+        long start = testHandlerManager.getCustomClock().now();
+        while (testHandlerManager.getCustomClock().now() < start + Utils.EXIT_TIME * 2) {
+            testHandlerManager.getCustomClock().increaseTimeInMillis(Utils.ONE_ADVERTISEMENT_INTERVAL);
         }
         verify(mockScannerListener, never()).onScanEventDetected(isEntryEvent());
         verify(mockScannerListener, never()).onScanEventDetected(isExitEvent());
 
-        while (platform.clock.now() < start + Utils.ONE_HOUR) {
-            platform.clock.increaseTimeInMillis(Utils.ONE_ADVERTISEMENT_INTERVAL);
+        while (testHandlerManager.getCustomClock().now() < start + Utils.ONE_HOUR) {
+            testHandlerManager.getCustomClock().increaseTimeInMillis(Utils.ONE_ADVERTISEMENT_INTERVAL);
         }
         verify(mockScannerListener, never()).onScanEventDetected(isEntryEvent());
         verify(mockScannerListener, never()).onScanEventDetected(isExitEvent());

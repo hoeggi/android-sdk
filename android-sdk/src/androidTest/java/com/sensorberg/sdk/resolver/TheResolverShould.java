@@ -1,12 +1,13 @@
 package com.sensorberg.sdk.resolver;
 
-import android.test.AndroidTestCase;
-
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
@@ -14,8 +15,13 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.joda.time.DateTime;
 
+import android.test.AndroidTestCase;
+
 import java.util.List;
 import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -24,38 +30,45 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-public class TheResolverShould extends AndroidTestCase{
+public class TheResolverShould extends AndroidTestCase {
+
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
 
     private Resolver testedWithFakeBackend;
 
     private static final ScanEvent SCANEVENT_1 = new ScanEvent.Builder()
             .withBeaconId(TestConstants.REGULAR_BEACON_ID)
             .build();
+
     private Resolver tested;
+
     private TestPlatform androidPlattform;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
         androidPlattform = spy(new TestPlatform());
-        androidPlattform.setTransport(new OkHttpClientTransport(androidPlattform, null, androidPlattform.getCachedVolleyQueue(), androidPlattform.clock));
+        androidPlattform
+                .setTransport(new OkHttpClientTransport(androidPlattform, null, androidPlattform.getCachedVolleyQueue(), testHandlerManager.getCustomClock()));
         androidPlattform.getTransport().setApiToken(TestConstants.API_TOKEN);
-        androidPlattform.clock.setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
+        testHandlerManager.getCustomClock().setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
 
-        testedWithFakeBackend = new Resolver(resolverConfiguration, androidPlattform, androidPlattform.getTransport());
+        testedWithFakeBackend = new Resolver(resolverConfiguration, testHandlerManager, androidPlattform.getTransport());
         ResolverConfiguration realConfiguration = new ResolverConfiguration();
-        tested = new Resolver(realConfiguration, androidPlattform, androidPlattform.getTransport());
+        tested = new Resolver(realConfiguration, testHandlerManager, androidPlattform.getTransport());
     }
 
 
-    public void test_should_try_to_resolve_a_beacon(){
+    public void test_should_try_to_resolve_a_beacon() {
         Resolution resolution = getResolution();
         Resolution spyResolution = spy(resolution);
 
         testedWithFakeBackend.startResolution(spyResolution);
-
 
         verify(spyResolution).queryServer();
     }
@@ -72,13 +85,11 @@ public class TheResolverShould extends AndroidTestCase{
      * https://manage.sensorberg.com/#/applications/edit/38eda3c5-649e-4178-9682-314d14abf1fe
      * https://manage.sensorberg.com/#/campaign/edit/bd67e5ec-4426-4f51-b962-6beea2c82695
      * https://manage.sensorberg.com/#/beacon/view/14053e1f-567b-43e5-818f-811c700b7ae4
-     *
      */
-    public void test_enter_exit_action(){
+    public void test_enter_exit_action() {
         URLFactory.Conf env = URLFactory.switchToProductionEnvironment();
 
         androidPlattform.getTransport().setApiToken("8961ee72ea4834053b376ad54007ea277cba4305db12188b74d104351ca8bf8a");
-
 
         ResolverListener mockListener = new ResolverListener() {
             @Override
@@ -102,7 +113,6 @@ public class TheResolverShould extends AndroidTestCase{
         Resolution resolution = tested.createResolution(conf);
         resolution.start();
 
-
         URLFactory.restorePreviousConf(env);
     }
 
@@ -114,7 +124,6 @@ public class TheResolverShould extends AndroidTestCase{
      * https://staging-manage.sensorberg.com/#/campaign/edit/be0c8822-937c-49ee-9890-13fb8ecbad05
      * https://staging-manage.sensorberg.com/#/campaign/edit/01fc187b-de29-4b87-b04c-32cdf60d4270
      * https://staging-manage.sensorberg.com/#/campaign/edit/ed464330-ea1b-4132-a993-d81796871587
-     *
      */
 
     public void test_resolve_in_app_function() throws Exception {
@@ -143,9 +152,9 @@ public class TheResolverShould extends AndroidTestCase{
     }
 
     /**
-     *  https://manage.sensorberg.com/#/campaign/edit/6edd5ff0-d63a-4968-b7fa-b448d1c3a0e9
+     * https://manage.sensorberg.com/#/campaign/edit/6edd5ff0-d63a-4968-b7fa-b448d1c3a0e9
      *
-     *  https://staging-manage.sensorberg.com/#/campaign/edit/be0c8822-937c-49ee-9890-13fb8ecbad05
+     * https://staging-manage.sensorberg.com/#/campaign/edit/be0c8822-937c-49ee-9890-13fb8ecbad05
      */
     public void test_beacon_with_delay() throws Exception {
 
@@ -153,8 +162,8 @@ public class TheResolverShould extends AndroidTestCase{
         tested.addResolverListener(mockListener);
         ResolutionConfiguration conf = new ResolutionConfiguration();
         conf.setScanEvent(new ScanEvent.Builder()
-                .withBeaconId(TestConstants.DELAY_BEACON_ID)
-                .withEventMask(ScanEventType.ENTRY.getMask()).build()
+                        .withBeaconId(TestConstants.DELAY_BEACON_ID)
+                        .withEventMask(ScanEventType.ENTRY.getMask()).build()
         );
         Resolution resolution = tested.createResolution(conf);
         resolution.start();

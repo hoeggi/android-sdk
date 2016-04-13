@@ -4,6 +4,7 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
@@ -12,6 +13,7 @@ import org.mockito.Mockito;
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.Utils;
 
@@ -33,6 +35,10 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
+
     private TestPlatform plattform = null;
     private Scanner tested;
 
@@ -40,7 +46,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         plattform = new TestPlatform();
-        this.plattform.clock.setNowInMillis(0);
+        this.testHandlerManager.getCustomClock().setNowInMillis(0);
 
         setUpScanner();
 
@@ -51,7 +57,8 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(plattform), plattform, false, plattform.clock, testFileManager, testServiceScheduler, plattform);
+        tested = new Scanner(new Settings(plattform), plattform, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+                testHandlerManager);
     }
 
     public void test_scanner_detects_exit() {
@@ -61,7 +68,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        this.plattform.clock.setNowInMillis(Utils.EXIT_TIME_HAS_PASSED);
+        this.testHandlerManager.getCustomClock().setNowInMillis(Utils.EXIT_TIME_HAS_PASSED);
 
         verify(mockListener).onScanEventDetected(isExitEvent());
         verify(mockListener).onScanEventDetected(isNotEntryEvent());
@@ -75,7 +82,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        this.plattform.clock.setNowInMillis(Utils.EXIT_TIME_NOT_YET);
+        this.testHandlerManager.getCustomClock().setNowInMillis(Utils.EXIT_TIME_NOT_YET);
 
         verifyNoMoreInteractions(mockListener);
     }
@@ -84,7 +91,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     public void test_should_exit_later_if_beacon_was_seen_twice() {
         //first sighting
         plattform.fakeIBeaconSighting();
-        plattform.clock.setNowInMillis(Utils.EXIT_TIME - 1);
+        testHandlerManager.getCustomClock().setNowInMillis(Utils.EXIT_TIME - 1);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
@@ -95,7 +102,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
         verifyZeroInteractions(mockListener);
 
         //wait until ExitEventDelay has passed
-        plattform.clock.setNowInMillis(plattform.clock.now() + Utils.EXIT_TIME + 1);
+        testHandlerManager.getCustomClock().setNowInMillis(testHandlerManager.getCustomClock().now() + Utils.EXIT_TIME + 1);
 
         //verify
         verify(mockListener).onScanEventDetected(isExitEvent());

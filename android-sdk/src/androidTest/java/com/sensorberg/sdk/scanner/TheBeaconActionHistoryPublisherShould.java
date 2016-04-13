@@ -1,16 +1,22 @@
 package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergApplicationTest;
+import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.realm.RealmResults;
 import util.TestConstants;
@@ -23,6 +29,10 @@ import static util.Verfier.hasSize;
 
 public class TheBeaconActionHistoryPublisherShould extends SensorbergApplicationTest {
 
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
+
     private BeaconActionHistoryPublisher tested;
 
     private Transport transport;
@@ -30,11 +40,12 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform testPlattform = new TestPlatform();
-        testPlattform.clock.setNowInMillis(System.currentTimeMillis());
+        testHandlerManager.getCustomClock().setNowInMillis(System.currentTimeMillis());
         transport = mock(Transport.class);
-        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, null, testPlattform.clock, testPlattform);
+        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, null, testHandlerManager.getCustomClock(), testHandlerManager);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

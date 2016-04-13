@@ -11,6 +11,7 @@ import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 import com.squareup.okhttp.CacheControl;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -36,6 +38,10 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
 
     @Inject
     TestServiceScheduler testServiceScheduler;
+
+    @Inject
+    @Named("testHandlerWithCustomClock")
+    TestHandlerManager testHandlerManager;
 
     InternalApplicationBootstrapper tested;
 
@@ -91,8 +97,8 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform platform = new TestPlatform();
-        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), platform.clock));
-        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler, platform, platform.clock);
+        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock()));
+        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock());
 
         broadcastReceiver = new TestGenericBroadcastReceiver();
 
