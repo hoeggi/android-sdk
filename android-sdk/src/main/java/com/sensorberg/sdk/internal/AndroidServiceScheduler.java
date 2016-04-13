@@ -44,7 +44,7 @@ public class AndroidServiceScheduler implements ServiceScheduler {
         alarmManager = am;
         clock = clk;
         postToServiceCounter = integerCounter;
-        pendingIntentStorage = new PendingIntentStorage(this);
+        pendingIntentStorage = new PendingIntentStorage(this, clock);
     }
 
     @SuppressLint("NewApi")

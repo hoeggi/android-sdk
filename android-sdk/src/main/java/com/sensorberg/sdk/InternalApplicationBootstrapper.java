@@ -57,21 +57,20 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     @Inject
     Context context;
 
-    @Inject
     Clock clock;
 
     @Inject
     FileManager fileManager;
 
-    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager) {
+    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk) {
         super(plattform, scheduler);
         SensorbergApplication.getComponent().inject(this);
 
         settings = new Settings(plattform);
         settings.restoreValuesFromPreferences();
         settings.setCallback(this);
-
         plattform.setSettings(settings);
+        clock = clk;
 
         beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform.getTransport(), this, settings, clock, handlerManager);
 

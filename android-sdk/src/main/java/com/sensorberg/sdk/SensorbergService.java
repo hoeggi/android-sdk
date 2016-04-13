@@ -4,6 +4,7 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.Platform;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -75,6 +77,10 @@ public class SensorbergService extends Service {
 
     @Inject
     HandlerManager handlerManager;
+
+    @Inject
+    @Named("realClock")
+    Clock clock;
 
     Platform platform;
 
@@ -183,7 +189,7 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager);
+                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper);
                         bootstrapper.startScanning();
@@ -390,7 +396,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 platform.getTransport().setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager);
+                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock);
             } else{
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }

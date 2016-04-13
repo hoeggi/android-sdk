@@ -46,7 +46,7 @@ public class TestServiceScheduler implements ServiceScheduler {
         alarmManager = am;
         clock = clk;
         postToServiceCounter = integerCounter;
-        pendingIntentStorage = new PendingIntentStorage(this);
+        pendingIntentStorage = new PendingIntentStorage(this, clk);
     }
 
     @Override

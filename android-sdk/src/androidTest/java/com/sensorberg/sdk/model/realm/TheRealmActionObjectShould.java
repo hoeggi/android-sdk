@@ -1,19 +1,23 @@
 package com.sensorberg.sdk.model.realm;
 
-import android.test.AndroidTestCase;
-
 import com.sensorberg.sdk.Constants;
+import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.action.InAppAction;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
-import com.sensorberg.sdk.testUtils.NoClock;
 
 import org.fest.assertions.api.Assertions;
 
+import android.test.AndroidTestCase;
+
 import java.util.Collections;
 import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -24,11 +28,15 @@ public class TheRealmActionObjectShould extends AndroidTestCase {
     private RealmAction tested;
     private Realm realm;
     private UUID uuid = UUID.fromString("6133172D-935F-437F-B932-A901265C24B0");
-    private Clock clock;
+
+    @Inject
+    @Named("noClock")
+    Clock clock;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         realm = Realm.getInstance(getContext(), "test" + System.currentTimeMillis());
 
         realm.beginTransaction();
@@ -38,10 +46,8 @@ public class TheRealmActionObjectShould extends AndroidTestCase {
                 .withTrigger(ScanEventType.ENTRY.getMask())
                 .build();
         beaconEvent.setBeaconId(TestConstants.ANY_BEACON_ID);
-        clock = NoClock.CLOCK;
         tested = RealmAction.from(beaconEvent, realm, clock);
         realm.commitTransaction();
-
     }
 
 

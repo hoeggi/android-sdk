@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 
@@ -50,6 +51,7 @@ public class AndroidPlatform implements Platform {
     SharedPreferences settingsPreferences;
 
     @Inject
+    @Named("realClock")
     Clock clock;
 
     @Inject

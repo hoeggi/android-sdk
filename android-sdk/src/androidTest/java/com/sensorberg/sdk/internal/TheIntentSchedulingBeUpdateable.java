@@ -18,6 +18,7 @@ import android.util.Log;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,7 @@ public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
     AlarmManager alarmManager;
 
     @Inject
+    @Named("realClock")
     Clock androidClock;
 
     @Inject

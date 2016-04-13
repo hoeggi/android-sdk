@@ -6,6 +6,7 @@ import com.sensorberg.sdk.TheInternalBootstrapperIntegration;
 import com.sensorberg.sdk.TheSensorbergServiceShould;
 import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
+import com.sensorberg.sdk.model.realm.TheRealmActionObjectShould;
 import com.sensorberg.sdk.scanner.ScannerWithLongScanTime;
 import com.sensorberg.sdk.scanner.TheBackgroundScannerShould;
 import com.sensorberg.sdk.scanner.TheBeaconActionHistoryPublisherIntegrationShould;
@@ -65,6 +66,8 @@ public interface TestComponent extends Component {
     void inject(TheIntentSchedulingShould theIntentSchedulingShould);
 
     void inject(TheBeaconActionHistoryPublisherIntegrationShould theBeaconActionHistoryPublisherIntegrationShould);
+
+    void inject(TheRealmActionObjectShould theRealmActionObjectShould);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

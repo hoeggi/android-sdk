@@ -18,6 +18,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -53,8 +54,9 @@ public class ProvidersModule {
     }
 
     @Provides
+    @Named("realClock")
     @Singleton
-    public Clock provideClock() {
+    public Clock provideRealClock() {
         return new AndroidClock();
     }
 
@@ -84,7 +86,7 @@ public class ProvidersModule {
 
     @Provides
     @Singleton
-    public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, Clock clock, PersistentIntegerCounter persistentIntegerCounter) {
+    public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, @Named("realClock") Clock clock, PersistentIntegerCounter persistentIntegerCounter) {
         return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
     }
 

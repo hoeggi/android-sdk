@@ -5,14 +5,15 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
-import com.sensorberg.sdk.testUtils.NoClock;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -23,6 +24,10 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
 
     @Inject
     HandlerManager testHandleManager;
+
+    @Inject
+    @Named("noClock")
+    Clock clock;
 
     private ScanEvent SCAN_EVENT;
 
@@ -35,7 +40,7 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
 
         Platform platform = spy(new AndroidPlatform(getContext()));
         Settings settings = new Settings(platform);
-        tested = new BeaconActionHistoryPublisher(platform.getTransport(), ResolverListener.NONE, settings, NoClock.CLOCK, testHandleManager);
+        tested = new BeaconActionHistoryPublisher(platform.getTransport(), ResolverListener.NONE, settings, clock, testHandleManager);
 
         startWebserver();
         server.enqueue(new MockResponse().setBody("{}"));

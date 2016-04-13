@@ -4,7 +4,6 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.model.BeaconId;
-import com.sensorberg.sdk.testUtils.NoClock;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 
 import org.fest.assertions.api.Assertions;
@@ -19,6 +18,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 @RunWith(AndroidJUnit4.class)
 public class TheBeaconMapShould {
@@ -26,8 +26,11 @@ public class TheBeaconMapShould {
     @Inject
     TestFileManager testFileManager;
 
+    @Inject
+    @Named("noClock")
+    Clock clock;
+
     BeaconMap tested;
-    private Clock clock = NoClock.CLOCK;
 
     @Before
     public void setUp() throws Exception {

@@ -20,11 +20,11 @@ public class PendingIntentStorage {
     @Inject
     Context context;
 
-    @Inject
     Clock clock;
 
-    public PendingIntentStorage(ServiceScheduler serviceScheduler) {
+    public PendingIntentStorage(ServiceScheduler serviceScheduler, Clock clk) {
         this.serviceScheduler = serviceScheduler;
+        clock = clk;
         SensorbergApplication.getComponent().inject(this);
         storage = new SQLiteStore("pendingIntentStorage.sqlite", context);
     }
