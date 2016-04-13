@@ -17,7 +17,6 @@ import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
-import com.sensorbergorm.SugarContext;
 
 import java.io.File;
 import java.sql.SQLClientInfoException;

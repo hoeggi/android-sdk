@@ -2,7 +2,6 @@ package com.sensorberg.sdk.scanner;
 
 import android.util.Log;
 
-import com.sensorbergorm.SugarContext;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import util.TestConstants;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
