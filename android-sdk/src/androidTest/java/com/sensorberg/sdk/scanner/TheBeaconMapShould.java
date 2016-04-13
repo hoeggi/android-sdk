@@ -2,7 +2,7 @@ package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.testUtils.NoClock;
 import com.sensorberg.sdk.testUtils.TestFileManager;

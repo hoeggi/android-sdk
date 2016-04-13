@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.sensorberg.SensorbergApplication;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 
 import java.util.ArrayList;
 

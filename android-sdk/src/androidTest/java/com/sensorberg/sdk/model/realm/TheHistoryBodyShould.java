@@ -3,7 +3,7 @@ package com.sensorberg.sdk.model.realm;
 import android.test.AndroidTestCase;
 
 import util.TestConstants;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.scanner.ScanEvent;

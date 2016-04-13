@@ -4,7 +4,7 @@ import android.os.Message;
 import android.util.Pair;
 
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.RunLoop;
 
 import java.util.ArrayList;

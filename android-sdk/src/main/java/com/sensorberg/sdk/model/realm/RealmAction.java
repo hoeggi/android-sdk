@@ -3,7 +3,7 @@ package com.sensorberg.sdk.model.realm;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 

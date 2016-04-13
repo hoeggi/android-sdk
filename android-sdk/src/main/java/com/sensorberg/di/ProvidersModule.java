@@ -2,7 +2,7 @@ package com.sensorberg.di;
 
 import com.sensorberg.sdk.internal.AndroidClock;
 import com.sensorberg.sdk.internal.AndroidFileManager;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 
 import android.app.Application;

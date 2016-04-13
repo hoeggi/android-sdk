@@ -9,7 +9,7 @@ import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;

@@ -11,6 +11,7 @@ import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.GenericBroadcastReceiver;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.BeaconEvent;

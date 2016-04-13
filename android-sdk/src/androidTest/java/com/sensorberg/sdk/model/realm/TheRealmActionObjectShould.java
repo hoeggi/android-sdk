@@ -4,7 +4,7 @@ import android.test.AndroidTestCase;
 
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.action.InAppAction;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;

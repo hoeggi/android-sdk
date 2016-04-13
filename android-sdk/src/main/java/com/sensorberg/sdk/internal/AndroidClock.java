@@ -1,5 +1,7 @@
 package com.sensorberg.sdk.internal;
 
+import com.sensorberg.sdk.internal.interfaces.Clock;
+
 import android.os.SystemClock;
 
 public class AndroidClock implements Clock {

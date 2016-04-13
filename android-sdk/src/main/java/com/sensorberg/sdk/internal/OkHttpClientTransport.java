@@ -11,6 +11,7 @@ import com.android.sensorbergVolley.toolbox.RequestFuture;
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.Constants;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;

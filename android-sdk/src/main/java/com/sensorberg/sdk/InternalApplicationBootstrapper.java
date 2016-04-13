@@ -4,7 +4,7 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.interfaces.FileManager;

@@ -7,7 +7,7 @@ import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
