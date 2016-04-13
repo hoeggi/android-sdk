@@ -37,7 +37,7 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould {
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager, testServiceScheduler);
+        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager, testServiceScheduler, plattform);
     }
 
     public void test_scanner_waits_to_the_edge_of_second_pause() {

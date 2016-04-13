@@ -44,9 +44,9 @@ public class TheResolverShould extends AndroidTestCase{
         androidPlattform.getTransport().setApiToken(TestConstants.API_TOKEN);
         androidPlattform.clock.setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
 
-        testedWithFakeBackend = new Resolver(resolverConfiguration, androidPlattform);
+        testedWithFakeBackend = new Resolver(resolverConfiguration, androidPlattform, androidPlattform.getTransport());
         ResolverConfiguration realConfiguration = new ResolverConfiguration();
-        tested = new Resolver(realConfiguration, androidPlattform);
+        tested = new Resolver(realConfiguration, androidPlattform, androidPlattform.getTransport());
     }
 
 

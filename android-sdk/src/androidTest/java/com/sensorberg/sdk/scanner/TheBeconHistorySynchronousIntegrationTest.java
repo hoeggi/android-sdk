@@ -19,22 +19,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplicationTest {
+
     private BeaconActionHistoryPublisher tested;
 
     private Transport transport;
-    private TestPlatform testPlattform;
-
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        testPlattform = new TestPlatform();
+        TestPlatform testPlattform = new TestPlatform();
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());
         transport = spy(new DumbSucessTransport());
-        testPlattform.setTransport(transport);
         Settings settings = mock(Settings.class);
-        tested = new BeaconActionHistoryPublisher(testPlattform, transport, ResolverListener.NONE, settings, testPlattform.clock);
+        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, settings, testPlattform.clock, testPlattform);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

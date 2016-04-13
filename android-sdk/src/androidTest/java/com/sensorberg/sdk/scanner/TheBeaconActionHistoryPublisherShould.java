@@ -22,21 +22,19 @@ import static org.mockito.Mockito.verify;
 import static util.Verfier.hasSize;
 
 public class TheBeaconActionHistoryPublisherShould extends SensorbergApplicationTest {
+
     private BeaconActionHistoryPublisher tested;
 
     private Transport transport;
-    private TestPlatform testPlattform;
-
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        testPlattform = new TestPlatform();
+        TestPlatform testPlattform = new TestPlatform();
         testPlattform.clock.setNowInMillis(System.currentTimeMillis());
         transport = mock(Transport.class);
-        testPlattform.setTransport(transport);
-        tested = new BeaconActionHistoryPublisher(testPlattform, transport, ResolverListener.NONE, null, testPlattform.clock);
+        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, null, testPlattform.clock, testPlattform);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

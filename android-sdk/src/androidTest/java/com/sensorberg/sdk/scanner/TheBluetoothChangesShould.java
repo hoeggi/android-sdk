@@ -45,7 +45,7 @@ public class TheBluetoothChangesShould {
         platform = new TestPlatform();
 
         settings = new Settings(platform);
-        tested = new Scanner(settings, platform, false, platform.clock, testFileManager, testServiceScheduler);
+        tested = new Scanner(settings, platform, false, platform.clock, testFileManager, testServiceScheduler, platform);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;
         tested.start();

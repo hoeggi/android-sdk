@@ -42,7 +42,7 @@ public class TheInternalApplicationBootstrapperShould{
         testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
-        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler));
+        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testPlatform));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
                 .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null ,null, 0))

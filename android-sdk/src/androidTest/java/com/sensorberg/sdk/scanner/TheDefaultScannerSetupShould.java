@@ -34,7 +34,7 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         plattform = new TestPlatform();
         settings = new Settings(plattform);
-        tested = new UIScanner(settings, plattform, plattform.clock, testFileManager, testServiceScheduler);
+        tested = new UIScanner(settings, plattform, plattform.clock, testFileManager, testServiceScheduler, plattform);
 
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0;

@@ -29,7 +29,7 @@ public class TheDefaultScanner extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         platform = new TestPlatform();
-        tested = new Scanner(new Settings(platform), platform, false, platform.clock, testFileManager, testServiceScheduler);
+        tested = new Scanner(new Settings(platform), platform, false, platform.clock, testFileManager, testServiceScheduler, platform);
 
         tested.start();
     }

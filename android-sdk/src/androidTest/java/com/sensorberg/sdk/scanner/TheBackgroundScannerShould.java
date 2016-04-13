@@ -44,7 +44,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler);
+        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler, platform);
     }
 
     public void test_be_in_background_mode(){
@@ -59,11 +59,9 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
        ScannerListener mockListener = Mockito.mock(ScannerListener.class);
        tested.addScannerListener(mockListener);
 
-
        platform.fakeIBeaconSighting();
 
        verifyZeroInteractions(mockListener);
-
    }
 
     public void test_detect_beacon_because_sleep_has_ended(){

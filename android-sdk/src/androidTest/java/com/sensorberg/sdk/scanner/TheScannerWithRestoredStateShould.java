@@ -52,7 +52,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() / 2;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler);
+        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler, platform);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();
@@ -70,7 +70,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() + 1;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler);
+        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler, platform);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();
@@ -88,7 +88,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() - 1;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler);
+        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler, platform);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();

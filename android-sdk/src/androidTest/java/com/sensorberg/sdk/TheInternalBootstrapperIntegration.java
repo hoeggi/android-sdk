@@ -92,7 +92,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
 
         TestPlatform platform = new TestPlatform();
         platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), platform.clock));
-        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler);
+        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler, platform);
 
         broadcastReceiver = new TestGenericBroadcastReceiver();
 

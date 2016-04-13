@@ -38,7 +38,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
         when(modifiedSettings.getForeGroundWaitTime()).thenReturn(Constants.Time.ONE_SECOND);
-        tested = new UIScanner(modifiedSettings, spyPlatform, spyPlatform.clock, testFileManager, testServiceScheduler);
+        tested = new UIScanner(modifiedSettings, spyPlatform, spyPlatform.clock, testFileManager, testServiceScheduler, spyPlatform);
     }
 
     public void test_should_pause_when_going_to_the_background_and_scanning_was_running() throws Exception {
@@ -49,11 +49,9 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         spyPlatform.clock.setNowInMillis(modifiedSettings.getBackgroundScanTime() );
         spyPlatform.clock.setNowInMillis(modifiedSettings.getBackgroundScanTime() + 1 );
 
-
         reset(spyPlatform);
         tested.hostApplicationInBackground();
 
         verify(spyPlatform).stopLeScan();
-
     }
 }

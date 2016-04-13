@@ -42,7 +42,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler);
+        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler, platform);
         tested.waitTime = Settings.DEFAULT_FOREGROUND_WAIT_TIME;
         tested.scanTime = Settings.DEFAULT_FOREGROUND_SCAN_TIME;
     }
