@@ -1,11 +1,16 @@
 package com.sensorberg.sdk.scanner;
 
-import android.test.AndroidTestCase;
-
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.mockito.Mockito;
+
+import android.test.AndroidTestCase;
+
+import javax.inject.Inject;
 
 import util.Utils;
 
@@ -21,11 +26,15 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class TheScannerWithoutPausesShould extends AndroidTestCase {
 
+    @Inject
+    TestFileManager testFileManager;
+
     private TestPlatform plattform = null;
     private Scanner tested;
 
     @Override
     public void setUp() throws Exception {
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         plattform = new TestPlatform();
         this.plattform.clock.setNowInMillis(0);
 
@@ -38,7 +47,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(plattform), plattform, false, plattform.clock);
+        tested = new Scanner(new Settings(plattform), plattform, false, plattform.clock, testFileManager);
     }
 
     public void test_scanner_detects_exit() {

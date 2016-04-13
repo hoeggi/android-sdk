@@ -1,5 +1,20 @@
 package com.sensorberg.sdk.testUtils;
 
+import com.android.sensorbergVolley.Network;
+import com.android.sensorbergVolley.RequestQueue;
+import com.android.sensorbergVolley.toolbox.BasicNetwork;
+import com.android.sensorbergVolley.toolbox.DiskBasedCache;
+import com.sensorberg.android.okvolley.OkHttpStack;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.RunLoop;
+import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.model.BeaconId;
+import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.settings.Settings;
+
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
@@ -9,25 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.android.sensorbergVolley.Network;
-import com.android.sensorbergVolley.RequestQueue;
-import com.android.sensorbergVolley.toolbox.BasicNetwork;
-import com.android.sensorbergVolley.toolbox.DiskBasedCache;
-import com.sensorberg.android.okvolley.OkHttpStack;
-import com.sensorberg.sdk.SensorbergTestApplication;
-import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.Clock;
-import com.sensorberg.sdk.internal.FileHelper;
-import com.sensorberg.sdk.internal.Platform;
-import com.sensorberg.sdk.internal.RunLoop;
-import com.sensorberg.sdk.internal.Transport;
-import com.sensorberg.sdk.model.BeaconId;
-import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.settings.Settings;
-
 import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -150,15 +147,6 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public File getFile(String fileName) {
-        try {
-            return File.createTempFile(fileName, null);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public boolean useSyncClient() {
         return true;
     }
@@ -206,16 +194,6 @@ public class TestPlatform implements Platform {
     @Override
     public void unscheduleIntent(int index) {
         android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void write(Serializable serializableObject, String fileName) {
-        FileHelper.write(serializableObject, getFile(fileName));
-    }
-
-    @Override
-    public void removeFile(String fileName) {
-        getFile(fileName).delete();
     }
 
     @Override

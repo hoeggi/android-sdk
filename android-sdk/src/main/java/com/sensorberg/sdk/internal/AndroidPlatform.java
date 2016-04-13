@@ -1,5 +1,21 @@
 package com.sensorberg.sdk.internal;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+
+import com.sensorberg.SensorbergApplication;
+import com.sensorberg.android.okvolley.OkVolley;
+import com.sensorberg.bluetooth.CrashCallBackWrapper;
+import com.sensorberg.sdk.BuildConfig;
+import com.sensorberg.sdk.GenericBroadcastReceiver;
+import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.presenter.LocalBroadcastManager;
+import com.sensorberg.sdk.presenter.ManifestParser;
+import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.settings.Settings;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
@@ -20,24 +36,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.sensorberg.SensorbergApplication;
-import com.sensorberg.android.okvolley.OkVolley;
-import com.sensorberg.bluetooth.CrashCallBackWrapper;
-import com.sensorberg.sdk.BuildConfig;
-import com.sensorberg.sdk.GenericBroadcastReceiver;
-import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.SensorbergService;
-import com.sensorberg.sdk.presenter.LocalBroadcastManager;
-import com.sensorberg.sdk.presenter.ManifestParser;
-import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.settings.Settings;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -258,11 +257,6 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public File getFile(String fileName) {
-        return new File(context.getFilesDir() + File.separator + fileName);
-    }
-
-    @Override
     public boolean useSyncClient() {
         return false;
     }
@@ -426,17 +420,6 @@ public class AndroidPlatform implements Platform {
     public void unscheduleIntent(int index) {
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         manager.cancel(getPendingIntent(index, null));
-    }
-
-    @Override
-    public void write(Serializable serializableObject, String fileName) {
-        FileHelper.write(serializableObject, getFile(fileName));
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Override
-    public void removeFile(String fileName) {
-        getFile(fileName).delete();
     }
 
     @Override

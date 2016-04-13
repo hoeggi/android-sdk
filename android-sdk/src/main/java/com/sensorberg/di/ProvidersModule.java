@@ -1,12 +1,14 @@
 package com.sensorberg.di;
 
+import com.sensorberg.sdk.internal.AndroidClock;
+import com.sensorberg.sdk.internal.AndroidFileManager;
+import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.FileManager;
+
 import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.sensorberg.sdk.internal.AndroidClock;
-import com.sensorberg.sdk.internal.Clock;
 
 import javax.inject.Singleton;
 
@@ -46,5 +48,11 @@ public class ProvidersModule {
     @Singleton
     public Clock provideClock() {
         return new AndroidClock();
+    }
+
+    @Provides
+    @Singleton
+    public FileManager provideFileManager(Context context) {
+        return new AndroidFileManager(context);
     }
 }

@@ -1,10 +1,14 @@
 package com.sensorberg.sdk;
 
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestPlatform;
+
 import android.content.Context;
 import android.content.Intent;
 import android.test.AndroidTestCase;
 
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import javax.inject.Inject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.reset;
@@ -16,6 +20,9 @@ public class TheSensorbergServiceShould extends AndroidTestCase {
     private static final String NEW_API_TOKEN = "SOME_NEW_API_TOKEN";
     private static final String DEFAULT_API_KEY = "DEFAULT_API_KEY";
 
+    @Inject
+    TestFileManager testFileManager;
+
     SensorbergService tested;
     private Intent CHANGE_API_KEY_MESSAGE;
     private TestPlatform testPlatform;
@@ -24,6 +31,7 @@ public class TheSensorbergServiceShould extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         testPlatform = spy(new TestPlatform());
         {
@@ -45,6 +53,6 @@ public class TheSensorbergServiceShould extends AndroidTestCase {
 
     public void should_persist_the_settings_when_getting_a_new_API_token() throws Exception {
         tested.onStartCommand(CHANGE_API_KEY_MESSAGE, -1, -1);
-        verify(testPlatform).write(any(ServiceConfiguration.class), any(String.class));
+        verify(testFileManager).write(any(ServiceConfiguration.class), any(String.class));
     }
 }

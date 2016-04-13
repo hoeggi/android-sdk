@@ -1,5 +1,8 @@
 package com.sensorberg.sdk.internal;
 
+import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.settings.Settings;
+
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -7,11 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.settings.Settings;
-
-import java.io.File;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +24,6 @@ public interface Platform {
 
     Transport getTransport();
 
-    File getFile(String fileName);
 
     boolean useSyncClient();
 
@@ -47,10 +44,6 @@ public interface Platform {
     void setSettings(Settings settings);
 
     void unscheduleIntent(int index);
-
-    void write(Serializable serializableObject, String fileName);
-
-    void removeFile(String fileName);
 
     void cancelAllScheduledTimer();
 

@@ -1,5 +1,17 @@
 package com.sensorberg.sdk;
 
+import com.sensorberg.SensorbergApplication;
+import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
+import com.sensorberg.sdk.internal.AndroidPlatform;
+import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.internal.interfaces.FileManager;
+import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.resolver.ResolutionConfiguration;
+import com.sensorberg.sdk.resolver.ResolverConfiguration;
+
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Context;
@@ -13,20 +25,11 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.widget.Toast;
 
-import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
-import com.sensorberg.sdk.internal.AndroidPlatform;
-import com.sensorberg.sdk.internal.FileHelper;
-import com.sensorberg.sdk.internal.Platform;
-import com.sensorberg.sdk.internal.URLFactory;
-import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.resolver.ResolutionConfiguration;
-import com.sensorberg.sdk.resolver.ResolverConfiguration;
-
-import net.danlew.android.joda.JodaTimeAndroid;
-
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.inject.Inject;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -62,7 +65,8 @@ public class SensorbergService extends Service {
     public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
-
+    @Inject
+    FileManager fileManager;
 
     Platform platform;
 
@@ -129,6 +133,7 @@ public class SensorbergService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        SensorbergApplication.getComponent().inject(this);
         platform = new AndroidPlatform(getApplicationContext());
         Logger.log.logServiceState("onCreate");
         JodaTimeAndroid.init(this);
@@ -314,7 +319,7 @@ public class SensorbergService extends Service {
     private void updateDiskConfiguration(Intent intent) {
         if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
             int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
-            ServiceConfiguration diskConf = (ServiceConfiguration) FileHelper.getContentsOfFileOrNull(platform.getFile(SERVICE_CONFIGURATION));
+            ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(SERVICE_CONFIGURATION));
             if (diskConf == null) {
                 diskConf = new ServiceConfiguration(null);
             }
@@ -354,7 +359,7 @@ public class SensorbergService extends Service {
                 case MSG_SHUTDOWN:{
                     Logger.log.serviceHandlesMessage(MSG.stringFrom(type));
                     MinimalBootstrapper minimalBootstrapper = bootstrapper != null ? bootstrapper : new MinimalBootstrapper(platform);
-                    platform.removeFile(SERVICE_CONFIGURATION);
+                    fileManager.removeFile(SERVICE_CONFIGURATION);
                     ScannerBroadcastReceiver.setManifestReceiverEnabled(false, this);
                     GenericBroadcastReceiver.setManifestReceiverEnabled(false, this);
 
@@ -371,7 +376,7 @@ public class SensorbergService extends Service {
 
     private void createBootstrapperFromDiskConfiguration() {
         try {
-            ServiceConfiguration diskConf = (ServiceConfiguration) FileHelper.getContentsOfFileOrNull(platform.getFile(SERVICE_CONFIGURATION));
+            ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(SERVICE_CONFIGURATION));
             if (diskConf != null && diskConf.resolverConfiguration.getResolverLayoutURL() != null){
                 URLFactory.setLayoutURL(diskConf.resolverConfiguration.getResolverLayoutURL().toString());
             }
@@ -388,7 +393,7 @@ public class SensorbergService extends Service {
     }
 
     private void persistConfiguration(ServiceConfiguration conf) {
-        platform.write(conf, SERVICE_CONFIGURATION);
+        fileManager.write(conf, SERVICE_CONFIGURATION);
     }
 
     private void persistConfiguration(ResolverConfiguration resolverConfiguration) {

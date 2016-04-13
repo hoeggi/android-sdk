@@ -1,17 +1,13 @@
 package com.sensorberg.sdk;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SyncStatusObserver;
-
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
+import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.Transport;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
@@ -27,6 +23,11 @@ import com.sensorberg.sdk.scanner.Scanner;
 import com.sensorberg.sdk.scanner.ScannerListener;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.utils.ListUtils;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SyncStatusObserver;
 
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,9 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     @Inject
     Clock clock;
 
+    @Inject
+    FileManager fileManager;
+
     public InternalApplicationBootstrapper(Platform plattform) {
         super(plattform);
         SensorbergApplication.getComponent().inject(this);
@@ -74,7 +78,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         plattform.getTransport().setBeaconReportHandler(this);
         plattform.getTransport().setProximityUUIDUpdateHandler(this);
 
-        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock);
+        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock, fileManager);
         resolver = new Resolver(resolverConfiguration, plattform);
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);

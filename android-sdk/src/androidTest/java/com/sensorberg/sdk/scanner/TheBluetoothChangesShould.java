@@ -1,13 +1,18 @@
 package com.sensorberg.sdk.scanner;
 
-import android.support.test.runner.AndroidJUnit4;
-
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import android.support.test.runner.AndroidJUnit4;
+
+import javax.inject.Inject;
 
 import util.Utils;
 
@@ -22,6 +27,9 @@ import static org.mockito.Mockito.verify;
 @RunWith(AndroidJUnit4.class)
 public class TheBluetoothChangesShould {
 
+    @Inject
+    TestFileManager testFileManager;
+
     Scanner tested;
     private TestPlatform platform;
     private long RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY = Utils.THIRTY_SECONDS;
@@ -29,11 +37,11 @@ public class TheBluetoothChangesShould {
 
     @Before
     public void setUp() throws Exception {
-
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         platform = new TestPlatform();
 
         settings = new Settings(platform);
-        tested = new Scanner(settings, platform, false, platform.clock);
+        tested = new Scanner(settings, platform, false, platform.clock, testFileManager);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;
         tested.start();

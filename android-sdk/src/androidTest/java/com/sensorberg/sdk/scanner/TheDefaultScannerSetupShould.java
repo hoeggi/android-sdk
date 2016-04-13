@@ -1,9 +1,14 @@
 package com.sensorberg.sdk.scanner;
 
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestPlatform;
+
 import android.test.AndroidTestCase;
 
-import com.sensorberg.sdk.settings.Settings;
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import javax.inject.Inject;
 
 import util.Utils;
 
@@ -11,6 +16,10 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 
 public class TheDefaultScannerSetupShould extends AndroidTestCase{
+
+    @Inject
+    TestFileManager testFileManager;
+
     protected UIScanner tested;
     protected Settings settings;
     protected TestPlatform plattform;
@@ -18,9 +27,10 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         plattform = new TestPlatform();
         settings = new Settings(plattform);
-        tested = new UIScanner(settings, plattform, plattform.clock);
+        tested = new UIScanner(settings, plattform, plattform.clock, testFileManager);
 
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0;

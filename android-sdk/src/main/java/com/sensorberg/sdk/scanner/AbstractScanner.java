@@ -1,20 +1,21 @@
 package com.sensorberg.sdk.scanner;
 
-import android.annotation.TargetApi;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.os.Build;
-import android.os.Message;
-import android.util.Pair;
-
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
+import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.Settings;
+
+import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.os.Build;
+import android.os.Message;
+import android.util.Pair;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private RssiListener rssiListener = RssiListener.NONE;
 
-    AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock) {
+    AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager) {
         SensorbergApplication.getComponent().inject(this);
         this.platform = platform;
         this.settings = settings;
@@ -58,8 +59,8 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
         scanning = false;
         runLoop = platform.getScannerRunLoop(this);
 
-        File beaconFile = platform.getFile("enteredBeaconsCache");
-        enteredBeacons = new BeaconMap(shouldRestoreBeaconStates ? beaconFile : null);
+        File beaconFile = shouldRestoreBeaconStates ? fileManager.getFile("enteredBeaconsCache") : null;
+        enteredBeacons = new BeaconMap(fileManager, beaconFile);
     }
 
 

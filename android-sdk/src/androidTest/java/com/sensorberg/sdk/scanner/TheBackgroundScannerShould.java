@@ -1,11 +1,16 @@
 package com.sensorberg.sdk.scanner;
 
-import android.test.AndroidTestCase;
-
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.mockito.Mockito;
+
+import android.test.AndroidTestCase;
+
+import javax.inject.Inject;
 
 import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isEntryEvent;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -14,6 +19,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 
 public class TheBackgroundScannerShould extends AndroidTestCase{
+
+    @Inject
+    TestFileManager testFileManager;
+
     private TestPlatform platform;
     private UIScanner tested;
 
@@ -21,6 +30,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         platform = new TestPlatform();
         setUpScanner();
 
@@ -30,7 +40,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform, platform.clock);
+        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager);
     }
 
     public void test_be_in_background_mode(){

@@ -1,21 +1,31 @@
 package com.sensorberg.sdk.scanner;
 
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestPlatform;
+
 import android.test.AndroidTestCase;
 
-import com.sensorberg.sdk.settings.Settings;
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import javax.inject.Inject;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class TheDefaultScanner extends AndroidTestCase {
+
+    @Inject
+    TestFileManager testFileManager;
+
     private TestPlatform platform;
     private Scanner tested;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         platform = new TestPlatform();
-        tested = new Scanner(new Settings(platform), platform, false, platform.clock);
+        tested = new Scanner(new Settings(platform), platform, false, platform.clock, testFileManager);
 
         tested.start();
     }

@@ -1,16 +1,18 @@
 package com.sensorberg.di;
 
-import android.app.Application;
-
 import com.sensorberg.sdk.InternalApplicationBootstrapper;
+import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.PendingIntentStorage;
 import com.sensorberg.sdk.scanner.AbstractScanner;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
+import com.sensorberg.sdk.scanner.BeaconMap;
 import com.sensorberg.sdk.scanner.Scanner;
 import com.sensorberg.sdk.scanner.UIScanner;
 import com.sensorberg.sdk.settings.Settings;
+
+import android.app.Application;
 
 import javax.inject.Singleton;
 
@@ -38,6 +40,10 @@ public interface Component {
     void inject(Scanner scanner);
 
     void inject(UIScanner scanner);
+
+    void inject(SensorbergService sensorbergService);
+
+    void inject(BeaconMap beaconMap);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

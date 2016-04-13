@@ -1,8 +1,13 @@
 package com.sensorberg.sdk.scanner;
 
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestFileManager;
 
 import org.mockito.Mockito;
+
+import javax.inject.Inject;
 
 import util.Utils;
 
@@ -10,11 +15,15 @@ import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isExitEvent;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould{
+public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould {
+
+    @Inject
+    TestFileManager testFileManager;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         plattform.clock.setNowInMillis(0);
 
@@ -24,7 +33,7 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock);
+        tested = new UIScanner(new Settings(plattform), plattform, plattform.clock, testFileManager);
     }
 
     public void test_scanner_waits_to_the_edge_of_second_pause() {
@@ -37,16 +46,16 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould{
         long shouldNotSeeBeaconExitUntil = beaconSighting + Utils.EXIT_TIME + tested.waitTime;
         long shouldSeeExitEvent = shouldNotSeeBeaconExitUntil + tested.waitTime;
 
-        while(plattform.clock.now() < Utils.ONE_MINUTE * 2){
-            if (plattform.clock.now() == beaconSighting){
+        while (plattform.clock.now() < Utils.ONE_MINUTE * 2) {
+            if (plattform.clock.now() == beaconSighting) {
                 plattform.fakeIBeaconSighting();
                 tested.addScannerListener(mockListener);
             }
 
-            if (plattform.clock.now() < shouldNotSeeBeaconExitUntil){
+            if (plattform.clock.now() < shouldNotSeeBeaconExitUntil) {
                 verifyNoMoreInteractions(mockListener);
             }
-            if (plattform.clock.now() > shouldSeeExitEvent){
+            if (plattform.clock.now() > shouldSeeExitEvent) {
                 verify(mockListener).onScanEventDetected(isExitEvent());
             }
 
@@ -64,16 +73,16 @@ public class TheScannerWithTimeoutsShould extends TheDefaultScannerSetupShould{
         long shouldNotSeeBeaconExitUntil = beaconSighting + Utils.EXIT_TIME + tested.waitTime;
         long shouldSeeExitEvent = shouldNotSeeBeaconExitUntil + tested.waitTime;
 
-        while(plattform.clock.now() < Utils.ONE_MINUTE * 2){
-            if (plattform.clock.now() == beaconSighting){
+        while (plattform.clock.now() < Utils.ONE_MINUTE * 2) {
+            if (plattform.clock.now() == beaconSighting) {
                 plattform.fakeIBeaconSighting();
                 tested.addScannerListener(mockListener);
             }
 
-            if (plattform.clock.now() < shouldNotSeeBeaconExitUntil){
+            if (plattform.clock.now() < shouldNotSeeBeaconExitUntil) {
                 verifyNoMoreInteractions(mockListener);
             }
-            if (plattform.clock.now() > shouldSeeExitEvent){
+            if (plattform.clock.now() > shouldSeeExitEvent) {
                 verify(mockListener).onScanEventDetected(isExitEvent());
             }
 
