@@ -54,11 +54,7 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
 
     public void test_should_persist_scans_that_need_queing() throws Exception {
         List<SugarScan> notSentObjects = SugarScan.notSentScans();
-        for (SugarScan thing: notSentObjects) {
-            Log.i("things", Long.toString(thing.getId()));
-        }
         assertThat(notSentObjects).hasSize(1);
-
     }
 
     public void test_should_persist_actions_that_need_queing() throws Exception {

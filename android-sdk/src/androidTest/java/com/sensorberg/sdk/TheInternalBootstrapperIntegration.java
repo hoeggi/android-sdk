@@ -153,7 +153,6 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
                 .withEventMask(ScanEventType.ENTRY.getMask())
                 .build());
 
-        // TODO confirm amount. We definitely are only getting 1 back. Look at when fixing tests.
         waitForRequests(2);
 
         //we should have exactly one notification
