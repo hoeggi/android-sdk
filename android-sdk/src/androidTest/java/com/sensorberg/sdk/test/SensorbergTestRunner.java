@@ -35,6 +35,7 @@ public class SensorbergTestRunner extends android.support.test.runner.AndroidJUn
         JodaTimeAndroid.init(getContext());
         TestDatabaseHelper testDatabaseHelper = new TestDatabaseHelper(getContext(), "sensorbergORM.db", null, 1);
         testDatabaseHelper.getWritableDatabase();
+        SugarContext.init(getContext());
 //        TimeZoneChangedReceiver receiver = new TimeZoneChangedReceiver();
 //        Intent timeZoneIntent = new Intent();
 //        timeZoneIntent.putExtra("time-zone", "GMT+00:00");
