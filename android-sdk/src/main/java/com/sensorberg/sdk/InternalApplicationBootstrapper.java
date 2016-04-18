@@ -48,6 +48,10 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     private static final boolean SURVIVE_REBOOT = true;
 
+    final Platform platform;
+
+    final Transport transport;
+
     final Resolver resolver;
 
     final Scanner scanner;
@@ -72,27 +76,29 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     BluetoothPlatform bluetoothPlatform;
 
-    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk,
+    public InternalApplicationBootstrapper(Platform platform, Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk,
             BluetoothPlatform btPlatform, SharedPreferences preferences) {
-        super(plattform, scheduler);
+        super(scheduler);
         SensorbergApplication.getComponent().inject(this);
 
-        settings = new Settings(plattform.getTransport(), preferences);
+        this.platform = platform;
+        this.transport = transport;
+        settings = new Settings(transport, preferences);
         settings.restoreValuesFromPreferences();
         settings.setSettingsUpdateCallback(settingsUpdateCallbackListener);
-        plattform.setSettings(settings);
+        platform.setSettings(settings);
         clock = clk;
         bluetoothPlatform = btPlatform;
 
-        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform.getTransport(), this, settings, clock, handlerManager);
+        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(transport, this, settings, clock, handlerManager);
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
 
-        plattform.getTransport().setBeaconReportHandler(this);
-        plattform.getTransport().setProximityUUIDUpdateHandler(this);
+        transport.setBeaconReportHandler(this);
+        transport.setProximityUUIDUpdateHandler(this);
 
         scanner = new Scanner(settings, settings.isShouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager, btPlatform);
-        resolver = new Resolver(resolverConfiguration, handlerManager, plattform.getTransport());
+        resolver = new Resolver(resolverConfiguration, handlerManager, transport);
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);
 
@@ -231,7 +237,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         scanner.hostApplicationInForeground();
         updateSettings();
         //we do not care if sync is disabled, the app is in the foreground so we cache!
-        platform.getTransport().updateBeaconLayout();
+        transport.updateBeaconLayout();
         beaconActionHistoryPublisher.publishHistory();
     }
 
@@ -240,7 +246,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     }
 
     public void setApiToken(String apiToken) {
-        platform.getTransport().setApiToken(apiToken);
+        transport.setApiToken(apiToken);
         beaconActionHistoryPublisher.publishHistory();
         if (resolver.configuration.setApiToken(apiToken)) {
             unscheduleAllPendingActions();
@@ -271,7 +277,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     public void updateBeaconLayout() {
         if (platform.isSyncEnabled()) {
-            platform.getTransport().updateBeaconLayout();
+            transport.updateBeaconLayout();
         }
     }
 

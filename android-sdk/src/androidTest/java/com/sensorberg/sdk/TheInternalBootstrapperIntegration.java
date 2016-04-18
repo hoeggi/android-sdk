@@ -6,6 +6,7 @@ import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.model.server.ResolveAction;
 import com.sensorberg.sdk.model.server.ResolveResponse;
@@ -114,9 +115,11 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform platform = new TestPlatform();
-        platform.setTransport(
-                new OkHttpClientTransport(null, platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock(), testPlatformIdentifier, true));
-        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
+        Transport transport = new OkHttpClientTransport(null, platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock(),
+                testPlatformIdentifier, true);
+        platform.setTransport(transport);
+        tested = new InternalApplicationBootstrapper(platform, transport, testServiceScheduler, testHandlerManager,
+                testHandlerManager.getCustomClock(),
                 bluetoothPlatform, sharedPreferences);
 
         broadcastReceiver = new TestGenericBroadcastReceiver();

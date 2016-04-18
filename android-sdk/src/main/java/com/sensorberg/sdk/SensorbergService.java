@@ -199,7 +199,7 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform, sharedPreferences);
+                        bootstrapper = new InternalApplicationBootstrapper(platform, platform.getTransport(), serviceScheduler, handlerManager, clock, bluetoothPlatform, sharedPreferences);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper);
                         bootstrapper.startScanning();
@@ -382,7 +382,7 @@ public class SensorbergService extends Service {
             switch (type){
                 case MSG_SHUTDOWN:{
                     Logger.log.serviceHandlesMessage(MSG.stringFrom(type));
-                    MinimalBootstrapper minimalBootstrapper = bootstrapper != null ? bootstrapper : new MinimalBootstrapper(platform, serviceScheduler);
+                    MinimalBootstrapper minimalBootstrapper = bootstrapper != null ? bootstrapper : new MinimalBootstrapper(serviceScheduler);
                     fileManager.removeFile(SERVICE_CONFIGURATION);
                     ScannerBroadcastReceiver.setManifestReceiverEnabled(false, this);
                     GenericBroadcastReceiver.setManifestReceiverEnabled(false, this);
@@ -406,7 +406,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 platform.getTransport().setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform, sharedPreferences);
+                bootstrapper = new InternalApplicationBootstrapper(platform, platform.getTransport(), serviceScheduler, handlerManager, clock, bluetoothPlatform, sharedPreferences);
             } else{
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }

@@ -53,8 +53,6 @@ public class AndroidPlatform implements Platform {
 
     private Settings settings;
 
-    private boolean shouldUseHttpCache = true;
-
     private static boolean actionBroadcastReceiversRegistered;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -66,7 +64,7 @@ public class AndroidPlatform implements Platform {
     @Override
     public Transport getTransport() {
         if (asyncTransport == null) {
-            asyncTransport = new OkHttpClientTransport(settings, OkVolley.newRequestQueue(context, shouldUseHttpCache), clock,
+            asyncTransport = new OkHttpClientTransport(settings, OkVolley.newRequestQueue(context, true), clock,
                     platformIdentifier, false);
         }
         return asyncTransport;

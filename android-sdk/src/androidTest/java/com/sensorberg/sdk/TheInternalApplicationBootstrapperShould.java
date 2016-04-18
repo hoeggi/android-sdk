@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
@@ -59,7 +60,7 @@ public class TheInternalApplicationBootstrapperShould {
         TestPlatform testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
-        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
+        tested = spy(new InternalApplicationBootstrapper(testPlatform, new DumbSucessTransport(), testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
                 bluetoothPlatform, sharedPreferences));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
