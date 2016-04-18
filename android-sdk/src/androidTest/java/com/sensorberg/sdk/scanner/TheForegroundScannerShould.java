@@ -2,6 +2,7 @@ package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
@@ -48,18 +49,18 @@ public class TheForegroundScannerShould extends AndroidTestCase {
 
     private void setUpScanner() {
         tested = new UIScanner(new Settings(new DumbSucessTransport()), platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
-        tested.waitTime = Settings.DEFAULT_FOREGROUND_WAIT_TIME;
-        tested.scanTime = Settings.DEFAULT_FOREGROUND_SCAN_TIME;
+        tested.waitTime = DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME;
+        tested.scanTime = DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME;
     }
 
 
     public void test_be_in_foreground_mode(){
-        assertThat(tested.waitTime).isEqualTo(Settings.DEFAULT_FOREGROUND_WAIT_TIME);
-        assertThat(tested.scanTime).isEqualTo(Settings.DEFAULT_FOREGROUND_SCAN_TIME);
+        assertThat(tested.waitTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
+        assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
     }
 
     public void test_detect_no_beacon_because_it_is_sleeping(){
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
@@ -70,12 +71,12 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     }
 
     public void test_detect_beacon_because_sleep_has_ended(){
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
@@ -86,25 +87,25 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     }
 
     public void test_foreground_times_should_be_switched_to_background_times() {
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
 
         tested.hostApplicationInBackground();
-        assertThat(tested.waitTime).isEqualTo(Settings.DEFAULT_BACKGROUND_WAIT_TIME);
-        assertThat(tested.waitTime).isNotEqualTo(Settings.DEFAULT_FOREGROUND_WAIT_TIME);
-        assertThat(tested.scanTime).isEqualTo(Settings.DEFAULT_BACKGROUND_SCAN_TIME);
-        assertThat(tested.scanTime).isNotEqualTo(Settings.DEFAULT_FOREGROUND_SCAN_TIME);
+        assertThat(tested.waitTime).isEqualTo(DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME);
+        assertThat(tested.waitTime).isNotEqualTo(DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
+        assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME);
+        assertThat(tested.scanTime).isNotEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
     }
 
     public void test_do_not_detect_beacon_because_sleep_has_not_ended_due_to_background(){
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
 
         tested.hostApplicationInBackground();
 
@@ -121,22 +122,22 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
 
         tested.hostApplicationInBackground();
 
         //finish the foreground wait time
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME - 1);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME - 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
 
 
         //set time just before the end of the Background scan time
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + Settings.DEFAULT_BACKGROUND_SCAN_TIME -1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME -1);
         //mock a beacon, since the scanner is active, this one should be recognized
         bluetoothPlatform.fakeIBeaconSighting();
 
@@ -148,29 +149,29 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME / 2);
 
         tested.hostApplicationInBackground();
 
         //finish the foreground wait time
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME - 1);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME);
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME - 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
 
 
         //set time just before the end of the Background scan time
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + Settings.DEFAULT_BACKGROUND_SCAN_TIME + 1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME + 1);
         //mock a beacon, since the scanner is should be inactive, this should not be recognized
         bluetoothPlatform.fakeIBeaconSighting();
 
         //since it is one millis after, there should not be interactions
         verifyZeroInteractions(mockListener);
 
-        platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + Settings.DEFAULT_BACKGROUND_SCAN_TIME + Settings.DEFAULT_BACKGROUND_WAIT_TIME -1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME + DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME -1);
         bluetoothPlatform.fakeIBeaconSighting();
 
         //is is one milli before the end...

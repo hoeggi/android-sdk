@@ -62,7 +62,7 @@ public class TheScannerWithRestoredStateShould {
         tested.addScannerListener(listener);
         tested.start();
 
-        platform.clock.increaseTimeInMillis(settings.getExitTimeout() - 1);
+        platform.clock.increaseTimeInMillis(settings.getExitTimeoutMillis() - 1);
         platform.clock.increaseTimeInMillis(1);
         platform.clock.increaseTimeInMillis(1);
 
@@ -80,7 +80,7 @@ public class TheScannerWithRestoredStateShould {
         tested.addScannerListener(listener);
         tested.start();
 
-        platform.clock.increaseTimeInMillis(settings.getExitTimeout() - 1);
+        platform.clock.increaseTimeInMillis(settings.getExitTimeoutMillis() - 1);
         platform.clock.increaseTimeInMillis(1);
         platform.clock.increaseTimeInMillis(1);
 
@@ -98,7 +98,7 @@ public class TheScannerWithRestoredStateShould {
         tested.addScannerListener(listener);
         tested.start();
 
-        platform.clock.increaseTimeInMillis(settings.getExitTimeout() - 1);
+        platform.clock.increaseTimeInMillis(settings.getExitTimeoutMillis() - 1);
         bluetoothPlatform.fakeIBeaconSighting();
         platform.clock.increaseTimeInMillis(1);
         bluetoothPlatform.fakeIBeaconSighting();

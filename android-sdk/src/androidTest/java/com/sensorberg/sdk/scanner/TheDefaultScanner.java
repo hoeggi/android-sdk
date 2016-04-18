@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
+import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestFileManager;
@@ -48,8 +49,8 @@ public class TheDefaultScanner extends AndroidTestCase {
     }
 
     public void test_should_be_initially_setup_to_scan_in_with_the_background_configuration() throws Exception {
-        assertThat(tested.waitTime).isEqualTo(Settings.DEFAULT_BACKGROUND_WAIT_TIME);
-        assertThat(tested.scanTime).isEqualTo(Settings.DEFAULT_BACKGROUND_SCAN_TIME);
+        assertThat(tested.waitTime).isEqualTo(DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME);
+        assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME);
     }
 }
 

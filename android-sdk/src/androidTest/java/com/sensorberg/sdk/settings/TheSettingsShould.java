@@ -54,7 +54,7 @@ public class TheSettingsShould extends AndroidTestCase {
     public void test_initial_values_should_be_identical() throws Exception {
         Assertions.assertThat(untouched.getBackgroundScanTime()).isEqualTo(tested.getBackgroundScanTime());
         Assertions.assertThat(untouched.getBackgroundWaitTime()).isEqualTo(tested.getBackgroundWaitTime());
-        Assertions.assertThat(untouched.getExitTimeout()).isEqualTo(tested.getExitTimeout());
+        Assertions.assertThat(untouched.getExitTimeoutMillis()).isEqualTo(tested.getExitTimeoutMillis());
         Assertions.assertThat(untouched.getForeGroundScanTime()).isEqualTo(tested.getForeGroundScanTime());
         Assertions.assertThat(untouched.getForeGroundWaitTime()).isEqualTo(tested.getForeGroundWaitTime());
     }
@@ -64,7 +64,7 @@ public class TheSettingsShould extends AndroidTestCase {
 
         Assertions.assertThat(untouched.getBackgroundScanTime()).isNotEqualTo(tested.getBackgroundScanTime());
         Assertions.assertThat(untouched.getBackgroundWaitTime()).isNotEqualTo(tested.getBackgroundWaitTime());
-        Assertions.assertThat(untouched.getExitTimeout()).isNotEqualTo(tested.getExitTimeout());
+        Assertions.assertThat(untouched.getExitTimeoutMillis()).isNotEqualTo(tested.getExitTimeoutMillis());
         Assertions.assertThat(untouched.getForeGroundScanTime()).isNotEqualTo(tested.getForeGroundScanTime());
         Assertions.assertThat(untouched.getForeGroundWaitTime()).isNotEqualTo(tested.getForeGroundWaitTime());
     }
@@ -82,6 +82,6 @@ public class TheSettingsShould extends AndroidTestCase {
         //simulating a settings request without content
         tested.onSettingsFound(new JSONObject());
 
-        Assertions.assertThat(tested.getBackgroundWaitTime()).isEqualTo(Settings.DEFAULT_BACKGROUND_WAIT_TIME);
+        Assertions.assertThat(tested.getBackgroundWaitTime()).isEqualTo(DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME);
     }
 }

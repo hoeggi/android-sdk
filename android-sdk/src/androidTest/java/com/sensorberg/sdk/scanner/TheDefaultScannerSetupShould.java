@@ -83,16 +83,16 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     }
 
     public void test_exit_time_should_be_correct(){
-        assertThat(settings.getExitTimeout()).isEqualTo(Utils.EXIT_TIME);
+        assertThat(settings.getExitTimeoutMillis()).isEqualTo(Utils.EXIT_TIME);
     }
 
     public void test_background_scan_time_should_be_bigger_than_exitTimeout(){
         tested.hostApplicationInBackground();
 
-        assertThat(tested.waitTime).isGreaterThan(settings.getExitTimeout());
+        assertThat(tested.waitTime).isGreaterThan(settings.getExitTimeoutMillis());
     }
 
     public void test_foreground_scan_time_should_be_bigger_than_exitTimeout(){
-        assertThat(tested.scanTime).isGreaterThan(settings.getExitTimeout());
+        assertThat(tested.scanTime).isGreaterThan(settings.getExitTimeoutMillis());
     }
 }

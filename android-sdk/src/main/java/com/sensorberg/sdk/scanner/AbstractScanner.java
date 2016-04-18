@@ -10,6 +10,7 @@ import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.model.BeaconId;
+import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.TargetApi;
@@ -28,9 +29,9 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private static final long NEVER_STOPPED = 0L;
 
-    long waitTime = Settings.DEFAULT_BACKGROUND_WAIT_TIME;
+    long waitTime = DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME;
 
-    long scanTime = Settings.DEFAULT_BACKGROUND_SCAN_TIME;
+    long scanTime = DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME;
 
     private final Settings settings;
 
@@ -100,7 +101,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                     public boolean filter(EventEntry beaconEntry, BeaconId beaconId) {
                         //might be negative!!!
                         long timeSinceWeSawTheBeacon = now - lastBreakLength - beaconEntry.lastBeaconTime;
-                        if (timeSinceWeSawTheBeacon > settings.getExitTimeout()) {
+                        if (timeSinceWeSawTheBeacon > settings.getExitTimeoutMillis()) {
                             ScanEvent scanEvent = new ScanEvent(beaconId, now, ScanEventType.EXIT.getMask());
                             runLoop.sendMessage(ScannerEvent.EVENT_DETECTED, scanEvent);
                             Logger.log.beaconResolveState(scanEvent,
@@ -238,7 +239,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     protected abstract void clearScheduledExecutions();
 
     private void loop() {
-        if (clock.now() > (started + settings.getExitTimeout())) {
+        if (clock.now() > (started + settings.getExitTimeoutMillis())) {
             if (bluetoothPlatform.isLeScanRunning()) {
                 checkAndExitEnteredBeacons();
             }

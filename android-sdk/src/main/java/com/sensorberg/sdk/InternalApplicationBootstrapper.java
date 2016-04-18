@@ -83,7 +83,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         plattform.getTransport().setBeaconReportHandler(this);
         plattform.getTransport().setProximityUUIDUpdateHandler(this);
 
-        scanner = new Scanner(settings, settings.shouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager, btPlatform);
+        scanner = new Scanner(settings, settings.isShouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager, btPlatform);
         resolver = new Resolver(resolverConfiguration, handlerManager, plattform.getTransport());
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);
