@@ -4,6 +4,7 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
@@ -62,7 +63,9 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     @Inject
     FileManager fileManager;
 
-    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk) {
+    BluetoothPlatform bluetoothPlatform;
+
+    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk, BluetoothPlatform btPlatform) {
         super(plattform, scheduler);
         SensorbergApplication.getComponent().inject(this);
 
@@ -71,6 +74,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         settings.setCallback(this);
         plattform.setSettings(settings);
         clock = clk;
+        bluetoothPlatform = btPlatform;
 
         beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform.getTransport(), this, settings, clock, handlerManager);
 
@@ -79,7 +83,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         plattform.getTransport().setBeaconReportHandler(this);
         plattform.getTransport().setProximityUUIDUpdateHandler(this);
 
-        scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager);
+        scanner = new Scanner(settings, settings.shouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager, btPlatform);
         resolver = new Resolver(resolverConfiguration, handlerManager, plattform.getTransport());
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);
@@ -206,7 +210,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     }
 
     public void startScanning() {
-        if (platform.isBluetoothLowEnergySupported() && platform.isBluetoothLowEnergyDeviceTurnedOn()){
+        if (bluetoothPlatform.isBluetoothLowEnergySupported() && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()){
             scanner.start();
         }
     }

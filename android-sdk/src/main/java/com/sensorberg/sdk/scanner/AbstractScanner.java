@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
@@ -31,13 +32,13 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     long scanTime = Settings.DEFAULT_BACKGROUND_SCAN_TIME;
 
-    final Platform platform;
-
     private final Settings settings;
 
     Clock clock;
 
     ServiceScheduler serviceScheduler;
+
+    private final BluetoothPlatform bluetoothPlatform;
 
     private final ScanCallback scanCallback = new ScanCallback();
 
@@ -65,14 +66,14 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private RssiListener rssiListener = RssiListener.NONE;
 
-    AbstractScanner(Settings settings, Platform platform, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager,
-            ServiceScheduler scheduler, HandlerManager handlerManager) {
-        this.platform = platform;
-        this.settings = settings;
-        this.clock = clock;
+    AbstractScanner(Settings stg, boolean shouldRestoreBeaconStates, Clock clk, FileManager fileManager,
+            ServiceScheduler scheduler, HandlerManager handlerManager, BluetoothPlatform btPlatform) {
+        settings = stg;
+        clock = clk;
         serviceScheduler = scheduler;
         scanning = false;
         runLoop = handlerManager.getScannerRunLoop(this);
+        bluetoothPlatform = btPlatform;
 
         File beaconFile = shouldRestoreBeaconStates ? fileManager.getFile("enteredBeaconsCache") : null;
         enteredBeacons = new BeaconMap(fileManager, beaconFile);
@@ -178,7 +179,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 break;
             }
             case ScannerEvent.PAUSE_SCAN: {
-                platform.stopLeScan();
+                bluetoothPlatform.stopLeScan();
                 Logger.log.scannerStateChange("sleeping for" + waitTime + "millis");
                 scheduleExecution(ScannerEvent.UN_PAUSE_SCAN, waitTime);
                 runLoop.cancelFixedRateExecution();
@@ -190,7 +191,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 Logger.log.scannerStateChange("starting to scan again, scan break was " + lastBreakLength + "millis");
                 if (scanning) {
                     Logger.log.scannerStateChange("scanning for" + scanTime + "millis");
-                    platform.startLeScan(scanCallback);
+                    bluetoothPlatform.startLeScan(scanCallback);
                     scheduleExecution(ScannerEvent.PAUSE_SCAN, scanTime);
 
                     runLoop.scheduleAtFixedRate(new TimerTask() {
@@ -206,7 +207,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 started = 0;
                 scanning = false;
                 clearScheduledExecutions();
-                platform.stopLeScan();
+                bluetoothPlatform.stopLeScan();
                 lastStopTimestamp = clock.now();
                 runLoop.cancelFixedRateExecution();
                 Logger.log.scannerStateChange("scan stopped");
@@ -238,7 +239,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private void loop() {
         if (clock.now() > (started + settings.getExitTimeout())) {
-            if (platform.isLeScanRunning()) {
+            if (bluetoothPlatform.isLeScanRunning()) {
                 checkAndExitEnteredBeacons();
             }
         }

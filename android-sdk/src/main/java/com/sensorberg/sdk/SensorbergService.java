@@ -4,6 +4,7 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
@@ -83,6 +84,10 @@ public class SensorbergService extends Service {
     @Named("realClock")
     Clock clock;
 
+    @Inject
+    @Named("androidBluetoothPlatform")
+    BluetoothPlatform bluetoothPlatform;
+
     Platform platform;
 
     private static class MSG {
@@ -158,7 +163,7 @@ public class SensorbergService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.log.logServiceState("onStartCommand");
 
-        if (!platform.isBluetoothLowEnergySupported() || !platform.hasMinimumAndroidRequirements()){
+        if (!bluetoothPlatform.isBluetoothLowEnergySupported() || !bluetoothPlatform.hasMinimumAndroidRequirements()){
             Logger.log.logError("platform.isBluetoothLowEnergySupported or platform.hasMinimumAndroidRequirement, shutting down.");
             stopSelf();
             return START_NOT_STICKY;
@@ -190,7 +195,7 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock);
+                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper);
                         bootstrapper.startScanning();
@@ -397,7 +402,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 platform.getTransport().setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock);
+                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform);
             } else{
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }

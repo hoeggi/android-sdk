@@ -1,6 +1,7 @@
 package com.sensorberg.di;
 
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
+import com.sensorberg.sdk.internal.AndroidBluetoothPlatform;
 import com.sensorberg.sdk.internal.AndroidClock;
 import com.sensorberg.sdk.internal.AndroidFileManager;
 import com.sensorberg.sdk.internal.AndroidHandlerManager;
@@ -8,6 +9,7 @@ import com.sensorberg.sdk.internal.AndroidPlatformIdentifier;
 import com.sensorberg.sdk.internal.AndroidServiceScheduler;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
@@ -17,8 +19,12 @@ import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.NotificationManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -88,7 +94,8 @@ public class ProvidersModule {
 
     @Provides
     @Singleton
-    public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, @Named("realClock") Clock clock, PersistentIntegerCounter persistentIntegerCounter) {
+    public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, @Named("realClock") Clock clock,
+            PersistentIntegerCounter persistentIntegerCounter) {
         return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
     }
 
@@ -110,5 +117,24 @@ public class ProvidersModule {
     @Singleton
     public PlatformIdentifier provideAndroidPlatformIdentifier(Context ctx, SharedPreferences settingsSharedPrefs) {
         return new AndroidPlatformIdentifier(ctx, settingsSharedPrefs);
+    }
+
+    @Provides
+    @Named("androidBluetoothPlatform")
+    @Singleton
+    public BluetoothPlatform provideAndroidBluetoothPlatform(BluetoothAdapter adapter, CrashCallBackWrapper wrapper) {
+        return new AndroidBluetoothPlatform(adapter, wrapper);
+    }
+
+    @Provides
+    @Singleton
+    public BluetoothAdapter provideBluetoothAdapter(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+                && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+            return bluetoothManager.getAdapter();
+        } else {
+            return null;
+        }
     }
 }

@@ -2,8 +2,7 @@ package com.sensorberg.sdk.internal;
 
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.okvolley.OkVolley;
-import com.sensorberg.bluetooth.CrashCallBackWrapper;
-import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
@@ -13,14 +12,11 @@ import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 
 import java.util.List;
@@ -46,19 +42,14 @@ public class AndroidPlatform implements Platform {
     private final Context context;
 
     @Inject
-    CrashCallBackWrapper crashCallBackWrapper;
-
-    @Inject
     @Named("androidPlatformIdentifier")
     PlatformIdentifier platformIdentifier;
 
-    private final BluetoothAdapter bluetoothAdapter;
-
-    private final boolean bluetoothLowEnergySupported;
+    @Inject
+    @Named("androidBluetoothPlatform")
+    BluetoothPlatform bluetoothPlatform;
 
     private Transport asyncTransport;
-
-    private boolean leScanRunning = false;
 
     private Settings settings;
 
@@ -70,15 +61,6 @@ public class AndroidPlatform implements Platform {
     public AndroidPlatform(Context context) {
         this.context = context;
         SensorbergApplication.getComponent().inject(this);
-
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-            bluetoothAdapter = bluetoothManager.getAdapter();
-            bluetoothLowEnergySupported = true;
-        } else {
-            bluetoothLowEnergySupported = false;
-            bluetoothAdapter = null;
-        }
     }
 
     @Override
@@ -103,11 +85,6 @@ public class AndroidPlatform implements Platform {
         } else {
             return true;
         }
-    }
-
-    @Override
-    public boolean hasMinimumAndroidRequirements() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
     }
 
     @Override
@@ -146,65 +123,9 @@ public class AndroidPlatform implements Platform {
         }
     }
 
-    /**
-     * Returns a flag indicating whether Bluetooth is enabled.
-     *
-     * @return a flag indicating whether Bluetooth is enabled
-     */
-    @Override
-    public boolean isBluetoothLowEnergyDeviceTurnedOn() {
-        //noinspection SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement
-        return bluetoothLowEnergySupported && (bluetoothAdapter.isEnabled());
-    }
-
-    /**
-     * Returns a flag indicating whether Bluetooth is supported.
-     *
-     * @return a flag indicating whether Bluetooth is supported
-     */
     @Override
     public boolean isBluetoothLowEnergySupported() {
-        return bluetoothLowEnergySupported;
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    @Override
-    public void startLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
-        if (bluetoothLowEnergySupported) {
-            if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
-                //noinspection deprecation old API compatability
-                bluetoothAdapter.startLeScan(crashCallBackWrapper);
-                crashCallBackWrapper.setCallback(scanCallback);
-                leScanRunning = true;
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    @Override
-    public void stopLeScan() {
-        if (bluetoothLowEnergySupported) {
-            try {
-                //noinspection deprecation old API compatability
-                bluetoothAdapter.stopLeScan(crashCallBackWrapper);
-            } catch (NullPointerException sentBySysteminternally) {
-                Logger.log.logError("System bug throwing a NullPointerException internally.", sentBySysteminternally);
-            } finally {
-                leScanRunning = false;
-                crashCallBackWrapper.setCallback(null);
-            }
-        }
-    }
-
-    @Override
-    public boolean isLeScanRunning() {
-        return leScanRunning;
-    }
-
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
-    @Override
-    public boolean isBluetoothEnabled() {
-        return bluetoothLowEnergySupported && bluetoothAdapter.isEnabled();
+        return bluetoothPlatform.isBluetoothLowEnergySupported();
     }
 
 }

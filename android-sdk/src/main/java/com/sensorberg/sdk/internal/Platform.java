@@ -1,12 +1,9 @@
 package com.sensorberg.sdk.internal;
 
-import android.annotation.TargetApi;
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.os.Build;
-
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.settings.Settings;
+
+import android.content.BroadcastReceiver;
 
 import java.util.List;
 
@@ -18,8 +15,6 @@ public interface Platform {
 
     boolean isSyncEnabled();
 
-    boolean hasMinimumAndroidRequirements();
-
     void setSettings(Settings settings);
 
     String getHostApplicationId();
@@ -29,7 +24,6 @@ public interface Platform {
     boolean registerBroadcastReceiver();
 
     void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver);
-
 
     interface ForegroundStateListener {
 
@@ -51,27 +45,10 @@ public interface Platform {
     }
 
     /**
-     * Returns a flag indicating whether Bluetooth is enabled.
-     *
-     * @return a flag indicating whether Bluetooth is enabled
-     */
-    boolean isBluetoothLowEnergyDeviceTurnedOn();
-
-    /**
      * Returns a flag indicating whether Bluetooth is supported.
      *
      * @return a flag indicating whether Bluetooth is supported
      */
-    boolean isBluetoothLowEnergySupported();
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    void startLeScan(BluetoothAdapter.LeScanCallback scanCallback);
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    void stopLeScan();
-
-    boolean isLeScanRunning();
-
-    boolean isBluetoothEnabled();
+    boolean isBluetoothLowEnergySupported(); //TODO remove after integrating Bootstrapper
 
 }
