@@ -8,10 +8,10 @@ import com.sensorberg.android.okvolley.OkHttpStack;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.Platform;
-import com.sensorberg.sdk.internal.interfaces.RunLoop;
-import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
+import com.sensorberg.sdk.internal.interfaces.RunLoop;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.Settings;
 
@@ -25,7 +25,6 @@ import android.os.Build;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -38,9 +37,6 @@ import static util.Utils.wrapWithZeroBytes;
 public class TestPlatform implements Platform, HandlerManager {
 
     public static final String TAG = "TestPlatform";
-
-    public static final UUID deviceInstallationIdentifier = UUID.randomUUID();
-    public static final String googleAdertiserIdentifier = "google" + UUID.randomUUID();
 
     public static final String ADVERTISEMENT_DATA_FLAGS = "020106";
     public static final String ADVERTISEMENT_DATA_FLAGS_ANDROID_NEXUS_9 = "020102";
@@ -123,21 +119,6 @@ public class TestPlatform implements Platform, HandlerManager {
     }
 
     @Override
-    public String getUserAgentString() {
-        return "something";
-    }
-
-    @Override
-    public String getDeviceInstallationIdentifier() {
-        return deviceInstallationIdentifier.toString();
-    }
-
-    @Override
-    public String getAdvertiserIdentifier() {
-        return googleAdertiserIdentifier;
-    }
-
-    @Override
     public Transport getTransport() {
         return transport;
     }
@@ -197,14 +178,6 @@ public class TestPlatform implements Platform, HandlerManager {
     @Override
     public void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver) {
         android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener) {
-    }
-
-    @Override
-    public void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener) {
     }
 
     @Override

@@ -3,10 +3,12 @@ package com.sensorberg.sdk.di;
 import com.sensorberg.di.ProvidersModule;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.testUtils.NoClock;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
+import com.sensorberg.sdk.testUtils.TestPlatformIdentifier;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.app.AlarmManager;
@@ -58,5 +60,12 @@ public class TestProvidersModule extends ProvidersModule {
     @Singleton
     public TestHandlerManager provideTestHandlerManagerWithCustomClock() {
         return new TestHandlerManager();
+    }
+
+    @Provides
+    @Named("testPlatformIdentifier")
+    @Singleton
+    public PlatformIdentifier provideTestPlatformIdentifier() {
+        return new TestPlatformIdentifier();
     }
 }

@@ -1,8 +1,11 @@
 package com.sensorberg.sdk.settings;
 
 import com.sensorberg.sdk.Constants;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
@@ -23,6 +26,10 @@ public class TheSettingsShould extends AndroidTestCase {
     @Named("realClock")
     Clock clock;
 
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
+
     Settings tested;
     Settings untouched;
     private TestPlatform platform;
@@ -32,8 +39,10 @@ public class TheSettingsShould extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
         platform = new TestPlatform();
-        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), clock));
+        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), clock, testPlatformIdentifier));
         platform.getTransport().setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
         tested = new Settings(platform);

@@ -5,9 +5,12 @@ import com.android.sensorbergVolley.VolleyError;
 import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.sdk.SensorbergApplicationTest;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.http.helper.OkHttpStackWithFailures;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -28,8 +31,12 @@ import static util.Utils.failWithVolleyError;
 public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest {
 
     @Inject
-    @Named("realClock")
-    Clock clock;
+    @Named("noClock")
+    Clock clock; //TODO should use test clock???
+
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
 
     protected Transport tested;
     protected TestPlatform testPlattform;
@@ -37,6 +44,7 @@ public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         testPlattform = spy(new TestPlatform());
 
         BasicNetwork network = new BasicNetwork(new OkHttpStackWithFailures(2));
@@ -47,7 +55,7 @@ public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest 
 
         when(testPlattform.getCachedVolleyQueue()).thenReturn(queue);
 
-        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), clock);
+        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 

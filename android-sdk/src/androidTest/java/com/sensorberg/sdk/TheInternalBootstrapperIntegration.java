@@ -4,6 +4,7 @@ import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.model.server.ResolveAction;
 import com.sensorberg.sdk.model.server.ResolveResponse;
@@ -42,6 +43,10 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     @Inject
     @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
+
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
 
     InternalApplicationBootstrapper tested;
 
@@ -97,7 +102,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform platform = new TestPlatform();
-        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock()));
+        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock(), testPlatformIdentifier));
         tested = new InternalApplicationBootstrapper(platform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock());
 
         broadcastReceiver = new TestGenericBroadcastReceiver();

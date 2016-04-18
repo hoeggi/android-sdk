@@ -6,9 +6,12 @@ import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
 import com.sensorberg.sdk.SensorbergApplicationTest;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 import com.sensorberg.sdk.test.R;
@@ -52,6 +55,10 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
     @Named("realClock")
     Clock clock;
 
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
+
     protected Transport tested;
     protected TestPlatform testPlattform;
     private OkHttpStack stack;
@@ -60,6 +67,7 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         testPlattform = spy(new TestPlatform());
 
@@ -72,7 +80,7 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
         queue.start();
 
         when(testPlattform.getCachedVolleyQueue()).thenReturn(queue);
-        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), clock);
+        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier);
         tested.setApiToken(TestConstants.API_TOKEN);
         startWebserver();
     }

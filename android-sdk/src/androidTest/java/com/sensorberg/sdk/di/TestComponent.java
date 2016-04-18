@@ -6,6 +6,10 @@ import com.sensorberg.sdk.TheInternalBootstrapperIntegration;
 import com.sensorberg.sdk.TheSensorbergServiceShould;
 import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
+import com.sensorberg.sdk.internal.http.OkHttpClientTransportWithRetries;
+import com.sensorberg.sdk.internal.http.OkHttpUserAgentTest;
+import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettings;
+import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettingsWithEtags;
 import com.sensorberg.sdk.internal.http.TransportShould;
 import com.sensorberg.sdk.model.realm.TheRealmActionObjectShould;
 import com.sensorberg.sdk.resolver.TheResolverShould;
@@ -23,6 +27,7 @@ import com.sensorberg.sdk.scanner.TheScannerWithRestoredStateShould;
 import com.sensorberg.sdk.scanner.TheScannerWithTimeoutsShould;
 import com.sensorberg.sdk.scanner.TheScannerWithoutPausesShould;
 import com.sensorberg.sdk.service.TheServiceConfiguration;
+import com.sensorberg.sdk.settings.TheSettingsShould;
 
 import android.app.Application;
 
@@ -80,6 +85,16 @@ public interface TestComponent extends Component {
     void inject(TheBeconHistorySynchronousIntegrationTest theBeconHistorySynchronousIntegrationTest);
 
     void inject(TransportShould transportShould);
+
+    void inject(OkHttpClientTransportWithRetries okHttpClientTransportWithRetries);
+
+    void inject(OkHttpUserAgentTest okHttpUserAgentTest);
+
+    void inject(OkVolleyShouldCacheTheSettings okVolleyShouldCacheTheSettings);
+
+    void inject(OkVolleyShouldCacheTheSettingsWithEtags okVolleyShouldCacheTheSettingsWithEtags);
+
+    void inject(TheSettingsShould theSettingsShould);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

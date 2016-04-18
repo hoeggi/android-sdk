@@ -4,6 +4,7 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
@@ -36,6 +37,10 @@ public class TheResolverShould extends AndroidTestCase {
     @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
+
     private Resolver testedWithFakeBackend;
 
     private static final ScanEvent SCANEVENT_1 = new ScanEvent.Builder()
@@ -54,7 +59,8 @@ public class TheResolverShould extends AndroidTestCase {
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
         androidPlattform = spy(new TestPlatform());
         androidPlattform
-                .setTransport(new OkHttpClientTransport(androidPlattform, null, androidPlattform.getCachedVolleyQueue(), testHandlerManager.getCustomClock()));
+                .setTransport(new OkHttpClientTransport(androidPlattform, null, androidPlattform.getCachedVolleyQueue(),
+                        testHandlerManager.getCustomClock(), testPlatformIdentifier));
         androidPlattform.getTransport().setApiToken(TestConstants.API_TOKEN);
         testHandlerManager.getCustomClock().setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
 

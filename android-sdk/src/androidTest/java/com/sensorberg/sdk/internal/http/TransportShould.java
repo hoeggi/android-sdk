@@ -9,6 +9,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
@@ -57,6 +58,10 @@ public class TransportShould extends SensorbergApplicationTest {
     @Named("testClock")
     TestClock clock;
 
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
+
     protected Transport tested;
     protected TestPlatform testPlattform;
     private ScanEvent scanEvent;
@@ -78,7 +83,7 @@ public class TransportShould extends SensorbergApplicationTest {
 
         settings = mock(Settings.class);
 
-        tested = new OkHttpClientTransport(testPlattform, settings, testPlattform.getCachedVolleyQueue(), clock);
+        tested = new OkHttpClientTransport(testPlattform, settings, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier);
         tested.setApiToken(TestConstants.API_TOKEN);
 
     }
