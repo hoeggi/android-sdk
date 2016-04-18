@@ -22,11 +22,6 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
         bluetoothAdapter = adapter;
     }
 
-    @Override
-    public boolean hasMinimumAndroidRequirements() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
-    }
-
     /**
      * Returns a flag indicating whether Bluetooth is enabled.
      *

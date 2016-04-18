@@ -6,8 +6,6 @@ import android.os.Build;
 
 public interface BluetoothPlatform {
 
-    boolean hasMinimumAndroidRequirements();
-
     /**
      * Returns a flag indicating whether Bluetooth is enabled.
      *

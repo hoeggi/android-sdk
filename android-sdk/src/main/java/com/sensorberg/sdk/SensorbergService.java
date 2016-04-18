@@ -163,8 +163,8 @@ public class SensorbergService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.log.logServiceState("onStartCommand");
 
-        if (!bluetoothPlatform.isBluetoothLowEnergySupported() || !bluetoothPlatform.hasMinimumAndroidRequirements()){
-            Logger.log.logError("platform.isBluetoothLowEnergySupported or platform.hasMinimumAndroidRequirement, shutting down.");
+        if (!bluetoothPlatform.isBluetoothLowEnergySupported()){
+            Logger.log.logError("isBluetoothLowEnergySupported not true, shutting down.");
             stopSelf();
             return START_NOT_STICKY;
         }
