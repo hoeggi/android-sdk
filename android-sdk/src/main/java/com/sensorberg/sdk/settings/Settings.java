@@ -18,33 +18,7 @@ import lombok.Setter;
 
 public class Settings implements TransportSettingsCallback {
 
-    public interface SettingsCallback {
-
-        SettingsCallback NONE = new SettingsCallback() {
-            @Override
-            public void onSettingsUpdateIntervalChange(Long updateIntervalMillies) {
-
-            }
-
-            @Override
-            public void onSettingsBeaconLayoutUpdateIntervalChange(long newLayoutUpdateInterval) {
-
-            }
-
-            @Override
-            public void onHistoryUploadIntervalChange(long newHistoryUploadInterval) {
-
-            }
-        };
-
-        void onSettingsUpdateIntervalChange(Long updateIntervalMillies);
-
-        void onSettingsBeaconLayoutUpdateIntervalChange(long newLayoutUpdateInterval);
-
-        void onHistoryUploadIntervalChange(long newHistoryUploadInterval);
-    }
-
-    private final Transport transport;
+   private final Transport transport;
 
     @Inject
     SharedPreferences preferences;
@@ -94,7 +68,7 @@ public class Settings implements TransportSettingsCallback {
     private Long revision = null;
 
     @Setter
-    private SettingsCallback callback = SettingsCallback.NONE;
+    private SettingsUpdateCallback settingsUpdateCallback = SettingsUpdateCallback.NONE;
 
     public Settings(Transport transport) {
         this.transport = transport;
@@ -181,19 +155,19 @@ public class Settings implements TransportSettingsCallback {
         long newHistoryUploadIntervalMillis = settings.optLong("network.historyUploadInterval", DefaultSettings.DEFAULT_HISTORY_UPLOAD_INTERVAL);
         if (newHistoryUploadIntervalMillis != historyUploadInterval) {
             historyUploadInterval = newHistoryUploadIntervalMillis;
-            callback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
+            settingsUpdateCallback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
         }
 
         long newLayoutUpdateInterval = settings.optLong("network.beaconLayoutUpdateInterval", DefaultSettings.DEFAULT_LAYOUT_UPDATE_INTERVAL);
         if (newLayoutUpdateInterval != layoutUpdateInterval) {
             layoutUpdateInterval = newLayoutUpdateInterval;
-            callback.onSettingsBeaconLayoutUpdateIntervalChange(newLayoutUpdateInterval);
+            settingsUpdateCallback.onSettingsBeaconLayoutUpdateIntervalChange(newLayoutUpdateInterval);
         }
 
         final long newSettingsUpdateInterval = settings.optLong("settings.updateTime", DefaultSettings.DEFAULT_SETTINGS_UPDATE_INTERVAL);
         if (newSettingsUpdateInterval != settingsUpdateInterval) {
             settingsUpdateInterval = newSettingsUpdateInterval;
-            callback.onSettingsUpdateIntervalChange(newSettingsUpdateInterval);
+            settingsUpdateCallback.onSettingsUpdateIntervalChange(newSettingsUpdateInterval);
         }
 
         persistToPreferences();
@@ -202,7 +176,7 @@ public class Settings implements TransportSettingsCallback {
     public void historyUploadIntervalChanged(Long newHistoryUploadIntervalMillis) {
         if (newHistoryUploadIntervalMillis != historyUploadInterval) {
             historyUploadInterval = newHistoryUploadIntervalMillis;
-            callback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
+            settingsUpdateCallback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
             persistToPreferences();
         }
     }

@@ -25,6 +25,7 @@ import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.Scanner;
 import com.sensorberg.sdk.scanner.ScannerListener;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsUpdateCallback;
 import com.sensorberg.utils.ListUtils;
 
 import android.content.ContentResolver;
@@ -41,18 +42,23 @@ import javax.inject.Inject;
 
 import io.realm.Realm;
 
-public class InternalApplicationBootstrapper extends MinimalBootstrapper implements ScannerListener, ResolverListener, Settings.SettingsCallback, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
+public class InternalApplicationBootstrapper extends MinimalBootstrapper
+        implements ScannerListener, ResolverListener, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
 
     private static final boolean SURVIVE_REBOOT = true;
+
     final Resolver resolver;
+
     final Scanner scanner;
 
     private final Settings settings;
 
     private final BeaconActionHistoryPublisher beaconActionHistoryPublisher;
+
     private final Object proximityUUIDsMonitor = new Object();
 
     private SensorbergService.MessengerList presentationDelegate;
+
     final Set<String> proximityUUIDs = new HashSet<>();
 
     @Inject
@@ -65,13 +71,14 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     BluetoothPlatform bluetoothPlatform;
 
-    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk, BluetoothPlatform btPlatform) {
+    public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk,
+            BluetoothPlatform btPlatform) {
         super(plattform, scheduler);
         SensorbergApplication.getComponent().inject(this);
 
         settings = new Settings(plattform.getTransport());
         settings.restoreValuesFromPreferences();
-        settings.setCallback(this);
+        settings.setSettingsUpdateCallback(settingsUpdateCallbackListener);
         plattform.setSettings(settings);
         clock = clk;
         bluetoothPlatform = btPlatform;
@@ -106,14 +113,14 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         serviceScheduler.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, settings.getHistoryUploadInterval(), TimeUnit.MILLISECONDS);
     }
 
-    private void setUpAlarmsForSettings(){
+    private void setUpAlarmsForSettings() {
         serviceScheduler.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settings.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
     }
 
-    private void updateAlarmsForActionLayoutFetch(){
+    private void updateAlarmsForActionLayoutFetch() {
         if (platform.isSyncEnabled()) {
             serviceScheduler.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settings.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
-        } else{
+        } else {
             serviceScheduler.cancelIntent(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
         }
     }
@@ -123,7 +130,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         beaconActionHistoryPublisher.onScanEventDetected(scanEvent);
 
         boolean contained;
-        synchronized (proximityUUIDsMonitor){
+        synchronized (proximityUUIDsMonitor) {
             contained = proximityUUIDs.isEmpty() || proximityUUIDs.contains(scanEvent.getBeaconId().getProximityUUIDWithoutDashes());
         }
         if (contained) {
@@ -176,7 +183,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     @Override
     public void onResolutionFailed(Resolution resolution, Throwable cause) {
-        Logger.log.logError("resolution failed:"+ resolution.configuration.getScanEvent().getBeaconId().toTraditionalString() , cause);
+        Logger.log.logError("resolution failed:" + resolution.configuration.getScanEvent().getBeaconId().toTraditionalString(), cause);
     }
 
     @Override
@@ -210,7 +217,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     }
 
     public void startScanning() {
-        if (bluetoothPlatform.isBluetoothLowEnergySupported() && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()){
+        if (bluetoothPlatform.isBluetoothLowEnergySupported() && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
             scanner.start();
         }
     }
@@ -234,7 +241,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
     public void setApiToken(String apiToken) {
         platform.getTransport().setApiToken(apiToken);
         beaconActionHistoryPublisher.publishHistory();
-        if (resolver.configuration.setApiToken(apiToken)){
+        if (resolver.configuration.setApiToken(apiToken)) {
             unscheduleAllPendingActions();
             beaconActionHistoryPublisher.deleteAllObjects();
         }
@@ -242,24 +249,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     public void updateSettings() {
         settings.updateValues();
-    }
-
-    @Override
-    public void onSettingsUpdateIntervalChange(Long updateIntervalMillies) {
-        serviceScheduler.cancelIntent(SensorbergService.MSG_SETTINGS_UPDATE);
-        serviceScheduler.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, updateIntervalMillies, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void onSettingsBeaconLayoutUpdateIntervalChange(long newLayoutUpdateInterval) {
-        serviceScheduler.cancelIntent(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
-        serviceScheduler.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, newLayoutUpdateInterval, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void onHistoryUploadIntervalChange(long newHistoryUploadInterval) {
-        serviceScheduler.cancelIntent(SensorbergService.MSG_UPLOAD_HISTORY);
-        serviceScheduler.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, newHistoryUploadInterval, TimeUnit.MILLISECONDS);
     }
 
     public void retryScanEventResolve(ResolutionConfiguration retry) {
@@ -299,4 +288,24 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
             }
         }
     }
+
+    SettingsUpdateCallback settingsUpdateCallbackListener = new SettingsUpdateCallback() {
+        @Override
+        public void onSettingsUpdateIntervalChange(Long updateIntervalMillies) {
+            serviceScheduler.cancelIntent(SensorbergService.MSG_SETTINGS_UPDATE);
+            serviceScheduler.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, updateIntervalMillies, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public void onSettingsBeaconLayoutUpdateIntervalChange(long newLayoutUpdateInterval) {
+            serviceScheduler.cancelIntent(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
+            serviceScheduler.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, newLayoutUpdateInterval, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public void onHistoryUploadIntervalChange(long newHistoryUploadInterval) {
+            serviceScheduler.cancelIntent(SensorbergService.MSG_UPLOAD_HISTORY);
+            serviceScheduler.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, newHistoryUploadInterval, TimeUnit.MILLISECONDS);
+        }
+    };
 }
