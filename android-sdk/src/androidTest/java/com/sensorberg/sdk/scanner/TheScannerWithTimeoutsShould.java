@@ -12,6 +12,7 @@ import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
 
+import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
@@ -38,6 +39,9 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
     @Inject
     TestBluetoothPlatform bluetoothPlatform;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private UIScanner tested;
 
     @Override
@@ -47,7 +51,7 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
 
         TestPlatform plattform = new TestPlatform();
         testHandlerManager.getCustomClock().setNowInMillis(0);
-        tested = new UIScanner(new Settings(new DumbSucessTransport()), testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+        tested = new UIScanner(new Settings(new DumbSucessTransport(), sharedPreferences), testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);
 
         tested.start();

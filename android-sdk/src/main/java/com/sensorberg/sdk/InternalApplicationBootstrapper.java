@@ -31,6 +31,7 @@ import com.sensorberg.utils.ListUtils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
 
 import java.util.HashSet;
@@ -72,11 +73,11 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     BluetoothPlatform bluetoothPlatform;
 
     public InternalApplicationBootstrapper(Platform plattform, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk,
-            BluetoothPlatform btPlatform) {
+            BluetoothPlatform btPlatform, SharedPreferences preferences) {
         super(plattform, scheduler);
         SensorbergApplication.getComponent().inject(this);
 
-        settings = new Settings(plattform.getTransport());
+        settings = new Settings(plattform.getTransport(), preferences);
         settings.restoreValuesFromPreferences();
         settings.setSettingsUpdateCallback(settingsUpdateCallbackListener);
         plattform.setSettings(settings);

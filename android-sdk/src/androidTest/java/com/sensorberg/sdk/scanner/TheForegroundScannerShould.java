@@ -12,6 +12,7 @@ import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
 
+import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
@@ -35,6 +36,9 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     @Inject
     TestBluetoothPlatform bluetoothPlatform;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private TestPlatform platform;
     private UIScanner tested;
 
@@ -48,7 +52,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(new DumbSucessTransport()), platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
+        tested = new UIScanner(new Settings(new DumbSucessTransport(), sharedPreferences), platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
         tested.waitTime = DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME;
         tested.scanTime = DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME;
     }

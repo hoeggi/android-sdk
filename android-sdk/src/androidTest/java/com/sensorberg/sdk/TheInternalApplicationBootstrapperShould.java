@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.content.SharedPreferences;
 import android.support.test.runner.AndroidJUnit4;
 
 import java.util.Arrays;
@@ -26,9 +27,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(AndroidJUnit4.class)
-public class TheInternalApplicationBootstrapperShould{
+public class TheInternalApplicationBootstrapperShould {
 
     private static final java.util.UUID UUID = java.util.UUID.randomUUID();
+
     private static final long SUPPRESSION_TIME = 10000;
 
     @Inject
@@ -42,27 +44,32 @@ public class TheInternalApplicationBootstrapperShould{
     @Named("testBluetoothPlatform")
     BluetoothPlatform bluetoothPlatform;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     InternalApplicationBootstrapper tested;
+
     private BeaconEvent beaconEventSupressionTime;
+
     private BeaconEvent beaconEventSentOnlyOnce;
-    private TestPlatform testPlatform;
 
     @Before
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        testPlatform = new TestPlatform();
+        TestPlatform testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
-        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(), bluetoothPlatform));
+        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
+                bluetoothPlatform, sharedPreferences));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
-                .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null ,null, 0))
+                .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null, null, 0))
                 .withSuppressionTime(SUPPRESSION_TIME)
                 .withPresentationTime(0)
                 .build();
 
         beaconEventSentOnlyOnce = new BeaconEvent.Builder()
-                .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null ,null, 0))
+                .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null, null, 0))
                 .withSendOnlyOnce(true)
                 .withPresentationTime(0)
                 .build();
@@ -76,7 +83,7 @@ public class TheInternalApplicationBootstrapperShould{
     }
 
     @Test
-    public void test_end_of_supression_time(){
+    public void test_end_of_supression_time() {
         tested.onResolutionsFinished(Arrays.asList(beaconEventSupressionTime));
 
         testHandlerManager.getCustomClock().setNowInMillis(SUPPRESSION_TIME + 1);
@@ -86,7 +93,7 @@ public class TheInternalApplicationBootstrapperShould{
     }
 
     @Test
-    public void test_send_only_once(){
+    public void test_send_only_once() {
         tested.onResolutionsFinished(Arrays.asList(beaconEventSentOnlyOnce));
         tested.onResolutionsFinished(Arrays.asList(beaconEventSentOnlyOnce));
         verify(tested, times(1)).presentBeaconEvent(any(BeaconEvent.class));

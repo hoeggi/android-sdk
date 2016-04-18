@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.content.SharedPreferences;
 import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
@@ -37,6 +38,9 @@ public class TheScannerWithRestoredStateShould {
     @Inject
     TestBluetoothPlatform bluetoothPlatform;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private Settings settings;
 
     private TestPlatform platform;
@@ -47,7 +51,7 @@ public class TheScannerWithRestoredStateShould {
         platform = new TestPlatform();
         platform = spy(platform);
 
-        settings = new Settings(new DumbSucessTransport());
+        settings = new Settings(new DumbSucessTransport(), sharedPreferences);
         platform.setSettings(settings);
     }
 

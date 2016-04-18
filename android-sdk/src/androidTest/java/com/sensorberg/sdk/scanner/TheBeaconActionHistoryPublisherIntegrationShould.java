@@ -12,6 +12,8 @@ import com.sensorberg.sdk.settings.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import android.content.SharedPreferences;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -30,6 +32,9 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
     @Named("noClock")
     Clock clock;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private ScanEvent SCAN_EVENT;
 
     private BeaconActionHistoryPublisher tested;
@@ -40,7 +45,7 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         Platform platform = spy(new AndroidPlatform(getContext()));
-        Settings settings = new Settings(platform.getTransport());
+        Settings settings = new Settings(platform.getTransport(), sharedPreferences);
         tested = new BeaconActionHistoryPublisher(platform.getTransport(), ResolverListener.NONE, settings, clock, testHandleManager);
 
         startWebserver();

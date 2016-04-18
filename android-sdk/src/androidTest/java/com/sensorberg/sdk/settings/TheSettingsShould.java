@@ -45,10 +45,10 @@ public class TheSettingsShould extends AndroidTestCase {
         platform.setTransport(new OkHttpClientTransport(null, platform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true));
         platform.getTransport().setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        tested = new Settings(platform.getTransport());
+        tested = new Settings(platform.getTransport(), testedSharedPreferences);
 
         untouchedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        untouched = new Settings(platform.getTransport());
+        untouched = new Settings(platform.getTransport(), untouchedSharedPreferences);
     }
 
     public void test_initial_values_should_be_identical() throws Exception {

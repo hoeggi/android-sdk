@@ -20,6 +20,7 @@ import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.DeadObjectException;
@@ -87,6 +88,9 @@ public class SensorbergService extends Service {
     @Inject
     @Named("androidBluetoothPlatform")
     BluetoothPlatform bluetoothPlatform;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
     Platform platform;
 
@@ -195,7 +199,7 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform);
+                        bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform, sharedPreferences);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper);
                         bootstrapper.startScanning();
@@ -402,7 +406,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 platform.getTransport().setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform);
+                bootstrapper = new InternalApplicationBootstrapper(platform, serviceScheduler, handlerManager, clock, bluetoothPlatform, sharedPreferences);
             } else{
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }

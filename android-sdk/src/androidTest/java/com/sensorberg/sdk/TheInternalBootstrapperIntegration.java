@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,9 +54,13 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     @Named("testBluetoothPlatform")
     BluetoothPlatform bluetoothPlatform;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     InternalApplicationBootstrapper tested;
 
     private static final JSONObject ANY_IN_APP_JSON = new JSONObject();
+
     static {
         try {
             ANY_IN_APP_JSON.put("url", "sensorberg://");
@@ -64,6 +69,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     }
 
     private static final String ANY_UUID = UUID.randomUUID().toString();
+
     private static final String ANOTHER_UUID = UUID.randomUUID().toString();
 
     private static final ResolveResponse PUBLISH_HISTORY_RESPONSE = new ResolveResponse.Builder()
@@ -99,6 +105,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
                             .build()
             ))
             .build();
+
     private TestGenericBroadcastReceiver broadcastReceiver;
 
     @Override
@@ -107,8 +114,10 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform platform = new TestPlatform();
-        platform.setTransport(new OkHttpClientTransport(null, platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock(), testPlatformIdentifier, true));
-        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(), bluetoothPlatform);
+        platform.setTransport(
+                new OkHttpClientTransport(null, platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock(), testPlatformIdentifier, true));
+        tested = new InternalApplicationBootstrapper(platform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
+                bluetoothPlatform, sharedPreferences);
 
         broadcastReceiver = new TestGenericBroadcastReceiver();
 

@@ -12,6 +12,7 @@ import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
 
+import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
@@ -44,6 +45,9 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     @Inject
     TestBluetoothPlatform bluetoothPlatform;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private TestPlatform plattform = null;
     private Scanner tested;
 
@@ -62,7 +66,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(new DumbSucessTransport()), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+        tested = new Scanner(new Settings(new DumbSucessTransport(), sharedPreferences), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);
     }
 

@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.content.SharedPreferences;
 import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
@@ -45,6 +46,8 @@ public class TheBluetoothChangesShould {
 
     @Inject
     TestBluetoothPlatform bluetoothPlatform;
+    @Inject
+    SharedPreferences sharedPreferences;
 
     Scanner tested;
     private long RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY = Utils.THIRTY_SECONDS;
@@ -55,7 +58,7 @@ public class TheBluetoothChangesShould {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         TestPlatform platform = new TestPlatform();
 
-        settings = new Settings(new DumbSucessTransport());
+        settings = new Settings(new DumbSucessTransport(), sharedPreferences);
         tested = new Scanner(settings, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager, bluetoothPlatform);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;

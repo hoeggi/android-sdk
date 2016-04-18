@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.settings;
 
 import com.android.sensorbergVolley.VolleyError;
-import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Transport;
@@ -11,8 +10,6 @@ import org.json.JSONObject;
 
 import android.content.SharedPreferences;
 
-import javax.inject.Inject;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +17,6 @@ public class Settings implements TransportSettingsCallback {
 
    private final Transport transport;
 
-    @Inject
     SharedPreferences preferences;
 
     @Getter
@@ -70,9 +66,9 @@ public class Settings implements TransportSettingsCallback {
     @Setter
     private SettingsUpdateCallback settingsUpdateCallback = SettingsUpdateCallback.NONE;
 
-    public Settings(Transport transport) {
+    public Settings(Transport transport, SharedPreferences prefs) {
         this.transport = transport;
-        SensorbergApplication.getComponent().inject(this);
+        preferences = prefs;
     }
 
     public void restoreValuesFromPreferences() {

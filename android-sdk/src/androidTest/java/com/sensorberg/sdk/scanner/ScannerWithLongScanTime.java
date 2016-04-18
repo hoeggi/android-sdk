@@ -11,6 +11,7 @@ import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
+import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
@@ -28,6 +29,9 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private BluetoothPlatform spyBluetoothPlatform;
 
     private TestPlatform spyPlatform;
@@ -39,7 +43,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         super.setUp();
         spyPlatform = spy(new TestPlatform());
         spyBluetoothPlatform = spy(new TestBluetoothPlatform());
-        modifiedSettings = spy(new Settings(new DumbSucessTransport()));
+        modifiedSettings = spy(new Settings(new DumbSucessTransport(), sharedPreferences));
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
