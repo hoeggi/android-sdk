@@ -38,7 +38,7 @@ public class DumbSucessTransport implements Transport {
     }
 
     @Override
-    public void getSettings(SettingsCallback settingsCallback) {
+    public void setSettingsCallback(SettingsCallback settingsCallback) {
 
     }
 

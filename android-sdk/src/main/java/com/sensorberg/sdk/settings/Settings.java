@@ -1,15 +1,15 @@
 package com.sensorberg.sdk.settings;
 
-import android.content.SharedPreferences;
-
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 
 import org.json.JSONObject;
+
+import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 
@@ -71,7 +71,7 @@ public class Settings implements SettingsCallback {
 
     private static final int DEFAULT_MAX_RETRIES = 3;
 
-    private final Platform platform;
+    private final Transport transport;
 
     @Inject
     SharedPreferences preferences;
@@ -101,8 +101,8 @@ public class Settings implements SettingsCallback {
 
     private SettingsCallback callback = SettingsCallback.NONE;
 
-    public Settings(Platform platform){
-        this.platform = platform;
+    public Settings(Transport transport){
+        this.transport = transport;
         SensorbergApplication.getComponent().inject(this);
     }
 
@@ -129,7 +129,7 @@ public class Settings implements SettingsCallback {
     }
 
     public void updateValues() {
-        platform.getTransport().getSettings(this);
+        transport.setSettingsCallback(this);
     }
 
 

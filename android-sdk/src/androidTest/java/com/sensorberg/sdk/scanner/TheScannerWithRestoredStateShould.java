@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -46,7 +47,7 @@ public class TheScannerWithRestoredStateShould {
         platform = new TestPlatform();
         platform = spy(platform);
 
-        settings = new Settings(platform);
+        settings = new Settings(new DumbSucessTransport());
         platform.setSettings(settings);
     }
 

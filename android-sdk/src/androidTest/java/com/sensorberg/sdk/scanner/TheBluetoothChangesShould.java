@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
@@ -53,7 +54,7 @@ public class TheBluetoothChangesShould {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         TestPlatform platform = new TestPlatform();
 
-        settings = new Settings(platform);
+        settings = new Settings(new DumbSucessTransport());
         tested = new Scanner(settings, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager, bluetoothPlatform);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;

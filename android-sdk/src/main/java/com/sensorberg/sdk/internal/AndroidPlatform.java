@@ -66,15 +66,10 @@ public class AndroidPlatform implements Platform {
     @Override
     public Transport getTransport() {
         if (asyncTransport == null) {
-            asyncTransport = new OkHttpClientTransport(this, settings, OkVolley.newRequestQueue(context, shouldUseHttpCache), clock,
-                    platformIdentifier);
+            asyncTransport = new OkHttpClientTransport(settings, OkVolley.newRequestQueue(context, shouldUseHttpCache), clock,
+                    platformIdentifier, false);
         }
         return asyncTransport;
-    }
-
-    @Override
-    public boolean useSyncClient() {
-        return false;
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

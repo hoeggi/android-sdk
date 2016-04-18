@@ -13,7 +13,6 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
@@ -33,7 +32,6 @@ import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by falkorichter on 14/01/15.
@@ -49,7 +47,6 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
     PlatformIdentifier testPlatformIdentifier;
 
     protected Transport tested;
-    protected TestPlatform testPlattform;
     private OkHttpStack stack;
 
     public OkVolleyShouldCacheTheSettings() {
@@ -62,8 +59,6 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
         createApplication();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        testPlattform = spy(new TestPlatform());
-
         stack = spy(new OkHttpStack());
 
         BasicNetwork network = new BasicNetwork(stack);
@@ -72,15 +67,13 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
         RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
         queue.start();
 
-        when(testPlattform.getCachedVolleyQueue()).thenReturn(queue);
-
-        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier);
+        tested = new OkHttpClientTransport(null, queue, clock, testPlatformIdentifier, true);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 
     public void test_should_only_call_the_network_once() throws Exception {
-        tested.getSettings(SettingsCallback.NONE);
-        tested.getSettings(new SettingsCallback() {
+        tested.setSettingsCallback(SettingsCallback.NONE);
+        tested.setSettingsCallback(new SettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail("there should be content returned by the network");

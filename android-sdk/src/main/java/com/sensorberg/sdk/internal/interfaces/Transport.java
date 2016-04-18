@@ -39,7 +39,7 @@ public interface Transport {
 
     void setApiToken(String apiToken);
 
-    void getSettings(SettingsCallback settingsCallback);
+    void setSettingsCallback(SettingsCallback settingsCallback);
 
     void publishHistory(List<RealmScan> scans, List<RealmAction> actions, HistoryCallback callback);
 

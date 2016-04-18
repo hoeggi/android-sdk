@@ -11,8 +11,6 @@ public interface Platform {
 
     Transport getTransport();
 
-    boolean useSyncClient();
-
     boolean isSyncEnabled();
 
     void setSettings(Settings settings);

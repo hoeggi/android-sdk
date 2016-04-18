@@ -69,7 +69,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         super(plattform, scheduler);
         SensorbergApplication.getComponent().inject(this);
 
-        settings = new Settings(plattform);
+        settings = new Settings(plattform.getTransport());
         settings.restoreValuesFromPreferences();
         settings.setCallback(this);
         plattform.setSettings(settings);
@@ -221,7 +221,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     public void hostApplicationInForeground() {
         scanner.hostApplicationInForeground();
-        settings.updateValues();
+        updateSettings();
         //we do not care if sync is disabled, the app is in the foreground so we cache!
         platform.getTransport().updateBeaconLayout();
         beaconActionHistoryPublisher.publishHistory();

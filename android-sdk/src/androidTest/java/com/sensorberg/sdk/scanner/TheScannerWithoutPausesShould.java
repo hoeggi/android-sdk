@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
@@ -61,7 +62,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(plattform), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+        tested = new Scanner(new Settings(new DumbSucessTransport()), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);
     }
 

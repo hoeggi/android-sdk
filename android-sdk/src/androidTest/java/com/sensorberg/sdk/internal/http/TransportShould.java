@@ -83,7 +83,7 @@ public class TransportShould extends SensorbergApplicationTest {
 
         settings = mock(Settings.class);
 
-        tested = new OkHttpClientTransport(testPlattform, settings, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier);
+        tested = new OkHttpClientTransport(settings, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
         tested.setApiToken(TestConstants.API_TOKEN);
 
     }
@@ -102,7 +102,7 @@ public class TransportShould extends SensorbergApplicationTest {
         Network network = testPlattform.getSpyNetwork();
         doThrow(new VolleyError()).when(network).performRequest(any(HeadersJsonObjectRequest.class));
 
-        tested.getSettings(new SettingsCallback() {
+        tested.setSettingsCallback(new SettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail();
@@ -155,7 +155,7 @@ public class TransportShould extends SensorbergApplicationTest {
     }
 
     public void test_a_settings_request(){
-        tested.getSettings(new SettingsCallback() {
+        tested.setSettingsCallback(new SettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail("there should be changes to no settings");

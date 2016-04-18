@@ -13,7 +13,6 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.json.JSONObject;
 
@@ -24,8 +23,6 @@ import javax.inject.Named;
 
 import util.TestConstants;
 
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 import static util.Utils.failWithVolleyError;
 
 public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest {
@@ -39,13 +36,11 @@ public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest 
     PlatformIdentifier testPlatformIdentifier;
 
     protected Transport tested;
-    protected TestPlatform testPlattform;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        testPlattform = spy(new TestPlatform());
 
         BasicNetwork network = new BasicNetwork(new OkHttpStackWithFailures(2));
 
@@ -53,14 +48,12 @@ public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest 
         RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
         queue.start();
 
-        when(testPlattform.getCachedVolleyQueue()).thenReturn(queue);
-
-        tested = new OkHttpClientTransport(testPlattform, null, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier);
+        tested = new OkHttpClientTransport(null, queue, clock, testPlatformIdentifier, true);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 
     public void test_succeed_even_after_two_failures() throws Exception {
-        tested.getSettings(new SettingsCallback() {
+        tested.setSettingsCallback(new SettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail();

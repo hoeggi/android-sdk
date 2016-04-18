@@ -1,7 +1,5 @@
 package com.sensorberg.sdk.internal;
 
-import android.content.Context;
-
 import com.android.sensorbergVolley.DefaultRetryPolicy;
 import com.android.sensorbergVolley.Request;
 import com.android.sensorbergVolley.RequestQueue;
@@ -42,8 +40,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.inject.Inject;
-
 import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
@@ -54,30 +50,28 @@ public class OkHttpClientTransport implements Transport,
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
-    @Inject
-    Context context;
-
     Clock clock;
 
     private final Map<String, String> headers = new HashMap<>();
 
     private RequestQueue queue;
-    private final Platform platform;
     private final Settings settings;
     private BeaconReportHandler beaconReportHandler;
     private ProximityUUIDUpdateHandler proximityUUIDUpdateHandler = ProximityUUIDUpdateHandler.NONE;
     private String apiToken;
 
+    private final boolean shouldUseSyncClient;
+
     private static final String INSTALLATION_IDENTIFIER = "X-iid";
     private static final String ADVERTISER_IDENTIFIER = "X-aid";
 
-    public OkHttpClientTransport(Platform platform, Settings settings, RequestQueue volleyQueue,
-            Clock clock, PlatformIdentifier platformId) {
+    public OkHttpClientTransport(Settings settings, RequestQueue volleyQueue,
+            Clock clock, PlatformIdentifier platformId, boolean useSyncClient) {
         SensorbergApplication.getComponent().inject(this);
-        this.platform = platform;
         this.settings = settings;
         queue = volleyQueue;
         this.clock = clock;
+        shouldUseSyncClient = useSyncClient;
 
         this.headers.put("User-Agent", platformId.getUserAgentString());
         this.headers.put(INSTALLATION_IDENTIFIER, platformId.getDeviceInstallationIdentifier());
@@ -192,7 +186,7 @@ public class OkHttpClientTransport implements Transport,
         Map<String, String> requestHeaders = new HashMap<>(headers);
         requestHeaders.putAll(this.headers);
 
-        if (platform.useSyncClient()) {
+        if (shouldUseSyncClient) {
             RequestFuture<T> future = RequestFuture.newFuture();
             HeadersJsonObjectRequest<T> request = new HeadersJsonObjectRequest<>(method, url, requestHeaders, body, future, future, clazz)
                     .setShouldAlwaysTryWithNetwork(shouldAlwaysTryWithNetwork);
@@ -240,7 +234,7 @@ public class OkHttpClientTransport implements Transport,
     }
 
     @Override
-    public void getSettings(final SettingsCallback settingsCallback) {
+    public void setSettingsCallback(final SettingsCallback settingsCallback) {
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override

@@ -5,6 +5,7 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -38,7 +39,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         super.setUp();
         spyPlatform = spy(new TestPlatform());
         spyBluetoothPlatform = spy(new TestBluetoothPlatform());
-        modifiedSettings = spy(new Settings(spyPlatform));
+        modifiedSettings = spy(new Settings(new DumbSucessTransport()));
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);

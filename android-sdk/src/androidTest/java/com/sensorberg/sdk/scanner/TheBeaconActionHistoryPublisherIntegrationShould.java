@@ -40,7 +40,7 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         Platform platform = spy(new AndroidPlatform(getContext()));
-        Settings settings = new Settings(platform);
+        Settings settings = new Settings(platform.getTransport());
         tested = new BeaconActionHistoryPublisher(platform.getTransport(), ResolverListener.NONE, settings, clock, testHandleManager);
 
         startWebserver();

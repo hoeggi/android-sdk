@@ -42,13 +42,13 @@ public class TheSettingsShould extends AndroidTestCase {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         platform = new TestPlatform();
-        platform.setTransport(new OkHttpClientTransport(platform, null, platform.getCachedVolleyQueue(), clock, testPlatformIdentifier));
+        platform.setTransport(new OkHttpClientTransport(null, platform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true));
         platform.getTransport().setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        tested = new Settings(platform);
+        tested = new Settings(platform.getTransport());
 
         untouchedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        untouched = new Settings(platform);
+        untouched = new Settings(platform.getTransport());
     }
 
     public void test_initial_values_should_be_identical() throws Exception {

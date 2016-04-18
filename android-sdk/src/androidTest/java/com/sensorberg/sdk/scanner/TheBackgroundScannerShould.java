@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -48,7 +49,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
+        tested = new UIScanner(new Settings(new DumbSucessTransport()), platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
     }
 
     public void test_be_in_background_mode(){

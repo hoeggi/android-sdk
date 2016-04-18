@@ -15,7 +15,6 @@ import com.sensorberg.sdk.internal.interfaces.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.settings.Settings;
 
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 
@@ -43,9 +42,7 @@ public class TestPlatform implements Platform, HandlerManager {
 
     private Transport transport = new DumbSucessTransport();
     private Settings settings;
-    private boolean spyOnScannerRunLoop;
     private Network network;
-    private NotificationManager notificationManager;
     private List<NonThreadedRunLoopForTesting> runLoops = new ArrayList<>();
 
     public TestPlatform() {
@@ -55,11 +52,6 @@ public class TestPlatform implements Platform, HandlerManager {
     @Override
     public Transport getTransport() {
         return transport;
-    }
-
-    @Override
-    public boolean useSyncClient() {
-        return true;
     }
 
     @Override

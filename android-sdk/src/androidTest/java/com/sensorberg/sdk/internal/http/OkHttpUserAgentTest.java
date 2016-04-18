@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
@@ -40,9 +39,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         plattform = spy(new TestPlatform());
 
-        when(plattform.useSyncClient()).thenReturn(true);
-
-        transport = new OkHttpClientTransport(plattform, null, plattform.getCachedVolleyQueue(), clock, testPlatformIdentifier);
+        transport = new OkHttpClientTransport(null, plattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
         startWebserver();
     }
 
