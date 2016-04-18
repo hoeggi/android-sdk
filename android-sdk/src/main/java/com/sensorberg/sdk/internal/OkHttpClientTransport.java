@@ -13,6 +13,7 @@ import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
@@ -47,7 +48,9 @@ import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
 
-public class OkHttpClientTransport implements Transport, Platform.DeviceInstallationIdentifierChangeListener, Platform.AdvertiserIdentifierChangeListener {
+public class OkHttpClientTransport implements Transport,
+        PlatformIdentifier.DeviceInstallationIdentifierChangeListener,
+        PlatformIdentifier.AdvertiserIdentifierChangeListener {
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
@@ -68,18 +71,19 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     private static final String INSTALLATION_IDENTIFIER = "X-iid";
     private static final String ADVERTISER_IDENTIFIER = "X-aid";
 
-    public OkHttpClientTransport(Platform platform, Settings settings, RequestQueue volleyQueue, Clock clock) {
+    public OkHttpClientTransport(Platform platform, Settings settings, RequestQueue volleyQueue,
+            Clock clock, PlatformIdentifier platformId) {
         SensorbergApplication.getComponent().inject(this);
         this.platform = platform;
         this.settings = settings;
         queue = volleyQueue;
         this.clock = clock;
 
-        this.headers.put("User-Agent", platform.getUserAgentString());
-        this.headers.put(INSTALLATION_IDENTIFIER, platform.getDeviceInstallationIdentifier());
-        this.headers.put(ADVERTISER_IDENTIFIER, platform.getAdvertiserIdentifier());
-        platform.addAdvertiserIdentifierChangeListener(this);
-        platform.addDeviceInstallationIdentifierChangeListener(this);
+        this.headers.put("User-Agent", platformId.getUserAgentString());
+        this.headers.put(INSTALLATION_IDENTIFIER, platformId.getDeviceInstallationIdentifier());
+        this.headers.put(ADVERTISER_IDENTIFIER, platformId.getAdvertiserIdentifier());
+        platformId.addAdvertiserIdentifierChangeListener(this);
+        platformId.addDeviceInstallationIdentifierChangeListener(this);
     }
 
     @Override

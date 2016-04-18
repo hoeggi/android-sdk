@@ -1,22 +1,16 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.settings.Settings;
-
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.os.Build;
 
+import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.settings.Settings;
+
 import java.util.List;
 
 public interface Platform {
-
-    String getUserAgentString();
-
-    String getDeviceInstallationIdentifier();
-
-    String getAdvertiserIdentifier();
 
     Transport getTransport();
 
@@ -36,11 +30,8 @@ public interface Platform {
 
     void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver);
 
-    void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 
-    void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener);
-
-    interface ForegroundStateListener{
+    interface ForegroundStateListener {
 
         ForegroundStateListener NONE = new ForegroundStateListener() {
             @Override
@@ -82,19 +73,5 @@ public interface Platform {
     boolean isLeScanRunning();
 
     boolean isBluetoothEnabled();
-
-    /**
-     * Interface for device installation identifier.
-     */
-    interface DeviceInstallationIdentifierChangeListener {
-        void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier);
-    }
-
-    /**
-     * Interface for advertising identifier.
-     */
-    interface AdvertiserIdentifierChangeListener {
-        void advertiserIdentifierChanged(String advertiserIdentifier);
-    }
 
 }

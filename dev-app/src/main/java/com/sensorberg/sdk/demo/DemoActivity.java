@@ -35,7 +35,6 @@ public class DemoActivity extends Activity
 		infoText.append('\n').append("API Key: ").append(DemoApplication.API_KEY);
 		infoText.append('\n').append("SDK Version: ").append(BuildConfig.VERSION_NAME);
 		infoText.append('\n').append("Bootstrapper Version: ").append(com.sensorberg.sdk.bootstrapper.BuildConfig.VERSION_NAME);
-		infoText.append('\n').append("Installation ID: ").append(new AndroidPlatform(getApplicationContext()).getDeviceInstallationIdentifier());
 
 		textView.setText(infoText.toString());
 		setContentView(textView);
