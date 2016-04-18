@@ -1,7 +1,5 @@
 package com.sensorberg.sdk.internal.transport;
 
-import com.android.sensorbergVolley.VolleyError;
-
 import org.json.JSONObject;
 
 public interface TransportSettingsCallback {
@@ -12,7 +10,7 @@ public interface TransportSettingsCallback {
         }
 
         @Override
-        public void onFailure(VolleyError e) {
+        public void onFailure(Exception e) {
 
         }
 
@@ -24,7 +22,7 @@ public interface TransportSettingsCallback {
 
     void nothingChanged();
 
-    void onFailure(VolleyError e);
+    void onFailure(Exception e);
 
     void onSettingsFound(JSONObject settings);
 }

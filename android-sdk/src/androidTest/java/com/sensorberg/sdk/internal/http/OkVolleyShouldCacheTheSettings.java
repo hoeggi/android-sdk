@@ -80,7 +80,7 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
             }
 
             @Override
-            public void onFailure(VolleyError e) {
+            public void onFailure(Exception e) {
                 //fail("this should not fail");
             }
 

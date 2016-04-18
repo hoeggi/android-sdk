@@ -109,7 +109,7 @@ public class TransportShould extends SensorbergApplicationTest {
             }
 
             @Override
-            public void onFailure(VolleyError e) {
+            public void onFailure(Exception e) {
                 Log.d("FOO", "onFailure" + e.getLocalizedMessage());
             }
 
@@ -162,7 +162,7 @@ public class TransportShould extends SensorbergApplicationTest {
             }
 
             @Override
-            public void onFailure(VolleyError e) {
+            public void onFailure(Exception e) {
                 failWithVolleyError(e, "there was a failure with this request");
             }
 

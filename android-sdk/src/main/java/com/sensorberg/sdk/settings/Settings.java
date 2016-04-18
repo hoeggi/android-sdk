@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.settings;
 
-import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Transport;
@@ -116,7 +115,7 @@ public class Settings implements TransportSettingsCallback {
     }
 
     @Override
-    public void onFailure(VolleyError e) {
+    public void onFailure(Exception e) {
         Logger.log.logSettingsUpdateState("onFailure");
         Logger.log.logError("settings update failed", e);
     }
