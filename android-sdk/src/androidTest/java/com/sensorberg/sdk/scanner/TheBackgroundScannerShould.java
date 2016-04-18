@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
@@ -27,6 +28,9 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    TestBluetoothPlatform bluetoothPlatform;
+
     private TestPlatform platform;
     private UIScanner tested;
 
@@ -44,7 +48,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler, platform);
+        tested = new UIScanner(new Settings(platform), platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
     }
 
     public void test_be_in_background_mode(){
@@ -59,7 +63,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
        ScannerListener mockListener = Mockito.mock(ScannerListener.class);
        tested.addScannerListener(mockListener);
 
-       platform.fakeIBeaconSighting();
+       bluetoothPlatform.fakeIBeaconSighting();
 
        verifyZeroInteractions(mockListener);
    }
@@ -76,7 +80,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
         tested.addScannerListener(mockListener);
 
 
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verify(mockListener).onScanEventDetected(isEntryEvent());
     }
@@ -109,7 +113,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verify(mockListener).onScanEventDetected(isEntryEvent());
     }

@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -33,7 +34,8 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
     @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
-    private TestPlatform plattform;
+    @Inject
+    TestBluetoothPlatform bluetoothPlatform;
 
     private UIScanner tested;
 
@@ -42,10 +44,10 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        plattform = new TestPlatform();
+        TestPlatform plattform = new TestPlatform();
         testHandlerManager.getCustomClock().setNowInMillis(0);
-        tested = new UIScanner(new Settings(plattform), plattform, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
-                testHandlerManager);
+        tested = new UIScanner(new Settings(plattform), testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+                testHandlerManager, bluetoothPlatform);
 
         tested.start();
     }
@@ -63,7 +65,7 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
 
         while (testHandlerManager.getCustomClock().now() < Utils.ONE_MINUTE * 2) {
             if (testHandlerManager.getCustomClock().now() == beaconSighting) {
-                plattform.fakeIBeaconSighting();
+                bluetoothPlatform.fakeIBeaconSighting();
                 tested.addScannerListener(mockListener);
             }
 
@@ -90,7 +92,7 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
 
         while (testHandlerManager.getCustomClock().now() < Utils.ONE_MINUTE * 2) {
             if (testHandlerManager.getCustomClock().now() == beaconSighting) {
-                plattform.fakeIBeaconSighting();
+                bluetoothPlatform.fakeIBeaconSighting();
                 tested.addScannerListener(mockListener);
             }
 

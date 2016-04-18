@@ -2,6 +2,7 @@ package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
@@ -37,6 +38,10 @@ public class TheInternalApplicationBootstrapperShould{
     @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
+    @Inject
+    @Named("testBluetoothPlatform")
+    BluetoothPlatform bluetoothPlatform;
+
     InternalApplicationBootstrapper tested;
     private BeaconEvent beaconEventSupressionTime;
     private BeaconEvent beaconEventSentOnlyOnce;
@@ -48,7 +53,7 @@ public class TheInternalApplicationBootstrapperShould{
         testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
-        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock()));
+        tested = spy(new InternalApplicationBootstrapper(testPlatform, testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(), bluetoothPlatform));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
                 .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null ,null, 0))

@@ -1,6 +1,7 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
@@ -41,7 +42,7 @@ public class TheSensorbergServiceShould extends AndroidTestCase {
         }
 
         tested = new SensorbergService();
-
+        tested.bluetoothPlatform = new TestBluetoothPlatform();
         tested.platform = testPlatform;
 
         Intent startIntent = new Intent(getContext(), SensorbergService.class);

@@ -3,7 +3,9 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
@@ -25,6 +27,8 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    private BluetoothPlatform spyBluetoothPlatform;
+
     private TestPlatform spyPlatform;
     private Settings modifiedSettings;
     private UIScanner tested;
@@ -33,12 +37,13 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         spyPlatform = spy(new TestPlatform());
+        spyBluetoothPlatform = spy(new TestBluetoothPlatform());
         modifiedSettings = spy(new Settings(spyPlatform));
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
         when(modifiedSettings.getForeGroundWaitTime()).thenReturn(Constants.Time.ONE_SECOND);
-        tested = new UIScanner(modifiedSettings, spyPlatform, spyPlatform.clock, testFileManager, testServiceScheduler, spyPlatform);
+        tested = new UIScanner(modifiedSettings, spyPlatform.clock, testFileManager, testServiceScheduler, spyPlatform, spyBluetoothPlatform);
     }
 
     public void test_should_pause_when_going_to_the_background_and_scanning_was_running() throws Exception {
@@ -52,6 +57,6 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         reset(spyPlatform);
         tested.hostApplicationInBackground();
 
-        verify(spyPlatform).stopLeScan();
+        verify(spyBluetoothPlatform).stopLeScan();
     }
 }

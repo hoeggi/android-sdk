@@ -2,6 +2,7 @@ package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
@@ -27,16 +28,20 @@ public class TheDefaultScanner extends AndroidTestCase {
     @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
-    private TestPlatform platform;
+    @Inject
+    @Named("testBluetoothPlatform")
+    BluetoothPlatform bluetoothPlatform;
+
     private Scanner tested;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        platform = new TestPlatform();
-        tested = new Scanner(new Settings(platform), platform, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
-                testHandlerManager);
+
+        TestPlatform platform = new TestPlatform();
+        tested = new Scanner(new Settings(platform), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+                testHandlerManager, bluetoothPlatform);
 
         tested.start();
     }

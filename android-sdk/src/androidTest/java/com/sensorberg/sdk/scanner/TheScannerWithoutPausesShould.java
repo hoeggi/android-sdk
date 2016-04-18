@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -39,6 +40,9 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
+    @Inject
+    TestBluetoothPlatform bluetoothPlatform;
+
     private TestPlatform plattform = null;
     private Scanner tested;
 
@@ -57,13 +61,13 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(plattform), plattform, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
-                testHandlerManager);
+        tested = new Scanner(new Settings(plattform), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+                testHandlerManager, bluetoothPlatform);
     }
 
     public void test_scanner_detects_exit() {
 
-        plattform.fakeIBeaconSighting(TestPlatform.BYTES_FOR_SENSORBERG_BEACON_1);
+        bluetoothPlatform.fakeIBeaconSighting(TestBluetoothPlatform.BYTES_FOR_SENSORBERG_BEACON_1);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
@@ -72,12 +76,12 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
 
         verify(mockListener).onScanEventDetected(isExitEvent());
         verify(mockListener).onScanEventDetected(isNotEntryEvent());
-        verify(mockListener).onScanEventDetected(hasBeaconId(TestPlatform.EXPECTED_BEACON_1));
+        verify(mockListener).onScanEventDetected(hasBeaconId(TestBluetoothPlatform.EXPECTED_BEACON_1));
     }
 
     public void test_scanner_detects_no_exit() {
 
-        plattform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
@@ -90,14 +94,14 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
 
     public void test_should_exit_later_if_beacon_was_seen_twice() {
         //first sighting
-        plattform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
         testHandlerManager.getCustomClock().setNowInMillis(Utils.EXIT_TIME - 1);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
         //second sighting, a little later
-        plattform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verifyZeroInteractions(mockListener);
 
@@ -112,11 +116,11 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
-        plattform.fakeIBeaconSighting(TestPlatform.BYTES_FOR_BEACON_1);
+        bluetoothPlatform.fakeIBeaconSighting(TestBluetoothPlatform.BYTES_FOR_BEACON_1);
 
         verify(mockListener).onScanEventDetected(isEntryEvent());
         verify(mockListener).onScanEventDetected(isNotExitEvent());
-        verify(mockListener).onScanEventDetected(hasBeaconId(TestPlatform.EXPECTED_BEACON_1));
+        verify(mockListener).onScanEventDetected(hasBeaconId(TestBluetoothPlatform.EXPECTED_BEACON_1));
     }
 
 

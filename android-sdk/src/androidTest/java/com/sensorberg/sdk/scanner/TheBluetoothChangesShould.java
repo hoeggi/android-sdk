@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
@@ -40,18 +41,20 @@ public class TheBluetoothChangesShould {
     @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
+    @Inject
+    TestBluetoothPlatform bluetoothPlatform;
+
     Scanner tested;
-    private TestPlatform platform;
     private long RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY = Utils.THIRTY_SECONDS;
     private Settings settings;
 
     @Before
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        platform = new TestPlatform();
+        TestPlatform platform = new TestPlatform();
 
         settings = new Settings(platform);
-        tested = new Scanner(settings, platform, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager);
+        tested = new Scanner(settings, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager, bluetoothPlatform);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;
         tested.start();
@@ -68,7 +71,7 @@ public class TheBluetoothChangesShould {
     public void still_sees_exit_events_when_bluetooth_is_restarted_in_a_short_interval() {
         ScannerListener mockScannerListener = mock(ScannerListener.class);
         tested.addScannerListener(mockScannerListener);
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verify(mockScannerListener).onScanEventDetected(isEntryEvent());
 
@@ -97,7 +100,7 @@ public class TheBluetoothChangesShould {
     public void beacon_events_are_removed_when_bluetooth_is_restarted_after_a_long_break_interval() {
         ScannerListener mockScannerListener = mock(ScannerListener.class);
         tested.addScannerListener(mockScannerListener);
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verify(mockScannerListener).onScanEventDetected(isEntryEvent());
 

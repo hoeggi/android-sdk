@@ -2,9 +2,11 @@ package com.sensorberg.sdk.di;
 
 import com.sensorberg.di.ProvidersModule;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.testUtils.NoClock;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
@@ -67,5 +69,18 @@ public class TestProvidersModule extends ProvidersModule {
     @Singleton
     public PlatformIdentifier provideTestPlatformIdentifier() {
         return new TestPlatformIdentifier();
+    }
+
+    @Provides
+    @Named("testBluetoothPlatform")
+    @Singleton
+    public BluetoothPlatform provideNamedTestBluetoothPlatform() {
+        return new TestBluetoothPlatform();
+    }
+
+    @Provides
+    @Singleton
+    public TestBluetoothPlatform provideTestBluetoothPlatform() {
+        return new TestBluetoothPlatform();
     }
 }

@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
@@ -32,6 +33,9 @@ public class TheScannerWithRestoredStateShould {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    TestBluetoothPlatform bluetoothPlatform;
+
     private Settings settings;
 
     private TestPlatform platform;
@@ -52,7 +56,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() / 2;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler, platform);
+        Scanner tested = new Scanner(settings, true, platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();
@@ -70,7 +74,7 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() + 1;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler, platform);
+        Scanner tested = new Scanner(settings, true, platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();
@@ -88,17 +92,17 @@ public class TheScannerWithRestoredStateShould {
         long startTime = settings.getCleanBeaconMapRestartTimeout() - 1;
 
         platform.clock.setNowInMillis(startTime);
-        Scanner tested = new Scanner(settings, platform, true, platform.clock, testFileManager, testServiceScheduler, platform);
+        Scanner tested = new Scanner(settings, true, platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
         ScannerListener listener = mock(ScannerListener.class);
         tested.addScannerListener(listener);
         tested.start();
 
         platform.clock.increaseTimeInMillis(settings.getExitTimeout() - 1);
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
         platform.clock.increaseTimeInMillis(1);
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
         platform.clock.increaseTimeInMillis(1);
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verifyNoMoreInteractions(listener);
     }

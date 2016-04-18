@@ -3,6 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
@@ -29,6 +30,9 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     @Inject
     TestServiceScheduler testServiceScheduler;
 
+    @Inject
+    TestBluetoothPlatform bluetoothPlatform;
+
     private TestPlatform platform;
     private UIScanner tested;
 
@@ -42,7 +46,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new UIScanner(new Settings(platform), platform, platform.clock, testFileManager, testServiceScheduler, platform);
+        tested = new UIScanner(new Settings(platform), platform.clock, testFileManager, testServiceScheduler, platform, bluetoothPlatform);
         tested.waitTime = Settings.DEFAULT_FOREGROUND_WAIT_TIME;
         tested.scanTime = Settings.DEFAULT_FOREGROUND_SCAN_TIME;
     }
@@ -59,7 +63,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verifyZeroInteractions(mockListener);
     }
@@ -75,7 +79,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verify(mockListener).onScanEventDetected(isEntryEvent());
     }
@@ -106,7 +110,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verifyZeroInteractions(mockListener);
     }
@@ -133,7 +137,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         //set time just before the end of the Background scan time
         platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + Settings.DEFAULT_BACKGROUND_SCAN_TIME -1);
         //mock a beacon, since the scanner is active, this one should be recognized
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         verify(mockListener).onScanEventDetected(isEntryEvent());
     }
@@ -160,13 +164,13 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         //set time just before the end of the Background scan time
         platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + Settings.DEFAULT_BACKGROUND_SCAN_TIME + 1);
         //mock a beacon, since the scanner is should be inactive, this should not be recognized
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         //since it is one millis after, there should not be interactions
         verifyZeroInteractions(mockListener);
 
         platform.clock.setNowInMillis(Settings.DEFAULT_FOREGROUND_SCAN_TIME + Settings.DEFAULT_FOREGROUND_WAIT_TIME + Settings.DEFAULT_BACKGROUND_SCAN_TIME + Settings.DEFAULT_BACKGROUND_WAIT_TIME -1);
-        platform.fakeIBeaconSighting();
+        bluetoothPlatform.fakeIBeaconSighting();
 
         //is is one milli before the end...
         verifyZeroInteractions(mockListener);
