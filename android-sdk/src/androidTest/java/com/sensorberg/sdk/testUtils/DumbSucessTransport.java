@@ -3,7 +3,7 @@ package com.sensorberg.sdk.testUtils;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
@@ -38,7 +38,7 @@ public class DumbSucessTransport implements Transport {
     }
 
     @Override
-    public void setSettingsCallback(SettingsCallback settingsCallback) {
+    public void setSettingsCallback(TransportSettingsCallback transportSettingsCallback) {
 
     }
 

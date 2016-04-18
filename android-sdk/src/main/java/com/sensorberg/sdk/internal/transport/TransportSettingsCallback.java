@@ -4,8 +4,8 @@ import com.android.sensorbergVolley.VolleyError;
 
 import org.json.JSONObject;
 
-public interface SettingsCallback {
-    SettingsCallback NONE = new SettingsCallback() {
+public interface TransportSettingsCallback {
+    TransportSettingsCallback NONE = new TransportSettingsCallback() {
         @Override
         public void nothingChanged() {
 

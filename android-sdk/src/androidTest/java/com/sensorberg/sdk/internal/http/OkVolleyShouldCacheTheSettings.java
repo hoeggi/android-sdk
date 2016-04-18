@@ -12,7 +12,7 @@ import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
@@ -72,8 +72,8 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
     }
 
     public void test_should_only_call_the_network_once() throws Exception {
-        tested.setSettingsCallback(SettingsCallback.NONE);
-        tested.setSettingsCallback(new SettingsCallback() {
+        tested.setSettingsCallback(TransportSettingsCallback.NONE);
+        tested.setSettingsCallback(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail("there should be content returned by the network");

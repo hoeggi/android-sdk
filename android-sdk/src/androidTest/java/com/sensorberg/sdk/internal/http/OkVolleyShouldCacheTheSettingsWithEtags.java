@@ -13,7 +13,7 @@ import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.test.R;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.spy;
 
 public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicationTest {
 
-    private static final SettingsCallback MUST_NOT_FAIL = new SettingsCallback() {
+    private static final TransportSettingsCallback MUST_NOT_FAIL = new TransportSettingsCallback() {
         @Override
         public void nothingChanged() {
             fail("there should be content returned by the network");

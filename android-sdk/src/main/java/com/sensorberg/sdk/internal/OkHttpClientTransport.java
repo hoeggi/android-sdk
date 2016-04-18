@@ -15,7 +15,7 @@ import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
@@ -234,26 +234,26 @@ public class OkHttpClientTransport implements Transport,
     }
 
     @Override
-    public void setSettingsCallback(final SettingsCallback settingsCallback) {
+    public void setSettingsCallback(final TransportSettingsCallback transportSettingsCallback) {
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
                 if (response == null) {
-                    settingsCallback.onSettingsFound(null);
+                    transportSettingsCallback.onSettingsFound(null);
                     return;
                 }
 
                 boolean success = response.optBoolean("success", true);
                 if (success) {
                     try {
-                        settingsCallback.onSettingsFound(response.getJSONObject("settings"));
+                        transportSettingsCallback.onSettingsFound(response.getJSONObject("settings"));
                     } catch (JSONException e) {
-                        settingsCallback.onFailure(new VolleyError(e));
+                        transportSettingsCallback.onFailure(new VolleyError(e));
                     }
                 } else {
-                    settingsCallback.onFailure(new VolleyError(new IllegalArgumentException("Server did not respond with success=true")));
+                    transportSettingsCallback.onFailure(new VolleyError(new IllegalArgumentException("Server did not respond with success=true")));
                 }
             }
         };
@@ -264,16 +264,16 @@ public class OkHttpClientTransport implements Transport,
 
                 if (volleyError.networkResponse != null) {
                     if (volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
-                        settingsCallback.nothingChanged();
+                        transportSettingsCallback.nothingChanged();
                         return;
                     }
                     if (volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_NO_CONTENT) {
-                        settingsCallback.onSettingsFound(NO_CONTENT);
+                        transportSettingsCallback.onSettingsFound(NO_CONTENT);
                         return;
                     }
                 }
 
-                settingsCallback.onFailure(volleyError);
+                transportSettingsCallback.onFailure(volleyError);
             }
         };
         perform(getSettingsURLString(this.apiToken), responseListener, errorListener);

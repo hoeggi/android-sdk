@@ -5,7 +5,7 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 
 import org.json.JSONObject;
 
@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Settings implements SettingsCallback {
+public class Settings implements TransportSettingsCallback {
 
     public interface SettingsCallback {
 

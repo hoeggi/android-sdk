@@ -13,7 +13,7 @@ import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
@@ -102,7 +102,7 @@ public class TransportShould extends SensorbergApplicationTest {
         Network network = testPlattform.getSpyNetwork();
         doThrow(new VolleyError()).when(network).performRequest(any(HeadersJsonObjectRequest.class));
 
-        tested.setSettingsCallback(new SettingsCallback() {
+        tested.setSettingsCallback(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail();
@@ -155,7 +155,7 @@ public class TransportShould extends SensorbergApplicationTest {
     }
 
     public void test_a_settings_request(){
-        tested.setSettingsCallback(new SettingsCallback() {
+        tested.setSettingsCallback(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail("there should be changes to no settings");

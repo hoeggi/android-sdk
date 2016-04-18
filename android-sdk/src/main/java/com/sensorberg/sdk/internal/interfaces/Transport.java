@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.internal.interfaces;
 
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
@@ -39,7 +39,7 @@ public interface Transport {
 
     void setApiToken(String apiToken);
 
-    void setSettingsCallback(SettingsCallback settingsCallback);
+    void setSettingsCallback(TransportSettingsCallback transportSettingsCallback);
 
     void publishHistory(List<RealmScan> scans, List<RealmAction> actions, HistoryCallback callback);
 

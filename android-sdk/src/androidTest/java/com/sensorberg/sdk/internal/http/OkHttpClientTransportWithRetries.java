@@ -12,7 +12,7 @@ import com.sensorberg.sdk.internal.http.helper.OkHttpStackWithFailures;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 
 import org.json.JSONObject;
 
@@ -53,7 +53,7 @@ public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest 
     }
 
     public void test_succeed_even_after_two_failures() throws Exception {
-        tested.setSettingsCallback(new SettingsCallback() {
+        tested.setSettingsCallback(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail();
