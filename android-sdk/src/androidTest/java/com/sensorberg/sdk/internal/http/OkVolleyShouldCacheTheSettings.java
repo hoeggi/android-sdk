@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Application> {
 
     @Inject
-    @Named("realClock")
+    @Named("noClock")
     Clock clock;
 
     @Inject

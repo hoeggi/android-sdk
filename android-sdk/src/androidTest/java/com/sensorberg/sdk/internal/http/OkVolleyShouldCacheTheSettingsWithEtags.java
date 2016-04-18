@@ -52,7 +52,7 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
     };
 
     @Inject
-    @Named("realClock")
+    @Named("noClock")
     Clock clock;
 
     @Inject

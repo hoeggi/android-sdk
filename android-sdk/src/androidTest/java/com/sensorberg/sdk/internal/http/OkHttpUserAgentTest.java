@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
     @Inject
-    @Named("realClock")
+    @Named("noClock")
     Clock clock;
 
     @Inject
