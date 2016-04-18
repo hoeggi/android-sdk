@@ -1,18 +1,18 @@
 package com.sensorberg.sdk.internal;
 
+import com.sensorberg.sdk.Constants;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestClock;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
+
+import org.fest.assertions.api.Assertions;
+
 import android.app.AlarmManager;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.FlakyTest;
-
-import com.sensorberg.sdk.Constants;
-import com.sensorberg.sdk.SensorbergTestApplication;
-import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.interfaces.Clock;
-import com.sensorberg.sdk.settings.Settings;
-import com.sensorberg.sdk.testUtils.TestServiceScheduler;
-
-import org.fest.assertions.api.Assertions;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,8 +28,8 @@ public class TheIntentSchedulingShould extends AndroidTestCase {
     AlarmManager alarmManager;
 
     @Inject
-    @Named("realClock")
-    Clock androidClock;
+    @Named("testClock")
+    TestClock androidClock;
 
     @Inject
     PersistentIntegerCounter persistentIntegerCounter;

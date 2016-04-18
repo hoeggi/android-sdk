@@ -3,8 +3,8 @@ package com.sensorberg.sdk.internal;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.fest.assertions.api.Assertions;
@@ -29,8 +29,8 @@ public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
     AlarmManager alarmManager;
 
     @Inject
-    @Named("realClock")
-    Clock androidClock;
+    @Named("testClock")
+    TestClock androidClock;
 
     @Inject
     PersistentIntegerCounter persistentIntegerCounter;
