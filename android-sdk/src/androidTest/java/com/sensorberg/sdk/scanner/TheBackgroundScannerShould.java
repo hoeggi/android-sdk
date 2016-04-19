@@ -45,6 +45,7 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
         platform = new TestPlatform();
         setUpScanner();
 

@@ -52,6 +52,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
         this.testHandlerManager.getCustomClock().setNowInMillis(0);
 
         setUpScanner();

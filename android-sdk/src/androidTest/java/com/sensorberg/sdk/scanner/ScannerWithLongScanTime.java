@@ -41,10 +41,12 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
+
         spyPlatform = spy(new TestPlatform());
         spyBluetoothPlatform = spy(new TestBluetoothPlatform());
         modifiedSettings = spy(new SettingsManager(new DumbSucessTransport(), sharedPreferences));
-        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
         when(modifiedSettings.getForeGroundWaitTime()).thenReturn(Constants.Time.ONE_SECOND);

@@ -43,6 +43,7 @@ public class TheDefaultScanner extends AndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
 
         tested = new Scanner(new SettingsManager(new DumbSucessTransport(), sharedPreferences), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);

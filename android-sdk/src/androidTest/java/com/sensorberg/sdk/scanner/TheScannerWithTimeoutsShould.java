@@ -47,6 +47,7 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
 
         testHandlerManager.getCustomClock().setNowInMillis(0);
         tested = new UIScanner(new SettingsManager(new DumbSucessTransport(), sharedPreferences), testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,

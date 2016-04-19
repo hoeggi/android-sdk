@@ -3,11 +3,11 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
+import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.content.SharedPreferences;
@@ -47,7 +47,8 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        TestPlatform plattform = new TestPlatform();
+        sharedPreferences.edit().clear().commit();
+
         settings = new SettingsManager(new DumbSucessTransport(), sharedPreferences);
         tested = new UIScanner(settings, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager, bluetoothPlatform);
 
@@ -65,13 +66,15 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     public void test_foreground_scanning_time_should_be_10seconds(){
         tested.hostApplicationInForeground();
 
-        assertThat(tested.scanTime).isEqualTo(Utils.TEN_SECONDS);
+        assertThat(settings.getForeGroundScanTime()).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
+        assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
     }
 
     public void test_foreground_pause_time_should_be_10seconds(){
         tested.hostApplicationInForeground();
 
-        assertThat(tested.waitTime).isEqualTo(Utils.TEN_SECONDS);
+        assertThat(settings.getForeGroundWaitTime()).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
+        assertThat(tested.waitTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
     }
 
     public void test_background_scanning_time_should_be_20seconds(){

@@ -45,6 +45,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
         platform = new TestPlatform();
         setUpScanner();
 
@@ -63,7 +64,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
     }
 
-    public void test_detect_no_beacon_because_it_is_sleeping(){
+    public void test_detect_no_beacon_because_it_is_sleeping() {
         platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
 
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
@@ -74,7 +75,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         verifyZeroInteractions(mockListener);
     }
 
-    public void test_detect_beacon_because_sleep_has_ended(){
+    public void test_detect_beacon_because_sleep_has_ended() {
         platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
         platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
         platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
@@ -104,7 +105,7 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         assertThat(tested.scanTime).isNotEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
     }
 
-    public void test_do_not_detect_beacon_because_sleep_has_not_ended_due_to_background(){
+    public void test_do_not_detect_beacon_because_sleep_has_not_ended_due_to_background() {
         platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME - 1);
         platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
         platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + 1);
@@ -175,7 +176,8 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         //since it is one millis after, there should not be interactions
         verifyZeroInteractions(mockListener);
 
-        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME + DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME -1);
+        platform.clock.setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME
+                + DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME + DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME -1);
         bluetoothPlatform.fakeIBeaconSighting();
 
         //is is one milli before the end...

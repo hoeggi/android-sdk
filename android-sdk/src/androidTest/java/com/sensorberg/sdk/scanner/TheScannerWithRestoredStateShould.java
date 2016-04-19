@@ -48,6 +48,7 @@ public class TheScannerWithRestoredStateShould {
     @Before
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
         platform = new TestPlatform();
         platform = spy(platform);
 
