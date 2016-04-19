@@ -73,11 +73,6 @@ public class AndroidPlatform implements Platform {
     }
 
     @Override
-    public String getHostApplicationId() {
-        return context.getPackageName();
-    }
-
-    @Override
     public List<BroadcastReceiver> getBroadcastReceiver() {
         return ManifestParser.findBroadcastReceiver(context);
     }

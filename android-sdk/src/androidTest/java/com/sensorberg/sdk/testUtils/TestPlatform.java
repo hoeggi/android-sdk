@@ -50,11 +50,6 @@ public class TestPlatform implements Platform, HandlerManager {
         return true;
     }
 
-    @Override
-    public String getHostApplicationId() {
-        return null;
-    }
-
     public Network getSpyNetwork(){
         return network;
     }

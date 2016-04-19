@@ -8,8 +8,6 @@ public interface Platform {
 
     boolean isSyncEnabled();
 
-    String getHostApplicationId();
-
     List<BroadcastReceiver> getBroadcastReceiver();
 
     boolean registerBroadcastReceiver();

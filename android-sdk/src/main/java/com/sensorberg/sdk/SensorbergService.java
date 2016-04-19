@@ -43,7 +43,6 @@ import static android.text.TextUtils.isEmpty;
 @SuppressWarnings("WeakerAccess") //external API
 public class SensorbergService extends Service {
 
-
     public static final int MSG_APPLICATION_IN_FOREGROUND = 1;
 
     public static final int MSG_APPLICATION_IN_BACKGROUND = 2;
@@ -358,12 +357,12 @@ public class SensorbergService extends Service {
         switch (intent.getIntExtra(EXTRA_GENERIC_TYPE, -1)) {
             case MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
-                Toast.makeText(context, "Log disabled " + platform.getHostApplicationId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Log disabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
                 break;
             }
             case MSG_TYPE_ENABLE_LOGGING: {
                 Logger.enableVerboseLogging();
-                Toast.makeText(context, "Log enabled " + platform.getHostApplicationId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Log enabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
                 break;
             }
         }
