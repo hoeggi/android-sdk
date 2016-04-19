@@ -57,7 +57,6 @@ android {
 }
 
 dependencies {
-    compile "com.sensorberg.sdk:android-sdk-bootstrapper:2.0.1RC1"
     compile project(':android-sdk')
     compile ('com.android.support:multidex:1.0.1')
 }

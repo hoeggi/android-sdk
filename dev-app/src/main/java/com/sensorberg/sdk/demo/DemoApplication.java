@@ -1,14 +1,14 @@
 package com.sensorberg.sdk.demo;
 
+import com.sensorberg.BackgroundDetector;
 import com.sensorberg.SensorbergApplication;
+import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.action.UriMessageAction;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
-import com.sensorberg.sdk.bootstrapper.BackgroundDetector;
-import com.sensorberg.sdk.bootstrapper.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.testApp.BuildConfig;
 

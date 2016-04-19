@@ -4,9 +4,9 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
-import com.sensorberg.sdk.BuildConfig;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
+import com.sensorberg.sdk.testApp.BuildConfig;
 
 import android.app.Activity;
 import android.content.Context;
@@ -32,8 +32,8 @@ public class DemoActivity extends Activity {
         textView = new TextView(this);
         StringBuilder infoText = new StringBuilder("This is an app that exposes some SDK APIs to the user").append('\n');
         infoText.append('\n').append("API Key: ").append(DemoApplication.API_KEY);
-        infoText.append('\n').append("SDK Version: ").append(BuildConfig.VERSION_NAME);
-        infoText.append('\n').append("Bootstrapper Version: ").append(com.sensorberg.sdk.bootstrapper.BuildConfig.VERSION_NAME);
+        infoText.append('\n').append("SDK Version: ").append(com.sensorberg.sdk.BuildConfig.VERSION_NAME);
+        infoText.append('\n').append("Demo Version: ").append(BuildConfig.VERSION_NAME);
 
         textView.setText(infoText.toString());
         setContentView(textView);
