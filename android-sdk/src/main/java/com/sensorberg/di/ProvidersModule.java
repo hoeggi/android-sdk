@@ -1,5 +1,6 @@
 package com.sensorberg.di;
 
+import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.internal.AndroidBluetoothPlatform;
 import com.sensorberg.sdk.internal.AndroidClock;
@@ -7,6 +8,7 @@ import com.sensorberg.sdk.internal.AndroidFileManager;
 import com.sensorberg.sdk.internal.AndroidHandlerManager;
 import com.sensorberg.sdk.internal.AndroidPlatformIdentifier;
 import com.sensorberg.sdk.internal.AndroidServiceScheduler;
+import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
@@ -15,6 +17,7 @@ import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.settings.DefaultSettings;
 
 import android.app.AlarmManager;
@@ -97,7 +100,8 @@ public class ProvidersModule {
     @Singleton
     public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, @Named("realClock") Clock clock,
             PersistentIntegerCounter persistentIntegerCounter) {
-        return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter, DefaultSettings.DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH);
+        return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter,
+                DefaultSettings.DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH);
     }
 
     @Provides
@@ -137,5 +141,13 @@ public class ProvidersModule {
         } else {
             return null;
         }
+    }
+
+    @Provides
+    @Named("realTransport")
+    @Singleton
+    public Transport provideRealTransport(Context context, @Named("realClock") Clock clock,
+            @Named("androidPlatformIdentifier") PlatformIdentifier platformIdentifier) {
+        return new OkHttpClientTransport(OkVolley.newRequestQueue(context, true), clock, platformIdentifier, false);
     }
 }

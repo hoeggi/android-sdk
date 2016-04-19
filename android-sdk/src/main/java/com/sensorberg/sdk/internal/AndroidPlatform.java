@@ -1,12 +1,9 @@
 package com.sensorberg.sdk.internal;
 
 import com.sensorberg.SensorbergApplication;
-import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
-import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
-import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 
@@ -41,14 +38,8 @@ public class AndroidPlatform implements Platform {
     private final Context context;
 
     @Inject
-    @Named("androidPlatformIdentifier")
-    PlatformIdentifier platformIdentifier;
-
-    @Inject
     @Named("androidBluetoothPlatform")
     BluetoothPlatform bluetoothPlatform;
-
-    private Transport asyncTransport;
 
     private static boolean actionBroadcastReceiversRegistered;
 
@@ -56,15 +47,6 @@ public class AndroidPlatform implements Platform {
     public AndroidPlatform(Context context) {
         this.context = context;
         SensorbergApplication.getComponent().inject(this);
-    }
-
-    @Override
-    public Transport getTransport() {
-        if (asyncTransport == null) {
-            asyncTransport = new OkHttpClientTransport(OkVolley.newRequestQueue(context, true), clock,
-                    platformIdentifier, false);
-        }
-        return asyncTransport;
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

@@ -1,14 +1,10 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.sdk.internal.interfaces.Transport;
-
 import android.content.BroadcastReceiver;
 
 import java.util.List;
 
 public interface Platform {
-
-    Transport getTransport();
 
     boolean isSyncEnabled();
 
