@@ -12,6 +12,7 @@ import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.SettingsChangedListener;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
@@ -69,6 +70,9 @@ public class OkHttpClientTransport implements Transport,
             Clock clock, PlatformIdentifier platformId, boolean useSyncClient) {
         SensorbergApplication.getComponent().inject(this);
         this.settings = settings;
+    @Setter
+    private SettingsChangedListener settingsChangedListener = SettingsChangedListener.NONE;
+
         queue = volleyQueue;
         this.clock = clock;
         shouldUseSyncClient = useSyncClient;
@@ -147,7 +151,7 @@ public class OkHttpClientTransport implements Transport,
                 }
                 proximityUUIDUpdateHandler.proximityUUIDListUpdated(response.getAccountProximityUUIDs());
                 if (response.reportTriggerSeconds != null) {
-                    settings.historyUploadIntervalChanged(TimeUnit.SECONDS.toMillis(response.reportTriggerSeconds));
+                    settingsChangedListener.historyUploadIntervalChanged(TimeUnit.SECONDS.toMillis(response.reportTriggerSeconds));
                 }
 
             }

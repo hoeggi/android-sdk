@@ -39,9 +39,11 @@ public interface Transport {
 
     void setApiToken(String apiToken);
 
-    void setSettingsCallback(TransportSettingsCallback transportSettingsCallback);
+    void loadSettings(TransportSettingsCallback transportSettingsCallback);
 
     void publishHistory(List<RealmScan> scans, List<RealmAction> actions, HistoryCallback callback);
 
     void updateBeaconLayout();
+
+    void setSettingsChangedListener(SettingsChangedListener listener);
 }
