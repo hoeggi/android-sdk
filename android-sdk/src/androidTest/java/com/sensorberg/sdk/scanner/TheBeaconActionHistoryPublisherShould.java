@@ -16,7 +16,6 @@ import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import io.realm.RealmResults;
 import util.TestConstants;
@@ -30,7 +29,6 @@ import static util.Verfier.hasSize;
 public class TheBeaconActionHistoryPublisherShould extends SensorbergApplicationTest {
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     private BeaconActionHistoryPublisher tested;

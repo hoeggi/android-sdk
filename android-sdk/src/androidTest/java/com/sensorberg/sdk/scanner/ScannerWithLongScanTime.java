@@ -8,7 +8,7 @@ import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.content.SharedPreferences;
@@ -16,7 +16,6 @@ import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
 
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,9 +31,11 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     @Inject
     SharedPreferences sharedPreferences;
 
+    @Inject
+    TestHandlerManager handlerManager;
+
     private BluetoothPlatform spyBluetoothPlatform;
 
-    private TestPlatform spyPlatform;
     private SettingsManager modifiedSettings;
     private UIScanner tested;
 
@@ -44,24 +45,22 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         sharedPreferences.edit().clear().commit();
 
-        spyPlatform = spy(new TestPlatform());
         spyBluetoothPlatform = spy(new TestBluetoothPlatform());
         modifiedSettings = spy(new SettingsManager(new DumbSucessTransport(), sharedPreferences));
 
         when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
         when(modifiedSettings.getForeGroundWaitTime()).thenReturn(Constants.Time.ONE_SECOND);
-        tested = new UIScanner(modifiedSettings, spyPlatform.clock, testFileManager, testServiceScheduler, spyPlatform, spyBluetoothPlatform);
+        tested = new UIScanner(modifiedSettings, handlerManager.getCustomClock(), testFileManager, testServiceScheduler, handlerManager, spyBluetoothPlatform);
     }
 
     public void test_should_pause_when_going_to_the_background_and_scanning_was_running() throws Exception {
         tested.hostApplicationInForeground();
         tested.start();
 
-        spyPlatform.clock.setNowInMillis(modifiedSettings.getBackgroundScanTime() - 1 );
-        spyPlatform.clock.setNowInMillis(modifiedSettings.getBackgroundScanTime() );
-        spyPlatform.clock.setNowInMillis(modifiedSettings.getBackgroundScanTime() + 1 );
+        handlerManager.getCustomClock().setNowInMillis(modifiedSettings.getBackgroundScanTime() - 1);
+        handlerManager.getCustomClock().setNowInMillis(modifiedSettings.getBackgroundScanTime());
+        handlerManager.getCustomClock().setNowInMillis(modifiedSettings.getBackgroundScanTime() + 1 );
 
-        reset(spyPlatform);
         tested.hostApplicationInBackground();
 
         verify(spyBluetoothPlatform).stopLeScan();

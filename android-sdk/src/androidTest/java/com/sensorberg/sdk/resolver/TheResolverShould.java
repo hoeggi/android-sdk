@@ -35,7 +35,6 @@ import static org.mockito.Mockito.verify;
 public class TheResolverShould extends AndroidTestCase {
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     @Inject

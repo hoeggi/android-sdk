@@ -18,7 +18,6 @@ import android.content.SharedPreferences;
 import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import util.Utils;
 
@@ -40,7 +39,6 @@ public class TheBluetoothChangesShould {
     TestServiceScheduler testServiceScheduler;
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     @Inject

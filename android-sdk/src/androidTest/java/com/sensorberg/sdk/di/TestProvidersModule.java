@@ -4,6 +4,7 @@ import com.sensorberg.di.ProvidersModule;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.testUtils.NoClock;
@@ -61,7 +62,13 @@ public class TestProvidersModule extends ProvidersModule {
     @Provides
     @Named("testHandlerWithCustomClock")
     @Singleton
-    public TestHandlerManager provideTestHandlerManagerWithCustomClock() {
+    public HandlerManager provideTestHandlerManagerWithCustomClock() {
+        return new TestHandlerManager();
+    }
+
+    @Provides
+    @Singleton
+    public TestHandlerManager provideTestHandlerManager() {
         return new TestHandlerManager();
     }
 

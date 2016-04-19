@@ -38,7 +38,6 @@ public class TheInternalApplicationBootstrapperShould {
     TestServiceScheduler testServiceScheduler;
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     @Inject

@@ -30,7 +30,6 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     TestServiceScheduler testServiceScheduler;
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     @Inject

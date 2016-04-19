@@ -15,7 +15,6 @@ import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -24,7 +23,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplicationTest {
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     private BeaconActionHistoryPublisher tested;

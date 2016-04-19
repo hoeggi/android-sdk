@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import util.Utils;
 
@@ -32,7 +31,6 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
     TestServiceScheduler testServiceScheduler;
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     @Inject

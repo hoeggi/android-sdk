@@ -44,7 +44,6 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     TestServiceScheduler testServiceScheduler;
 
     @Inject
-    @Named("testHandlerWithCustomClock")
     TestHandlerManager testHandlerManager;
 
     @Inject
