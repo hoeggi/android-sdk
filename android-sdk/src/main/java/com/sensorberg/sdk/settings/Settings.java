@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 import lombok.Getter;
 import lombok.Setter;
 
-public class OldSettings {
+public class Settings {
 
     @Getter
     private long cacheTtl = DefaultSettings.DEFAULT_CACHE_TTL;
@@ -56,10 +56,10 @@ public class OldSettings {
 
     private Long revision = null;
 
-    public OldSettings() {
+    public Settings() {
     }
 
-    public OldSettings(SharedPreferences preferences) {
+    public Settings(SharedPreferences preferences) {
         if (preferences != null) {
             exitTimeoutMillis = preferences
                     .getLong(Constants.SharedPreferencesKeys.Scanner.TIMEOUT_MILLIES, DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
@@ -94,7 +94,7 @@ public class OldSettings {
     }
 
 
-    public OldSettings(JSONObject settings, SettingsUpdateCallback settingsUpdateCallback) {
+    public Settings(JSONObject settings, SettingsUpdateCallback settingsUpdateCallback) {
         exitTimeoutMillis = settings.optLong("scanner.exitTimeoutMillis", DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
         foreGroundScanTime = settings.optLong("scanner.foreGroundScanTime", DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
         foreGroundWaitTime = settings.optLong("scanner.foreGroundWaitTime", DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);

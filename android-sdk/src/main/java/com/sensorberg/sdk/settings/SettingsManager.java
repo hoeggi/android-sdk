@@ -24,16 +24,16 @@ public class SettingsManager {
     @Setter
     private MessageDelayWindowLengthListener messageDelayWindowLengthListener = MessageDelayWindowLengthListener.NONE;
 
-    private OldSettings settings;
+    private Settings settings;
 
     public SettingsManager(Transport trans, SharedPreferences prefs) {
         transport = trans;
         preferences = prefs;
         transport.setBeaconHistoryUploadIntervalListener(mBeaconHistoryUploadIntervalListener);
-        updateSettings(new OldSettings(prefs));
+        updateSettings(new Settings(prefs));
     }
 
-    private void updateSettings(OldSettings stgs) {
+    private void updateSettings(Settings stgs) {
         settings = stgs;
         messageDelayWindowLengthListener.setMessageDelayWindowLength(getMessageDelayWindowLength());
 
@@ -59,13 +59,13 @@ public class SettingsManager {
 
         @Override
         public void onSettingsFound(JSONObject jsonSettings) {
-            OldSettings newSettings;
+            Settings newSettings;
 
             if (jsonSettings == null) {
-                newSettings = new OldSettings();
+                newSettings = new Settings();
                 preferences.edit().clear().apply();
             } else {
-                newSettings = new OldSettings(jsonSettings, settingsUpdateCallback);
+                newSettings = new Settings(jsonSettings, settingsUpdateCallback);
             }
 
             updateSettings(newSettings);
@@ -83,7 +83,7 @@ public class SettingsManager {
         }
     };
 
-    private OldSettings getSettings() {
+    private Settings getSettings() {
         return settings;
     }
 
