@@ -2,6 +2,8 @@ package com.sensorberg.sdk.internal.http;
 
 import com.android.sensorbergVolley.Network;
 import com.android.sensorbergVolley.VolleyError;
+import com.android.sensorbergVolley.toolbox.BasicNetwork;
+import com.sensorberg.android.okvolley.OkHttpStack;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
@@ -40,6 +42,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import util.TestConstants;
+import util.VolleyUtil;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -83,7 +86,7 @@ public class TransportShould extends SensorbergApplicationTest {
 
         listener = mock(BeaconHistoryUploadIntervalListener.class);
 
-        tested = new OkHttpClientTransport(testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
+        tested = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), clock, testPlatformIdentifier, true);
         tested.setBeaconHistoryUploadIntervalListener(listener);
         tested.setApiToken(TestConstants.API_TOKEN);
 
@@ -100,7 +103,8 @@ public class TransportShould extends SensorbergApplicationTest {
     }
 
     public void test_failures() throws VolleyError {
-        Network network = testPlattform.getSpyNetwork();
+
+        Network network = spy(new BasicNetwork(new OkHttpStack()));
         doThrow(new VolleyError()).when(network).performRequest(any(HeadersJsonObjectRequest.class));
 
         tested.loadSettings(new TransportSettingsCallback() {

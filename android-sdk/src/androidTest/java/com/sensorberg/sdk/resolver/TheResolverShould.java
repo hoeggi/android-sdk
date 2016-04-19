@@ -10,7 +10,6 @@ import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.hamcrest.BaseMatcher;
@@ -26,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import util.TestConstants;
+import util.VolleyUtil;
 
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.mock;
@@ -57,7 +57,7 @@ public class TheResolverShould extends AndroidTestCase {
 
         testHandlerManager = new TestHandlerManager();
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
-        testTransport = new OkHttpClientTransport(new TestPlatform().getCachedVolleyQueue(),
+        testTransport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()),
                 testHandlerManager.getCustomClock(), testPlatformIdentifier, true);
         testTransport.setApiToken(TestConstants.API_TOKEN);
         testHandlerManager.getCustomClock().setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());

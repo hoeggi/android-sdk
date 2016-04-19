@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import util.VolleyUtil;
+
 import static org.mockito.Mockito.spy;
 
 public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
@@ -39,7 +41,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         plattform = spy(new TestPlatform());
 
-        transport = new OkHttpClientTransport(plattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
+        transport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), clock, testPlatformIdentifier, true);
         startWebserver();
     }
 

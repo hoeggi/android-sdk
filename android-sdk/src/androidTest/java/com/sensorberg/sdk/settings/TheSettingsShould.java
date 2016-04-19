@@ -7,7 +7,6 @@ import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
@@ -20,6 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import util.TestConstants;
+import util.VolleyUtil;
 
 public class TheSettingsShould extends AndroidTestCase {
 
@@ -41,7 +41,7 @@ public class TheSettingsShould extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        Transport transport = new OkHttpClientTransport(new TestPlatform().getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
+        Transport transport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), clock, testPlatformIdentifier, true);
         transport.setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
         tested = new SettingsManager(transport, testedSharedPreferences);

@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import util.TestConstants;
+import util.VolleyUtil;
 
 public class TheInternalBootstrapperIntegration extends SensorbergApplicationTest {
 
@@ -114,7 +115,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         TestPlatform platform = new TestPlatform();
-        Transport transport = new OkHttpClientTransport(platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock(),
+        Transport transport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), testHandlerManager.getCustomClock(),
                 testPlatformIdentifier, true);
         tested = new InternalApplicationBootstrapper(transport, testServiceScheduler, testHandlerManager,
                 testHandlerManager.getCustomClock(),
