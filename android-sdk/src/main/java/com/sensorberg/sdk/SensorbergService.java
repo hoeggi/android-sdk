@@ -226,7 +226,7 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(platform, transport, serviceScheduler, handlerManager, clock,
+                        bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
                                 bluetoothPlatform, sharedPreferences);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper);
@@ -434,7 +434,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 transport.setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(platform, transport, serviceScheduler, handlerManager, clock,
+                bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
                         bluetoothPlatform, sharedPreferences);
             } else {
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");

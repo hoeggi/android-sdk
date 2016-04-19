@@ -9,7 +9,6 @@ import com.sensorberg.sdk.presenter.ManifestParser;
 
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -30,9 +29,6 @@ public class AndroidPlatform implements Platform {
     Clock clock;
 
     @Inject
-    PermissionChecker permissionChecker;
-
-    @Inject
     ServiceScheduler mServiceScheduler;
 
     private final Context context;
@@ -47,16 +43,6 @@ public class AndroidPlatform implements Platform {
     public AndroidPlatform(Context context) {
         this.context = context;
         SensorbergApplication.getComponent().inject(this);
-    }
-
-    @SuppressWarnings("SimplifiableIfStatement")
-    @Override
-    public boolean isSyncEnabled() {
-        if (permissionChecker.hasReadSyncSettingsPermissions()) {
-            return ContentResolver.getMasterSyncAutomatically();
-        } else {
-            return true;
-        }
     }
 
     @Override

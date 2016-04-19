@@ -6,8 +6,6 @@ import java.util.List;
 
 public interface Platform {
 
-    boolean isSyncEnabled();
-
     List<BroadcastReceiver> getBroadcastReceiver();
 
     boolean registerBroadcastReceiver();

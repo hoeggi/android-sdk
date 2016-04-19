@@ -7,9 +7,9 @@ import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
+import org.fest.assertions.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,10 +57,9 @@ public class TheInternalApplicationBootstrapperShould {
     @Before
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        TestPlatform testPlatform = new TestPlatform();
         BeaconActionHistoryPublisher.REALM_FILENAME = String.format("realm-%d.realm", System.currentTimeMillis());
 
-        tested = spy(new InternalApplicationBootstrapper(testPlatform, new DumbSucessTransport(), testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
+        tested = spy(new InternalApplicationBootstrapper(new DumbSucessTransport(), testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
                 bluetoothPlatform, sharedPreferences));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
@@ -100,5 +99,8 @@ public class TheInternalApplicationBootstrapperShould {
         verify(tested, times(1)).presentBeaconEvent(any(BeaconEvent.class));
     }
 
+    public void test_should_return_the_sync_setting(){
+        Assertions.assertThat(tested.isSyncEnabled()).isTrue();
+    }
 
 }

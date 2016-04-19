@@ -45,11 +45,6 @@ public class TestPlatform implements Platform, HandlerManager {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
     }
 
-    @Override
-    public boolean isSyncEnabled() {
-        return true;
-    }
-
     public Network getSpyNetwork(){
         return network;
     }

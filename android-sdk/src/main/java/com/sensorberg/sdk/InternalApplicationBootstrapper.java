@@ -4,7 +4,7 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
-import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
@@ -34,6 +34,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.HashSet;
 import java.util.List;
@@ -48,8 +49,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         implements ScannerListener, ResolverListener, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
 
     private static final boolean SURVIVE_REBOOT = true;
-
-    final Platform platform;
 
     final Transport transport;
 
@@ -78,15 +77,16 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     @Inject
     ServiceScheduler mServiceScheduler;
 
+    @Inject
+    PermissionChecker permissionChecker;
+
     BluetoothPlatform bluetoothPlatform;
 
-    public InternalApplicationBootstrapper(Platform platform, Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager,
-            Clock clk,
-            BluetoothPlatform btPlatform, SharedPreferences preferences) {
+    public InternalApplicationBootstrapper(Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager,
+            Clock clk, BluetoothPlatform btPlatform, SharedPreferences preferences) {
         super(scheduler);
         SensorbergApplication.getComponent().inject(this);
 
-        this.platform = platform;
         this.transport = transport;
         settingsManager = new SettingsManager(transport, preferences);
         settingsManager.setSettingsUpdateCallback(settingsUpdateCallbackListener);
@@ -130,7 +130,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     }
 
     private void updateAlarmsForActionLayoutFetch() {
-        if (platform.isSyncEnabled()) {
+        if (isSyncEnabled()) {
             serviceScheduler
                     .scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settingsManager.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
         } else {
@@ -276,13 +276,23 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         }
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
+    @VisibleForTesting
+    boolean isSyncEnabled() {
+        if (permissionChecker.hasReadSyncSettingsPermissions()) {
+            return ContentResolver.getMasterSyncAutomatically();
+        } else {
+            return true;
+        }
+    }
+
     @Override
     public void reportImmediately() {
         beaconActionHistoryPublisher.publishHistory();
     }
 
     public void updateBeaconLayout() {
-        if (platform.isSyncEnabled()) {
+        if (isSyncEnabled()) {
             transport.updateBeaconLayout();
         }
     }

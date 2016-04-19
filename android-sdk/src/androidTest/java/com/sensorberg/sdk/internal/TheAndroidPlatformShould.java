@@ -52,11 +52,6 @@ public class TheAndroidPlatformShould extends SensorbergApplicationTest {
         super.tearDown();
     }
 
-    public void test_should_return_the_sync_setting(){
-        AndroidPlatform platform = new AndroidPlatform(getContext());
-        Assertions.assertThat(platform.isSyncEnabled()).isTrue();
-    }
-
     public void test_should_not_registerBroadcastReceiver_twice(){
         TestGenericBroadcastReceiver2.reset(1);
         AndroidPlatform androidPlatform = new AndroidPlatform(getContext());
