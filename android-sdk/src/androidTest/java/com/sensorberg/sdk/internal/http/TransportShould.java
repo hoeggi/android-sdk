@@ -8,6 +8,7 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
+import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
@@ -21,7 +22,6 @@ import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
-import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
@@ -65,7 +65,7 @@ public class TransportShould extends SensorbergApplicationTest {
     protected Transport tested;
     protected TestPlatform testPlattform;
     private ScanEvent scanEvent;
-    private Settings settings;
+    private BeaconHistoryUploadIntervalListener listener;
 
     @Override
     public void setUp() throws Exception {
@@ -81,9 +81,10 @@ public class TransportShould extends SensorbergApplicationTest {
                 .withEventTime(clock.now())
                 .build();
 
-        settings = mock(Settings.class);
+        listener = mock(BeaconHistoryUploadIntervalListener.class);
 
-        tested = new OkHttpClientTransport(settings, testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
+        tested = new OkHttpClientTransport(testPlattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
+        tested.setBeaconHistoryUploadIntervalListener(listener);
         tested.setApiToken(TestConstants.API_TOKEN);
 
     }
@@ -95,7 +96,7 @@ public class TransportShould extends SensorbergApplicationTest {
                 .build(), BeaconResponseHandler.NONE);
 
         waitForRequests(1);
-        verify(settings).historyUploadIntervalChanged(1337L * 1000);
+        verify(listener).historyUploadIntervalChanged(1337L * 1000);
     }
 
     public void test_failures() throws VolleyError {

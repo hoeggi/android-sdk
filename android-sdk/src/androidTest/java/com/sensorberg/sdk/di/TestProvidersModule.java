@@ -5,6 +5,7 @@ import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.testUtils.NoClock;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestClock;
@@ -54,7 +55,7 @@ public class TestProvidersModule extends ProvidersModule {
     @Singleton
     public TestServiceScheduler provideTestServiceScheduler(Context context, AlarmManager alarmManager, @Named("realClock") Clock clock,
             PersistentIntegerCounter persistentIntegerCounter) {
-        return new TestServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
+        return new TestServiceScheduler(context, alarmManager, clock, persistentIntegerCounter, DefaultSettings.DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH);
     }
 
     @Provides

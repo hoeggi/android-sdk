@@ -3,7 +3,7 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
@@ -41,14 +41,14 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     SharedPreferences sharedPreferences;
 
     protected UIScanner tested;
-    protected Settings settings;
+    protected SettingsManager settings;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         TestPlatform plattform = new TestPlatform();
-        settings = new Settings(new DumbSucessTransport(), sharedPreferences);
+        settings = new SettingsManager(new DumbSucessTransport(), sharedPreferences);
         tested = new UIScanner(settings, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager, bluetoothPlatform);
 
         tested.scanTime = Long.MAX_VALUE;

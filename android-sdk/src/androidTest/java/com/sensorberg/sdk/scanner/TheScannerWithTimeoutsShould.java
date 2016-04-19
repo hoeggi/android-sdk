@@ -2,12 +2,11 @@ package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
@@ -49,9 +48,8 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        TestPlatform plattform = new TestPlatform();
         testHandlerManager.getCustomClock().setNowInMillis(0);
-        tested = new UIScanner(new Settings(new DumbSucessTransport(), sharedPreferences), testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+        tested = new UIScanner(new SettingsManager(new DumbSucessTransport(), sharedPreferences), testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);
 
         tested.start();

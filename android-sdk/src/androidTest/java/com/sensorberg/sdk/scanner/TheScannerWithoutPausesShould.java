@@ -2,12 +2,11 @@ package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.mockito.Mockito;
@@ -48,13 +47,11 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     @Inject
     SharedPreferences sharedPreferences;
 
-    private TestPlatform plattform = null;
     private Scanner tested;
 
     @Override
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        plattform = new TestPlatform();
         this.testHandlerManager.getCustomClock().setNowInMillis(0);
 
         setUpScanner();
@@ -66,7 +63,7 @@ public class TheScannerWithoutPausesShould extends AndroidTestCase {
     }
 
     private void setUpScanner() {
-        tested = new Scanner(new Settings(new DumbSucessTransport(), sharedPreferences), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+        tested = new Scanner(new SettingsManager(new DumbSucessTransport(), sharedPreferences), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);
     }
 

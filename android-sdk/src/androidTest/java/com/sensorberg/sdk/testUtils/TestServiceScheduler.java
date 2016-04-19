@@ -4,9 +4,9 @@ import com.sensorberg.sdk.internal.PendingIntentStorage;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -19,11 +19,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public class TestServiceScheduler implements ServiceScheduler {
+public class TestServiceScheduler implements ServiceScheduler, MessageDelayWindowLengthListener {
 
     public static final String TAG = "TestServiceScheduler";
 
@@ -35,17 +33,16 @@ public class TestServiceScheduler implements ServiceScheduler {
 
     private final PersistentIntegerCounter postToServiceCounter;
 
-    private Settings settings;
-
-    private final Set<Integer> repeatingPendingIntents = new HashSet<>();
-
     private final PendingIntentStorage pendingIntentStorage;
 
-    public TestServiceScheduler(Context ctx, AlarmManager am, Clock clk, PersistentIntegerCounter integerCounter) {
+    private long messageDelayWindowLength;
+
+    public TestServiceScheduler(Context ctx, AlarmManager am, Clock clk, PersistentIntegerCounter integerCounter, long messageDelayWindowLength) {
         context = ctx;
         alarmManager = am;
         clock = clk;
         postToServiceCounter = integerCounter;
+        this.messageDelayWindowLength = messageDelayWindowLength;
         pendingIntentStorage = new PendingIntentStorage(this, clk);
     }
 
@@ -79,11 +76,6 @@ public class TestServiceScheduler implements ServiceScheduler {
     @Override
     public void unscheduleIntent(int index) {
         alarmManager.cancel(getPendingIntent(index, null));
-    }
-
-    @Override
-    public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 
     @Override
@@ -137,11 +129,15 @@ public class TestServiceScheduler implements ServiceScheduler {
     private void scheduleAlarm(long delayInMillis, PendingIntent pendingIntent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarmManager
-                    .setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, settings.getMessageDelayWindowLength(),
+                    .setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, messageDelayWindowLength,
                             pendingIntent);
         } else {
             alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, pendingIntent);
         }
     }
 
+    @Override
+    public void setMessageDelayWindowLength(long messageDelayWindowLength) {
+        this.messageDelayWindowLength = messageDelayWindowLength;
+    }
 }

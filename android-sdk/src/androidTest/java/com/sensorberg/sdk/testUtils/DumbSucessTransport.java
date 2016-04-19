@@ -1,5 +1,6 @@
 package com.sensorberg.sdk.testUtils;
 
+import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
@@ -14,6 +15,11 @@ public class DumbSucessTransport implements Transport {
 
     @Override
     public void updateBeaconLayout() {
+
+    }
+
+    @Override
+    public void setBeaconHistoryUploadIntervalListener(BeaconHistoryUploadIntervalListener listener) {
 
     }
 

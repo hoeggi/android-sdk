@@ -3,12 +3,11 @@ package com.sensorberg.sdk.scanner;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.settings.DefaultSettings;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.junit.Before;
@@ -51,14 +50,13 @@ public class TheBluetoothChangesShould {
 
     Scanner tested;
     private long RANDOM_VALUE_THAT_IS_SHORTER_THAN_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT_BUT_LONGER_THAN_EXIT_EVENT_DELAY = Utils.THIRTY_SECONDS;
-    private Settings settings;
+    private SettingsManager settings;
 
     @Before
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        TestPlatform platform = new TestPlatform();
 
-        settings = new Settings(new DumbSucessTransport(), sharedPreferences);
+        settings = new SettingsManager(new DumbSucessTransport(), sharedPreferences);
         tested = new Scanner(settings, false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager, bluetoothPlatform);
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0L;

@@ -2,7 +2,7 @@ package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
@@ -41,7 +41,7 @@ public class TheScannerWithRestoredStateShould {
     @Inject
     SharedPreferences sharedPreferences;
 
-    private Settings settings;
+    private SettingsManager settings;
 
     private TestPlatform platform;
 
@@ -51,8 +51,7 @@ public class TheScannerWithRestoredStateShould {
         platform = new TestPlatform();
         platform = spy(platform);
 
-        settings = new Settings(new DumbSucessTransport(), sharedPreferences);
-        platform.setSettings(settings);
+        settings = new SettingsManager(new DumbSucessTransport(), sharedPreferences);
     }
 
     @Test

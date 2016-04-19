@@ -8,10 +8,9 @@ import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import java.util.UUID;
 
@@ -21,8 +20,6 @@ import javax.inject.Named;
 import util.TestConstants;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplicationTest {
 
@@ -39,11 +36,8 @@ public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplica
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        TestPlatform testPlattform = new TestPlatform();
         testHandlerManager.getCustomClock().setNowInMillis(System.currentTimeMillis());
-        transport = spy(new DumbSucessTransport());
-        Settings settings = mock(Settings.class);
-        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, settings, testHandlerManager.getCustomClock(), testHandlerManager);
+        tested = new BeaconActionHistoryPublisher(new DumbSucessTransport(), ResolverListener.NONE, DefaultSettings.DEFAULT_CACHE_TTL, testHandlerManager.getCustomClock(), testHandlerManager);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

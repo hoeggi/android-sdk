@@ -10,8 +10,8 @@ import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
+import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import java.util.UUID;
 
@@ -42,10 +42,9 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        TestPlatform testPlattform = new TestPlatform();
         testHandlerManager.getCustomClock().setNowInMillis(System.currentTimeMillis());
         transport = mock(Transport.class);
-        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, null, testHandlerManager.getCustomClock(), testHandlerManager);
+        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, DefaultSettings.DEFAULT_CACHE_TTL, testHandlerManager.getCustomClock(), testHandlerManager);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

@@ -39,7 +39,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         plattform = spy(new TestPlatform());
 
-        transport = new OkHttpClientTransport(null, plattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
+        transport = new OkHttpClientTransport(plattform.getCachedVolleyQueue(), clock, testPlatformIdentifier, true);
         startWebserver();
     }
 

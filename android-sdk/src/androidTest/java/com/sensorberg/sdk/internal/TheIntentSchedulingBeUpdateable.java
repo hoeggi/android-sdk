@@ -3,7 +3,6 @@ package com.sensorberg.sdk.internal;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
@@ -19,9 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
 
@@ -46,10 +42,7 @@ public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        testServiceScheduler = new TestServiceScheduler(getContext(), alarmManager, androidClock, persistentIntegerCounter);
-        Settings mockSettings = mock(Settings.class);
-        when(mockSettings.getMessageDelayWindowLength()).thenReturn(Constants.Time.ONE_SECOND / 10);
-        testServiceScheduler.setSettings(mockSettings);
+        testServiceScheduler = new TestServiceScheduler(getContext(), alarmManager, androidClock, persistentIntegerCounter, Constants.Time.ONE_SECOND / 10);
         INTENT_BUNDLE = new Bundle();
         INTENT_BUNDLE.putString("foo", "bar");
 

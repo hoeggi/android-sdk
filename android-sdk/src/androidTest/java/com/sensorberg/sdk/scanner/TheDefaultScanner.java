@@ -4,11 +4,10 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.settings.DefaultSettings;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import android.content.SharedPreferences;
@@ -45,8 +44,7 @@ public class TheDefaultScanner extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        TestPlatform platform = new TestPlatform();
-        tested = new Scanner(new Settings(new DumbSucessTransport(), sharedPreferences), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+        tested = new Scanner(new SettingsManager(new DumbSucessTransport(), sharedPreferences), false, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);
 
         tested.start();

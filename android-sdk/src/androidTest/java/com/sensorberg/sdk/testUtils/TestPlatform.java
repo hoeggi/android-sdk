@@ -13,7 +13,6 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.settings.Settings;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,7 +40,6 @@ public class TestPlatform implements Platform, HandlerManager {
     public CustomClock clock = new CustomClock();
 
     private Transport transport = new DumbSucessTransport();
-    private Settings settings;
     private Network network;
     private List<NonThreadedRunLoopForTesting> runLoops = new ArrayList<>();
 
@@ -57,11 +55,6 @@ public class TestPlatform implements Platform, HandlerManager {
     @Override
     public boolean isSyncEnabled() {
         return true;
-    }
-
-    @Override
-    public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 
     @Override

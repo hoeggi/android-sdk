@@ -73,7 +73,7 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
         queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
         queue.start();
 
-        tested = new OkHttpClientTransport(null, queue, clock, testPlatformIdentifier, true);
+        tested = new OkHttpClientTransport(queue, clock, testPlatformIdentifier, true);
         tested.setApiToken(TestConstants.API_TOKEN);
         startWebserver();
     }
