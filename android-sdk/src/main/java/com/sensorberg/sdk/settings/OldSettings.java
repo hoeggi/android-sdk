@@ -1,9 +1,6 @@
 package com.sensorberg.sdk.settings;
 
 import com.sensorberg.sdk.Constants;
-import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 
 import org.json.JSONObject;
 
@@ -12,11 +9,7 @@ import android.content.SharedPreferences;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Settings implements TransportSettingsCallback {
-
-   private final Transport transport;
-
-    SharedPreferences preferences;
+public class OldSettings {
 
     @Getter
     private long cacheTtl = DefaultSettings.DEFAULT_CACHE_TTL;
@@ -49,6 +42,7 @@ public class Settings implements TransportSettingsCallback {
     private int maxRetries = DefaultSettings.DEFAULT_MAX_RETRIES;
 
     @Getter
+    @Setter
     private long historyUploadInterval = DefaultSettings.DEFAULT_HISTORY_UPLOAD_INTERVAL;
 
     @Getter
@@ -62,15 +56,10 @@ public class Settings implements TransportSettingsCallback {
 
     private Long revision = null;
 
-    @Setter
-    private SettingsUpdateCallback settingsUpdateCallback = SettingsUpdateCallback.NONE;
-
-    public Settings(Transport transport, SharedPreferences prefs) {
-        this.transport = transport;
-        preferences = prefs;
+    public OldSettings() {
     }
 
-    public void restoreValuesFromPreferences() {
+    public OldSettings(SharedPreferences preferences) {
         if (preferences != null) {
             exitTimeoutMillis = preferences
                     .getLong(Constants.SharedPreferencesKeys.Scanner.TIMEOUT_MILLIES, DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
@@ -101,38 +90,14 @@ public class Settings implements TransportSettingsCallback {
                     DefaultSettings.DEFAULT_SHOULD_RESTORE_BEACON_STATE);
             cacheTtl = preferences.getLong(Constants.SharedPreferencesKeys.Platform.CACHE_OBJECT_TIME_TO_LIVE, DefaultSettings.DEFAULT_CACHE_TTL);
         }
-    }
 
-    public void updateValues() {
-        transport.setSettingsCallback(this);
     }
 
 
-    @Override
-    public void nothingChanged() {
-        //all is good nothing to do
-        Logger.log.logSettingsUpdateState("nothingChanged");
-    }
-
-    @Override
-    public void onFailure(Exception e) {
-        Logger.log.logSettingsUpdateState("onFailure");
-        Logger.log.logError("settings update failed", e);
-    }
-
-    @Override
-    public void onSettingsFound(JSONObject settings) {
-        Logger.log.logSettingsUpdateState("onSettingsFound: " + revision);
-
-        if (settings == null) {
-            settings = new JSONObject();
-            preferences.edit().clear().apply();
-        }
-
+    public OldSettings(JSONObject settings, SettingsUpdateCallback settingsUpdateCallback) {
         exitTimeoutMillis = settings.optLong("scanner.exitTimeoutMillis", DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
         foreGroundScanTime = settings.optLong("scanner.foreGroundScanTime", DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
         foreGroundWaitTime = settings.optLong("scanner.foreGroundWaitTime", DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
-
         backgroundScanTime = settings.optLong("scanner.backgroundScanTime", DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME);
         backgroundWaitTime = settings.optLong("scanner.backgroundWaitTime", DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME);
 
@@ -140,9 +105,7 @@ public class Settings implements TransportSettingsCallback {
                 .optLong("scanner.cleanBeaconMapRestartTimeout", DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT);
 
         messageDelayWindowLength = settings.optLong("presenter.messageDelayWindowLength", DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT);
-
         cacheTtl = settings.optLong("cache.objectTTL", DefaultSettings.DEFAULT_CACHE_TTL);
-
         maxRetries = settings.optInt("network.maximumResolveRetries", DefaultSettings.DEFAULT_MAX_RETRIES);
         millisBetweenRetries = settings.optLong("network.millisBetweenRetries", DefaultSettings.DEFAULT_MILLIS_BEETWEEN_RETRIES);
         shouldRestoreBeaconStates = settings.optBoolean("scanner.restoreBeaconStates", DefaultSettings.DEFAULT_SHOULD_RESTORE_BEACON_STATE);
@@ -165,18 +128,9 @@ public class Settings implements TransportSettingsCallback {
             settingsUpdateCallback.onSettingsUpdateIntervalChange(newSettingsUpdateInterval);
         }
 
-        persistToPreferences();
     }
 
-    public void historyUploadIntervalChanged(Long newHistoryUploadIntervalMillis) {
-        if (newHistoryUploadIntervalMillis != historyUploadInterval) {
-            historyUploadInterval = newHistoryUploadIntervalMillis;
-            settingsUpdateCallback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
-            persistToPreferences();
-        }
-    }
-
-    private void persistToPreferences() {
+    public void persistToPreferences(SharedPreferences preferences) {
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
 

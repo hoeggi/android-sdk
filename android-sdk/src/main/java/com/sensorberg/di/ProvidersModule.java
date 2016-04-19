@@ -15,6 +15,7 @@ import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
+import com.sensorberg.sdk.settings.DefaultSettings;
 
 import android.app.AlarmManager;
 import android.app.Application;
@@ -96,7 +97,7 @@ public class ProvidersModule {
     @Singleton
     public ServiceScheduler provideIntentScheduler(Context context, AlarmManager alarmManager, @Named("realClock") Clock clock,
             PersistentIntegerCounter persistentIntegerCounter) {
-        return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter);
+        return new AndroidServiceScheduler(context, alarmManager, clock, persistentIntegerCounter, DefaultSettings.DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH);
     }
 
     @Provides

@@ -9,7 +9,6 @@ import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
-import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
@@ -51,8 +50,6 @@ public class AndroidPlatform implements Platform {
 
     private Transport asyncTransport;
 
-    private Settings settings;
-
     private static boolean actionBroadcastReceiversRegistered;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -64,7 +61,7 @@ public class AndroidPlatform implements Platform {
     @Override
     public Transport getTransport() {
         if (asyncTransport == null) {
-            asyncTransport = new OkHttpClientTransport(settings, OkVolley.newRequestQueue(context, true), clock,
+            asyncTransport = new OkHttpClientTransport(OkVolley.newRequestQueue(context, true), clock,
                     platformIdentifier, false);
         }
         return asyncTransport;
@@ -91,12 +88,6 @@ public class AndroidPlatform implements Platform {
             actionBroadcastReceiversRegistered = true;
         }
         return true;
-    }
-
-    @Override
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-        mServiceScheduler.setSettings(settings);
     }
 
     @Override

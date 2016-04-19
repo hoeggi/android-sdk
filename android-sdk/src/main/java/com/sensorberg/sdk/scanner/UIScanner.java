@@ -5,13 +5,13 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 
 public class UIScanner extends AbstractScanner {
 
-    public UIScanner(Settings settings, Clock clock, FileManager fileManager, ServiceScheduler scheduler,
+    public UIScanner(SettingsManager stgMgr, Clock clock, FileManager fileManager, ServiceScheduler scheduler,
             HandlerManager handlerManager, BluetoothPlatform bluetoothPlatform) {
-        super(settings, false, clock, fileManager, scheduler, handlerManager, bluetoothPlatform);
+        super(stgMgr, false, clock, fileManager, scheduler, handlerManager, bluetoothPlatform);
     }
 
     @Override

@@ -45,5 +45,5 @@ public interface Transport {
 
     void updateBeaconLayout();
 
-    void setSettingsChangedListener(SettingsChangedListener listener);
+    void setBeaconHistoryUploadIntervalListener(BeaconHistoryUploadIntervalListener listener);
 }

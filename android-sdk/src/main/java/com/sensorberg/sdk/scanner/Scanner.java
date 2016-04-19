@@ -7,16 +7,16 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 
 import android.os.Bundle;
 
 public class Scanner extends AbstractScanner {
     private static final String SCANNER_EVENT = "com.sensorberg.sdk.scanner.SDKScanner.SCANNER_EVENT";
 
-    public Scanner(Settings settings, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager,
+    public Scanner(SettingsManager stgMgr, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager,
             ServiceScheduler scheduler, HandlerManager handlerManager, BluetoothPlatform bluetoothPlatform) {
-        super(settings, shouldRestoreBeaconStates, clock, fileManager, scheduler, handlerManager, bluetoothPlatform);
+        super(stgMgr, shouldRestoreBeaconStates, clock, fileManager, scheduler, handlerManager, bluetoothPlatform);
     }
 
     @Override

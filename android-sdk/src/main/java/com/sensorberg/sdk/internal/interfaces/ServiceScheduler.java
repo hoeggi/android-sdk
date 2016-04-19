@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.internal.interfaces;
 
 import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.settings.Settings;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -14,8 +13,6 @@ public interface ServiceScheduler {
     void scheduleIntent(long key, long delayInMillis, Bundle content);
 
     void unscheduleIntent(int index);
-
-    void setSettings(Settings settings);
 
     void cancelServiceMessage(int index);
 

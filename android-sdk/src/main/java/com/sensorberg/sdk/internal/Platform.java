@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.internal;
 
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.settings.Settings;
 
 import android.content.BroadcastReceiver;
 
@@ -12,8 +11,6 @@ public interface Platform {
     Transport getTransport();
 
     boolean isSyncEnabled();
-
-    void setSettings(Settings settings);
 
     String getHostApplicationId();
 

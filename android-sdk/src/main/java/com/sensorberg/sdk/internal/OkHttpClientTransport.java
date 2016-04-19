@@ -6,13 +6,12 @@ import com.android.sensorbergVolley.RequestQueue;
 import com.android.sensorbergVolley.Response;
 import com.android.sensorbergVolley.VolleyError;
 import com.android.sensorbergVolley.toolbox.RequestFuture;
-import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.SettingsChangedListener;
+import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
@@ -26,7 +25,6 @@ import com.sensorberg.sdk.model.server.ResolveResponse;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
-import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.utils.Objects;
 
 import org.json.JSONException;
@@ -40,6 +38,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import lombok.Setter;
 
 import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
@@ -56,23 +56,23 @@ public class OkHttpClientTransport implements Transport,
     private final Map<String, String> headers = new HashMap<>();
 
     private RequestQueue queue;
-    private final Settings settings;
+
     private BeaconReportHandler beaconReportHandler;
+
     private ProximityUUIDUpdateHandler proximityUUIDUpdateHandler = ProximityUUIDUpdateHandler.NONE;
+
     private String apiToken;
 
     private final boolean shouldUseSyncClient;
 
     private static final String INSTALLATION_IDENTIFIER = "X-iid";
+
     private static final String ADVERTISER_IDENTIFIER = "X-aid";
 
-    public OkHttpClientTransport(Settings settings, RequestQueue volleyQueue,
-            Clock clock, PlatformIdentifier platformId, boolean useSyncClient) {
-        SensorbergApplication.getComponent().inject(this);
-        this.settings = settings;
     @Setter
-    private SettingsChangedListener settingsChangedListener = SettingsChangedListener.NONE;
+    private BeaconHistoryUploadIntervalListener beaconHistoryUploadIntervalListener = BeaconHistoryUploadIntervalListener.NONE;
 
+    public OkHttpClientTransport(RequestQueue volleyQueue, Clock clock, PlatformIdentifier platformId, boolean useSyncClient) {
         queue = volleyQueue;
         this.clock = clock;
         shouldUseSyncClient = useSyncClient;
@@ -122,7 +122,8 @@ public class OkHttpClientTransport implements Transport,
             }
         };
         //noinspection unchecked
-        perform(Request.Method.GET, getResolveURLString(), null, listener, Response.ErrorListener.NONE, BaseResolveResponse.class, Collections.EMPTY_MAP, true);
+        perform(Request.Method.GET, getResolveURLString(), null, listener, Response.ErrorListener.NONE, BaseResolveResponse.class,
+                Collections.EMPTY_MAP, true);
     }
 
     @Override
@@ -151,7 +152,7 @@ public class OkHttpClientTransport implements Transport,
                 }
                 proximityUUIDUpdateHandler.proximityUUIDListUpdated(response.getAccountProximityUUIDs());
                 if (response.reportTriggerSeconds != null) {
-                    settingsChangedListener.historyUploadIntervalChanged(TimeUnit.SECONDS.toMillis(response.reportTriggerSeconds));
+                    beaconHistoryUploadIntervalListener.historyUploadIntervalChanged(TimeUnit.SECONDS.toMillis(response.reportTriggerSeconds));
                 }
 
             }
@@ -163,7 +164,8 @@ public class OkHttpClientTransport implements Transport,
             }
         };
 
-        perform(Request.Method.GET, beaconURLString, null, listener, errorlistener, ResolveResponse.class, beaconHeader(resolutionConfiguration.getScanEvent()), false);
+        perform(Request.Method.GET, beaconURLString, null, listener, errorlistener, ResolveResponse.class,
+                beaconHeader(resolutionConfiguration.getScanEvent()), false);
 
     }
 
@@ -186,7 +188,8 @@ public class OkHttpClientTransport implements Transport,
         perform(method, url, body, listener, errorlistener, JSONObject.class, Collections.EMPTY_MAP, false);
     }
 
-    private <T> void perform(int method, String url, Object body, Response.Listener<T> listener, Response.ErrorListener errorlistener, Class<T> clazz, Map<String, String> headers, boolean shouldAlwaysTryWithNetwork) {
+    private <T> void perform(int method, String url, Object body, Response.Listener<T> listener, Response.ErrorListener errorlistener, Class<T> clazz,
+            Map<String, String> headers, boolean shouldAlwaysTryWithNetwork) {
         Map<String, String> requestHeaders = new HashMap<>(headers);
         requestHeaders.putAll(this.headers);
 
@@ -238,7 +241,7 @@ public class OkHttpClientTransport implements Transport,
     }
 
     @Override
-    public void setSettingsCallback(final TransportSettingsCallback transportSettingsCallback) {
+    public void loadSettings(final TransportSettingsCallback transportSettingsCallback) {
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -264,7 +267,6 @@ public class OkHttpClientTransport implements Transport,
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
 
                 if (volleyError.networkResponse != null) {
                     if (volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
@@ -306,7 +308,8 @@ public class OkHttpClientTransport implements Transport,
         HistoryBody body = new HistoryBody(scans, actions, clock);
 
         //noinspection unchecked
-        perform(Request.Method.POST, getResolveURLString(), body, responseListener, errorListener, ResolveResponse.class, Collections.EMPTY_MAP, false);
+        perform(Request.Method.POST, getResolveURLString(), body, responseListener, errorListener, ResolveResponse.class, Collections.EMPTY_MAP,
+                false);
 
     }
 }

@@ -4,11 +4,12 @@ import com.sensorberg.SensorbergApplication;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
+import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
-import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.model.realm.RealmAction;
@@ -24,7 +25,7 @@ import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.Scanner;
 import com.sensorberg.sdk.scanner.ScannerListener;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.settings.SettingsUpdateCallback;
 import com.sensorberg.utils.ListUtils;
 
@@ -56,7 +57,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     final Scanner scanner;
 
-    private final Settings settings;
+    private final SettingsManager settingsManager;
 
     private final BeaconActionHistoryPublisher beaconActionHistoryPublisher;
 
@@ -74,30 +75,34 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     @Inject
     FileManager fileManager;
 
+    @Inject
+    ServiceScheduler mServiceScheduler;
+
     BluetoothPlatform bluetoothPlatform;
 
-    public InternalApplicationBootstrapper(Platform platform, Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager, Clock clk,
+    public InternalApplicationBootstrapper(Platform platform, Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager,
+            Clock clk,
             BluetoothPlatform btPlatform, SharedPreferences preferences) {
         super(scheduler);
         SensorbergApplication.getComponent().inject(this);
 
         this.platform = platform;
         this.transport = transport;
-        settings = new Settings(transport, preferences);
-        settings.restoreValuesFromPreferences();
-        settings.setSettingsUpdateCallback(settingsUpdateCallbackListener);
-        platform.setSettings(settings);
+        settingsManager = new SettingsManager(transport, preferences);
+        settingsManager.setSettingsUpdateCallback(settingsUpdateCallbackListener);
+        settingsManager.setMessageDelayWindowLengthListener((MessageDelayWindowLengthListener) mServiceScheduler);
         clock = clk;
         bluetoothPlatform = btPlatform;
 
-        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(transport, this, settings, clock, handlerManager);
+        beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(transport, this, settingsManager.getCacheTtl(), clock, handlerManager);
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
 
         transport.setBeaconReportHandler(this);
         transport.setProximityUUIDUpdateHandler(this);
 
-        scanner = new Scanner(settings, settings.isShouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager, btPlatform);
+        scanner = new Scanner(settingsManager, settingsManager.isShouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager,
+                btPlatform);
         resolver = new Resolver(resolverConfiguration, handlerManager, transport);
         scanner.addScannerListener(this);
         resolver.addResolverListener(this);
@@ -117,16 +122,17 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     }
 
     private void setUpAlarmForBeaconActionHistoryPublisher() {
-        serviceScheduler.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, settings.getHistoryUploadInterval(), TimeUnit.MILLISECONDS);
+        serviceScheduler.scheduleRepeating(SensorbergService.MSG_UPLOAD_HISTORY, settingsManager.getHistoryUploadInterval(), TimeUnit.MILLISECONDS);
     }
 
     private void setUpAlarmsForSettings() {
-        serviceScheduler.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settings.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
+        serviceScheduler.scheduleRepeating(SensorbergService.MSG_SETTINGS_UPDATE, settingsManager.getSettingsUpdateInterval(), TimeUnit.MILLISECONDS);
     }
 
     private void updateAlarmsForActionLayoutFetch() {
         if (platform.isSyncEnabled()) {
-            serviceScheduler.scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settings.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
+            serviceScheduler
+                    .scheduleRepeating(SensorbergService.MSG_BEACON_LAYOUT_UPDATE, settingsManager.getLayoutUpdateInterval(), TimeUnit.MILLISECONDS);
         } else {
             serviceScheduler.cancelIntent(SensorbergService.MSG_BEACON_LAYOUT_UPDATE);
         }
@@ -143,8 +149,8 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         if (contained) {
             ResolutionConfiguration resolutionConfiguration = new ResolutionConfiguration();
             resolutionConfiguration.setScanEvent(scanEvent);
-            resolutionConfiguration.maxRetries = settings.getMaxRetries();
-            resolutionConfiguration.millisBetweenRetries = settings.getMillisBetweenRetries();
+            resolutionConfiguration.maxRetries = settingsManager.getMaxRetries();
+            resolutionConfiguration.millisBetweenRetries = settingsManager.getMillisBetweenRetries();
             Resolution resolution = resolver.createResolution(resolutionConfiguration);
             resolution.start();
         }
@@ -255,7 +261,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     }
 
     public void updateSettings() {
-        settings.updateValues();
+        settingsManager.updateSettingsFromNetwork();
     }
 
     public void retryScanEventResolve(ResolutionConfiguration retry) {

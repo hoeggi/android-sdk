@@ -4,9 +4,9 @@ import com.sensorberg.sdk.GenericBroadcastReceiver;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.settings.Settings;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -23,7 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public class AndroidServiceScheduler implements ServiceScheduler {
+import lombok.Setter;
+
+public class AndroidServiceScheduler implements ServiceScheduler, MessageDelayWindowLengthListener {
 
     private final Context context;
 
@@ -33,17 +35,19 @@ public class AndroidServiceScheduler implements ServiceScheduler {
 
     private final PersistentIntegerCounter postToServiceCounter;
 
-    private Settings settings;
+    @Setter
+    private long messageDelayWindowLength;
 
     private final Set<Integer> repeatingPendingIntents = new HashSet<>();
 
     private final PendingIntentStorage pendingIntentStorage;
 
-    public AndroidServiceScheduler(Context ctx, AlarmManager am, Clock clk, PersistentIntegerCounter integerCounter) {
+    public AndroidServiceScheduler(Context ctx, AlarmManager am, Clock clk, PersistentIntegerCounter integerCounter, long defaultMessageDelayWindowLength) {
         context = ctx;
         alarmManager = am;
         clock = clk;
         postToServiceCounter = integerCounter;
+        messageDelayWindowLength = defaultMessageDelayWindowLength;
         pendingIntentStorage = new PendingIntentStorage(this, clock);
     }
 
@@ -90,16 +94,11 @@ public class AndroidServiceScheduler implements ServiceScheduler {
     @SuppressLint("NewApi")
     private void scheduleAlarm(long delayInMillis, PendingIntent pendingIntent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmManager.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, settings.getMessageDelayWindowLength(),
+            alarmManager.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, messageDelayWindowLength,
                     pendingIntent);
         } else {
             alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + delayInMillis, pendingIntent);
         }
-    }
-
-    @Override
-    public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 
     @Override

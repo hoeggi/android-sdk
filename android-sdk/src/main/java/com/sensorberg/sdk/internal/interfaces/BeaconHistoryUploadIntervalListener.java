@@ -1,8 +1,8 @@
 package com.sensorberg.sdk.internal.interfaces;
 
-public interface SettingsChangedListener {
+public interface BeaconHistoryUploadIntervalListener {
 
-    SettingsChangedListener NONE = new SettingsChangedListener() {
+    BeaconHistoryUploadIntervalListener NONE = new BeaconHistoryUploadIntervalListener() {
         @Override
         public void historyUploadIntervalChanged(Long newHistoryUploadIntervalMillis) {
             //do nothing

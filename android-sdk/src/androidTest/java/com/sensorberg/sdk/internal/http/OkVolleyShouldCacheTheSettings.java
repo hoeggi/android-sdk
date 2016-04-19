@@ -2,7 +2,6 @@ package com.sensorberg.sdk.internal.http;
 
 import com.android.sensorbergVolley.Request;
 import com.android.sensorbergVolley.RequestQueue;
-import com.android.sensorbergVolley.VolleyError;
 import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
@@ -72,8 +71,8 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
     }
 
     public void test_should_only_call_the_network_once() throws Exception {
-        tested.setSettingsCallback(TransportSettingsCallback.NONE);
-        tested.setSettingsCallback(new TransportSettingsCallback() {
+        tested.loadSettings(TransportSettingsCallback.NONE);
+        tested.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail("there should be content returned by the network");

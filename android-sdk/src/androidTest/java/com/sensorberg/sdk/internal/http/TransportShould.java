@@ -102,7 +102,7 @@ public class TransportShould extends SensorbergApplicationTest {
         Network network = testPlattform.getSpyNetwork();
         doThrow(new VolleyError()).when(network).performRequest(any(HeadersJsonObjectRequest.class));
 
-        tested.setSettingsCallback(new TransportSettingsCallback() {
+        tested.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail();
@@ -155,7 +155,7 @@ public class TransportShould extends SensorbergApplicationTest {
     }
 
     public void test_a_settings_request(){
-        tested.setSettingsCallback(new TransportSettingsCallback() {
+        tested.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail("there should be changes to no settings");

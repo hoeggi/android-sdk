@@ -3,17 +3,16 @@ package com.sensorberg.sdk.scanner;
 import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.SensorbergApplication;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.interfaces.RunLoop;
-import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
+import com.sensorberg.sdk.internal.interfaces.RunLoop;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.realm.RealmAction;
 import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.realm.migrations.Version0to1Migration;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
-import com.sensorberg.sdk.settings.Settings;
 
 import android.content.Context;
 import android.os.Message;
@@ -46,13 +45,13 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private final Transport transport;
 
     private final ResolverListener resolverListener;
-    private final Settings settings;
+    private final long cacheTtl;
     private Realm realm;
 
-    public BeaconActionHistoryPublisher(Transport transport, ResolverListener resolverListener, Settings settings, Clock clock, HandlerManager handlerManager) {
+    public BeaconActionHistoryPublisher(Transport transport, ResolverListener resolverListener, long cacheTtl, Clock clock, HandlerManager handlerManager) {
         SensorbergApplication.getComponent().inject(this);
         this.resolverListener = resolverListener;
-        this.settings = settings;
+        this.cacheTtl = cacheTtl;
         this.transport = transport;
         this.clock = clock;
         runloop = handlerManager.getBeaconPublisherRunLoop(this);
@@ -86,12 +85,12 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
             case MSG_MARK_SCANS_AS_SENT:
                 //noinspection unchecked -> see useage of MSG_MARK_SCANS_AS_SENT
                 List<RealmScan> scans = (RealmResults<RealmScan>) queueEvent.obj;
-                RealmScan.maskAsSent(scans, realm, now, settings.getCacheTtl());
+                RealmScan.maskAsSent(scans, realm, now, cacheTtl);
                 break;
             case MSG_MARK_ACTIONS_AS_SENT:
                 //noinspection unchecked -> see useage of MSG_MARK_ACTIONS_AS_SENT
                 List<RealmAction> actions = (List<RealmAction>) queueEvent.obj;
-                RealmAction.markAsSent(actions, realm, now, settings.getCacheTtl());
+                RealmAction.markAsSent(actions, realm, now, cacheTtl);
                 break;
             case MSG_PUBLISH_HISTORY:
                 publishHistorySynchronously();

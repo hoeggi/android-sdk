@@ -81,14 +81,14 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
 
     public void test_should_answer_correctly() throws Exception {
         enqueue(R.raw.response_etag_001);
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
         waitForRequests(1);
     }
 
     public void test_should_cache() throws Exception {
         enqueue(R.raw.response_etag_001);
-        tested.setSettingsCallback(MUST_NOT_FAIL);
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
 
         waitForRequests(1);
 
@@ -97,9 +97,9 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
 
     public void test_cache_revalidation_with_etag() throws Exception {
         enqueue(R.raw.response_etag_001, R.raw.response_etag_002);
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
         Thread.sleep(1200);
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
 
         waitForRequests(2);
     }
@@ -108,9 +108,9 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
     public void test_cache_revalidation_with_header() throws Exception {
         enqueue(R.raw.response_etag_001, R.raw.response_etag_002);
 
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
         Thread.sleep(1200);
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
         Assertions.assertThat(server.getRequestCount()).overridingErrorMessage("there should be two request.").isEqualTo(2);
 
         List<RecordedRequest> requests = waitForRequests(2);
@@ -121,11 +121,11 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
 
     public void test_manual_cache_invalidation() throws Exception {
         enqueue(R.raw.response_etag_001, R.raw.response_etag_001);
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
 
         queue.getCache().invalidate(URLFactory.getSettingsURLString(TestConstants.API_TOKEN), true);
 
-        tested.setSettingsCallback(MUST_NOT_FAIL);
+        tested.loadSettings(MUST_NOT_FAIL);
         Assertions.assertThat(server.getRequestCount()).overridingErrorMessage("there should be two request. after invalidating the cache").isEqualTo(2);
     }
 }

@@ -4,14 +4,14 @@ import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
-import com.sensorberg.sdk.internal.interfaces.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
+import com.sensorberg.sdk.internal.interfaces.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.DefaultSettings;
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.SettingsManager;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
@@ -33,7 +33,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     long scanTime = DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME;
 
-    private final Settings settings;
+    private final SettingsManager settingsManager;
 
     Clock clock;
 
@@ -67,9 +67,9 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private RssiListener rssiListener = RssiListener.NONE;
 
-    AbstractScanner(Settings stg, boolean shouldRestoreBeaconStates, Clock clk, FileManager fileManager,
+    AbstractScanner(SettingsManager stgMgr, boolean shouldRestoreBeaconStates, Clock clk, FileManager fileManager,
             ServiceScheduler scheduler, HandlerManager handlerManager, BluetoothPlatform btPlatform) {
-        settings = stg;
+        settingsManager = stgMgr;
         clock = clk;
         serviceScheduler = scheduler;
         scanning = false;
@@ -101,7 +101,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                     public boolean filter(EventEntry beaconEntry, BeaconId beaconId) {
                         //might be negative!!!
                         long timeSinceWeSawTheBeacon = now - lastBreakLength - beaconEntry.lastBeaconTime;
-                        if (timeSinceWeSawTheBeacon > settings.getExitTimeoutMillis()) {
+                        if (timeSinceWeSawTheBeacon > settingsManager.getExitTimeoutMillis()) {
                             ScanEvent scanEvent = new ScanEvent(beaconId, now, ScanEventType.EXIT.getMask());
                             runLoop.sendMessage(ScannerEvent.EVENT_DETECTED, scanEvent);
                             Logger.log.beaconResolveState(scanEvent,
@@ -168,8 +168,8 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
             case ScannerEvent.LOGICAL_SCAN_START_REQUESTED: {
                 if (!scanning) {
                     lastExitCheckTimestamp = clock.now();
-                    if (lastStopTimestamp != NEVER_STOPPED && lastExitCheckTimestamp - lastStopTimestamp > settings
-                            .getCleanBeaconMapRestartTimeout()) {
+                    if (lastStopTimestamp != NEVER_STOPPED
+                            && lastExitCheckTimestamp - lastStopTimestamp > settingsManager.getCleanBeaconMapRestartTimeout()) {
                         clearCache();
                         Logger.log.scannerStateChange("clearing the currently seen beacon, since we were turned off too long.");
                     }
@@ -239,7 +239,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     protected abstract void clearScheduledExecutions();
 
     private void loop() {
-        if (clock.now() > (started + settings.getExitTimeoutMillis())) {
+        if (clock.now() > (started + settingsManager.getExitTimeoutMillis())) {
             if (bluetoothPlatform.isLeScanRunning()) {
                 checkAndExitEnteredBeacons();
             }
@@ -292,8 +292,8 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     @Override
     public void hostApplicationInForeground() {
         if (isNotSetupForForegroundScanning()) {
-            waitTime = settings.getForeGroundWaitTime();
-            scanTime = settings.getForeGroundScanTime();
+            waitTime = settingsManager.getForeGroundWaitTime();
+            scanTime = settingsManager.getForeGroundScanTime();
             if (scanning) {
                 long lastWaitTime = clock.now() - lastExitCheckTimestamp;
                 clearScheduledExecutions();
@@ -313,13 +313,13 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     abstract void scheduleExecution(int type, long delay);
 
     private boolean isNotSetupForForegroundScanning() {
-        return waitTime != settings.getForeGroundWaitTime() || scanTime != settings.getForeGroundScanTime();
+        return waitTime != settingsManager.getForeGroundWaitTime() || scanTime != settingsManager.getForeGroundScanTime();
     }
 
     @Override
     public void hostApplicationInBackground() {
-        waitTime = settings.getBackgroundWaitTime();
-        scanTime = settings.getBackgroundScanTime();
+        waitTime = settingsManager.getBackgroundWaitTime();
+        scanTime = settingsManager.getBackgroundScanTime();
         if ((clock.now() - lastScanStart) > scanTime) {
             Logger.log.scannerStateChange("We have been scanning longer than the background scan, so we´e going to pause right away");
             clearScheduledExecutions();

@@ -52,7 +52,7 @@ public class OkHttpClientTransportWithRetries extends SensorbergApplicationTest 
     }
 
     public void test_succeed_even_after_two_failures() throws Exception {
-        tested.setSettingsCallback(new TransportSettingsCallback() {
+        tested.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail();

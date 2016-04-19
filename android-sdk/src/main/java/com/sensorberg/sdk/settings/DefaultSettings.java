@@ -24,7 +24,7 @@ public class DefaultSettings {
 
     public static final long DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT = Constants.Time.ONE_MINUTE;
 
-    static final long DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH = Constants.Time.ONE_SECOND * 10;
+    public static final long DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH = Constants.Time.ONE_SECOND * 10;
 
     static final long DEFAULT_MILLIS_BEETWEEN_RETRIES = 5 * Constants.Time.ONE_SECOND;
 
