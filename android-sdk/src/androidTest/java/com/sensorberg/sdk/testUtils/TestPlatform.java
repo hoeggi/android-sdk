@@ -9,9 +9,6 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
-import com.sensorberg.sdk.internal.interfaces.Clock;
-import com.sensorberg.sdk.internal.interfaces.HandlerManager;
-import com.sensorberg.sdk.internal.interfaces.RunLoop;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,7 +22,7 @@ import javax.inject.Named;
 
 import static org.mockito.Mockito.spy;
 
-public class TestPlatform implements Platform, HandlerManager {
+public class TestPlatform implements Platform {
 
     public static final String TAG = "TestPlatform";
 
@@ -36,10 +33,7 @@ public class TestPlatform implements Platform, HandlerManager {
     @Named("testBluetoothPlatform")
     BluetoothPlatform bluetoothPlatform;
 
-    public CustomClock clock = new CustomClock();
-
     private Network network;
-    private List<NonThreadedRunLoopForTesting> runLoops = new ArrayList<>();
 
     public TestPlatform() {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
@@ -82,58 +76,8 @@ public class TestPlatform implements Platform, HandlerManager {
         return bluetoothPlatform.isBluetoothLowEnergySupported();
     }
 
-    @Override
-    public RunLoop getResolverRunLoop(RunLoop.MessageHandlerCallback callback) {
-        NonThreadedRunLoopForTesting loop = new NonThreadedRunLoopForTesting(callback, clock);
-        runLoops.add(loop);
-        return loop;
-    }
-
-    @Override
-    public RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback) {
-        NonThreadedRunLoopForTesting loop = new NonThreadedRunLoopForTesting(callback, clock);
-        runLoops.add(loop);
-        return loop;
-    }
-
-    @Override
-    public RunLoop getScannerRunLoop(RunLoop.MessageHandlerCallback callback) {
-        NonThreadedRunLoopForTesting loop = new NonThreadedRunLoopForTesting(callback, clock);
-        runLoops.add(loop);
-        return loop;
-    }
-
-    public void triggerRunLoop() {
-        for (NonThreadedRunLoopForTesting runLoop : runLoops) {
-            runLoop.loop();
-        }
-    }
-
     public void cleanUp() {
 
-    }
-
-    public class CustomClock implements Clock {
-        private long nowInMillis = 0;
-
-        @Override
-        public long now() {
-            return nowInMillis;
-        }
-
-        @Override
-        public long elapsedRealtime() {
-            return nowInMillis;
-        }
-
-        public void setNowInMillis(long nowInMillis) {
-            this.nowInMillis = nowInMillis;
-            triggerRunLoop();
-        }
-
-        public void increaseTimeInMillis(long value) {
-            setNowInMillis(nowInMillis + value);
-        }
     }
 }
 

@@ -34,7 +34,6 @@ import static org.mockito.Mockito.verify;
 
 public class TheResolverShould extends AndroidTestCase {
 
-    @Inject
     TestHandlerManager testHandlerManager;
 
     @Inject
@@ -56,6 +55,7 @@ public class TheResolverShould extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
+        testHandlerManager = new TestHandlerManager();
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
         testTransport = new OkHttpClientTransport(new TestPlatform().getCachedVolleyQueue(),
                 testHandlerManager.getCustomClock(), testPlatformIdentifier, true);

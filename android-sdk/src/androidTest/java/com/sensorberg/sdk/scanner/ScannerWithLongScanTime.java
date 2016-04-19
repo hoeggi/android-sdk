@@ -31,7 +31,6 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     @Inject
     SharedPreferences sharedPreferences;
 
-    @Inject
     TestHandlerManager handlerManager;
 
     private BluetoothPlatform spyBluetoothPlatform;
@@ -45,6 +44,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         sharedPreferences.edit().clear().commit();
 
+        handlerManager = new TestHandlerManager();
         spyBluetoothPlatform = spy(new TestBluetoothPlatform());
         modifiedSettings = spy(new SettingsManager(new DumbSucessTransport(), sharedPreferences));
 
