@@ -24,7 +24,7 @@ public class Resolution {
         this.resolver = resolver;
     }
 
-    void queryServer() {
+    public void queryServer() {
         Logger.log.beaconResolveState(configuration.getScanEvent(), "starting to resolve request");
         transport.getBeacon(configuration, new BeaconResponseHandler() {
             @Override
