@@ -12,7 +12,6 @@ import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.RunLoop;
-import com.sensorberg.sdk.internal.interfaces.Transport;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -39,17 +38,11 @@ public class TestPlatform implements Platform, HandlerManager {
 
     public CustomClock clock = new CustomClock();
 
-    private Transport transport = new DumbSucessTransport();
     private Network network;
     private List<NonThreadedRunLoopForTesting> runLoops = new ArrayList<>();
 
     public TestPlatform() {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-    }
-
-    @Override
-    public Transport getTransport() {
-        return transport;
     }
 
     @Override
@@ -124,10 +117,6 @@ public class TestPlatform implements Platform, HandlerManager {
         for (NonThreadedRunLoopForTesting runLoop : runLoops) {
             runLoop.loop();
         }
-    }
-
-    public void setTransport(Transport transport) {
-        this.transport = transport;
     }
 
     public void cleanUp() {

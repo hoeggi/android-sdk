@@ -117,7 +117,6 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         TestPlatform platform = new TestPlatform();
         Transport transport = new OkHttpClientTransport(platform.getCachedVolleyQueue(), testHandlerManager.getCustomClock(),
                 testPlatformIdentifier, true);
-        platform.setTransport(transport);
         tested = new InternalApplicationBootstrapper(platform, transport, testServiceScheduler, testHandlerManager,
                 testHandlerManager.getCustomClock(),
                 bluetoothPlatform, sharedPreferences);

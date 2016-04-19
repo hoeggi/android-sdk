@@ -5,6 +5,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
@@ -49,7 +50,7 @@ public class TheResolverShould extends AndroidTestCase {
 
     private Resolver tested;
 
-    private TestPlatform androidPlattform;
+    private Transport testTransport;
 
     @Override
     public void setUp() throws Exception {
@@ -57,15 +58,14 @@ public class TheResolverShould extends AndroidTestCase {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
-        androidPlattform = spy(new TestPlatform());
-        androidPlattform.setTransport(new OkHttpClientTransport(androidPlattform.getCachedVolleyQueue(),
-                testHandlerManager.getCustomClock(), testPlatformIdentifier, true));
-        androidPlattform.getTransport().setApiToken(TestConstants.API_TOKEN);
+        testTransport = new OkHttpClientTransport(new TestPlatform().getCachedVolleyQueue(),
+                testHandlerManager.getCustomClock(), testPlatformIdentifier, true);
+        testTransport.setApiToken(TestConstants.API_TOKEN);
         testHandlerManager.getCustomClock().setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
 
-        testedWithFakeBackend = new Resolver(resolverConfiguration, testHandlerManager, androidPlattform.getTransport());
+        testedWithFakeBackend = new Resolver(resolverConfiguration, testHandlerManager, testTransport);
         ResolverConfiguration realConfiguration = new ResolverConfiguration();
-        tested = new Resolver(realConfiguration, testHandlerManager, androidPlattform.getTransport());
+        tested = new Resolver(realConfiguration, testHandlerManager, testTransport);
     }
 
 
@@ -94,7 +94,7 @@ public class TheResolverShould extends AndroidTestCase {
     public void test_enter_exit_action() {
         URLFactory.Conf env = URLFactory.switchToProductionEnvironment();
 
-        androidPlattform.getTransport().setApiToken("8961ee72ea4834053b376ad54007ea277cba4305db12188b74d104351ca8bf8a");
+        testTransport.setApiToken("8961ee72ea4834053b376ad54007ea277cba4305db12188b74d104351ca8bf8a");
 
         ResolverListener mockListener = new ResolverListener() {
             @Override

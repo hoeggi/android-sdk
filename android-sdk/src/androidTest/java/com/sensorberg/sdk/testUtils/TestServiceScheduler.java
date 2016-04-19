@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.testUtils;
 
-import com.sensorberg.sdk.internal.PendingIntentStorage;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -31,19 +30,13 @@ public class TestServiceScheduler implements ServiceScheduler, MessageDelayWindo
 
     private final Clock clock;
 
-    private final PersistentIntegerCounter postToServiceCounter;
-
-    private final PendingIntentStorage pendingIntentStorage;
-
     private long messageDelayWindowLength;
 
     public TestServiceScheduler(Context ctx, AlarmManager am, Clock clk, PersistentIntegerCounter integerCounter, long messageDelayWindowLength) {
         context = ctx;
         alarmManager = am;
         clock = clk;
-        postToServiceCounter = integerCounter;
         this.messageDelayWindowLength = messageDelayWindowLength;
-        pendingIntentStorage = new PendingIntentStorage(this, clk);
     }
 
     @Override
