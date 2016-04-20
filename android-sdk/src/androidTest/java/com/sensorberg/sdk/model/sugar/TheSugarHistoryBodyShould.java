@@ -1,27 +1,26 @@
-package com.sensorberg.sdk.model.realm;
+package com.sensorberg.sdk.model.sugar;
 
 import android.test.AndroidTestCase;
-
-import util.TestConstants;
+import com.sensorbergorm.query.Select;
 import com.sensorberg.sdk.internal.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 
 import org.fest.assertions.api.Assertions;
 
-import io.realm.Realm;
+import util.TestConstants;
 
-public class TheHistoryBodyShould extends AndroidTestCase {
+public class TheSugarHistoryBodyShould extends AndroidTestCase {
 
     private HistoryBody tested;
+    private SugarScan scans;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        Realm realm = Realm.getInstance(getContext(), "test" + System.currentTimeMillis());
 
         ScanEvent scanevent = new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())
@@ -40,19 +39,13 @@ public class TheHistoryBodyShould extends AndroidTestCase {
             }
         };
 
-        realm.beginTransaction();
-        RealmScan.from(scanevent, realm, clock.now());
-        realm.commitTransaction();
-
-
-
-        tested = new HistoryBody(realm.allObjects(RealmScan.class), null, clock);
+        scans = SugarScan.from(scanevent, clock.now());
+        tested = new HistoryBody(Select.from(SugarScan.class).list(), null, clock);
     }
 
     public void test_should_be_serializeable() throws Exception {
         String asJSONStrion = HeadersJsonObjectRequest.gson.toJson(tested);
 
         Assertions.assertThat(asJSONStrion).isNotEmpty();
-
     }
 }

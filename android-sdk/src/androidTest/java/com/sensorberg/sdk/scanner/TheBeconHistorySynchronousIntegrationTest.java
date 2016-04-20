@@ -4,7 +4,7 @@ import com.sensorberg.sdk.SensorbergApplicationTest;
 import util.TestConstants;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
 import com.sensorberg.sdk.internal.Transport;
-import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
@@ -51,6 +51,6 @@ public class TheBeconHistorySynchronousIntegrationTest extends SensorbergApplica
 
     public void test_should_mark_sent_objects_as_sent() throws Exception {
         tested.publishHistory();
-        assertThat(RealmScan.notSentScans(getRealmInstance())).hasSize(0);
+        assertThat(SugarScan.notSentScans()).hasSize(0);
     }
 }

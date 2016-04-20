@@ -1,6 +1,7 @@
 package com.sensorberg.sdk;
 
 import android.content.IntentFilter;
+import android.util.Log;
 
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;

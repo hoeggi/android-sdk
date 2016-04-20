@@ -1,6 +1,8 @@
 package com.sensorberg.sdk.scanner;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Message;
 
 import com.android.sensorbergVolley.VolleyError;
@@ -10,19 +12,15 @@ import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.RunLoop;
 import com.sensorberg.sdk.internal.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
-import com.sensorberg.sdk.realm.migrations.Version0to1Migration;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.Settings;
 
 import java.io.File;
+import java.sql.SQLClientInfoException;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.exceptions.RealmMigrationNeededException;
 
 public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.MessageHandlerCallback {
 
@@ -32,7 +30,6 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private static final int MSG_ACTION = 4;
     private static final int MSG_MARK_ACTIONS_AS_SENT = 5;
     private static final int MSG_DELETE_ALL_DATA = 6;
-    public static String REALM_FILENAME = "scannerstorage.realm";
 
     private final RunLoop runloop;
     private final Context context;
@@ -40,9 +37,6 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private final Clock clock;
     private final ResolverListener resolverListener;
     private final Settings settings;
-    private Realm realm;
-
-
 
     public BeaconActionHistoryPublisher(Platform plattform, ResolverListener resolverListener, Settings settings) {
         this.resolverListener = resolverListener;
@@ -60,53 +54,41 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
 
     @Override
     public void handleMessage(Message queueEvent) {
-        if (realm == null) {
-            try {
-                realm = Realm.getInstance(context, REALM_FILENAME);
-            } catch (RealmMigrationNeededException e) {
-                Logger.log.logServiceState("database migration needed");
-                Realm.migrateRealmAtPath(new File(context.getFilesDir(), REALM_FILENAME).getPath(), new Version0to1Migration(), false);
-                Logger.log.logServiceState("database migration complete, opening realm again");
-                realm = Realm.getInstance(context, REALM_FILENAME);
-                Logger.log.logServiceState("realm opened successfully");
-            }
-        }
         long now = clock.now();
         switch (queueEvent.what){
             case MSG_SCAN_EVENT:
-                realm.beginTransaction();
-                RealmScan.from((ScanEvent) queueEvent.obj, realm, clock.now());
-                realm.commitTransaction();
+                //start tramsaction?
+                //database.beginTransaction();
+                SugarScan scan = SugarScan.from((ScanEvent) queueEvent.obj, clock.now());
+                scan.save();
+                //database.setTransactionSuccessful();
+                //database.endTransaction();
                 break;
             case MSG_MARK_SCANS_AS_SENT:
                 //noinspection unchecked -> see useage of MSG_MARK_SCANS_AS_SENT
-                List<RealmScan> scans = (RealmResults<RealmScan>) queueEvent.obj;
-                RealmScan.maskAsSent(scans, realm, now, settings.getCacheTtl());
+                List<SugarScan> scans = (List<SugarScan>) queueEvent.obj;
+                SugarScan.maskAsSent(scans, now, settings.getCacheTtl());
                 break;
             case MSG_MARK_ACTIONS_AS_SENT:
-                //noinspection unchecked -> see useage of MSG_MARK_ACTIONS_AS_SENT
-                List<RealmAction> actions = (List<RealmAction>) queueEvent.obj;
-                RealmAction.markAsSent(actions, realm, now, settings.getCacheTtl());
+                List<SugarAction> actions = (List<SugarAction>) queueEvent.obj;
+                SugarAction.markAsSent(actions, now, settings.getCacheTtl());
                 break;
             case MSG_PUBLISH_HISTORY:
                 publishHistorySynchronously();
                 break;
             case MSG_ACTION:
-                realm.beginTransaction();
-                RealmAction.from((BeaconEvent) queueEvent.obj, realm, clock);
-                realm.commitTransaction();
+                SugarAction sugarAction = SugarAction.from((BeaconEvent) queueEvent.obj, clock);
+                sugarAction.save();
                 break;
             case MSG_DELETE_ALL_DATA:
-                realm.beginTransaction();
-                realm.clear(RealmScan.class);
-                realm.clear(RealmAction.class);
-                realm.commitTransaction();
+                SugarAction.deleteAll(SugarAction.class);
+                SugarScan.deleteAll(SugarScan.class);
                 break;
         }
     }
     private void publishHistorySynchronously() {
-        RealmResults<RealmScan> scans = RealmScan.notSentScans(realm);
-        RealmResults<RealmAction> actions = RealmAction.notSentScans(realm);
+        List<SugarScan> scans = SugarScan.notSentScans();
+        List<SugarAction> actions = SugarAction.notSentScans();
         if (scans.isEmpty() && actions.isEmpty()){
             Logger.log.verbose("nothing to report");
             return;
@@ -114,7 +96,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
         transport.publishHistory(scans, actions, new HistoryCallback(){
 
             @Override
-            public void onSuccess(List<RealmScan> scanObjectList, List<RealmAction> actionList){
+            public void onSuccess(List<SugarScan> scanObjectList, List<SugarAction> actionList){
                 runloop.sendMessage(MSG_MARK_SCANS_AS_SENT, scanObjectList);
                 runloop.sendMessage(MSG_MARK_ACTIONS_AS_SENT, actionList);
             }

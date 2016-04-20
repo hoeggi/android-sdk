@@ -24,6 +24,9 @@ dependencies {
 
     compile 'net.danlew:android.joda:2.7.2'
 
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile files('libs/sensorberg_orm-0.7.1.201405082137.jar')
+
     compile project(':networkstate')
     compile project(':okvolley')
     compile project(':volley')

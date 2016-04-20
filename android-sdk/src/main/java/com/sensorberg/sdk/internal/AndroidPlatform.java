@@ -21,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.SystemClock;
-
 import com.android.sensorbergVolley.RequestQueue;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -36,7 +35,8 @@ import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.settings.Settings;
-
+import com.sensorbergorm.SugarContext;
+import net.danlew.android.joda.JodaTimeAndroid;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 
 public class AndroidPlatform implements Platform {
@@ -99,6 +98,8 @@ public class AndroidPlatform implements Platform {
             bluetoothAdapter = null;
         }
 
+        SugarContext.init(context);
+        JodaTimeAndroid.init(context);
         postToServiceCounter = new PersistentIntegerCounter(getSettingsSharedPrefs());
         pendingIntentStorage = new PendingIntentStorage(this);
     }

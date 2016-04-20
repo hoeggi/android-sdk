@@ -12,11 +12,11 @@ import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.SettingsCallback;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
-import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
 import com.sensorberg.sdk.model.server.BaseResolveResponse;
 import com.sensorberg.sdk.model.server.ResolveAction;
 import com.sensorberg.sdk.model.server.ResolveResponse;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
@@ -265,7 +265,7 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     }
 
     @Override
-    public void publishHistory(final List<RealmScan> scans, final List<RealmAction> actions, final HistoryCallback callback) {
+    public void publishHistory(final List<SugarScan> scans, final List<SugarAction> actions, final HistoryCallback callback) {
         Response.Listener<ResolveResponse> responseListener = new Response.Listener<ResolveResponse>() {
             @Override
             public void onResponse(ResolveResponse response) {
