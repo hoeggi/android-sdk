@@ -12,7 +12,13 @@ import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.model.realm.RealmAction;
+
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.SyncStatusObserver;
+import android.util.Log;
+
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -29,11 +35,8 @@ import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.settings.SettingsUpdateCallback;
 import com.sensorberg.utils.ListUtils;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SyncStatusObserver;
 import android.support.annotation.VisibleForTesting;
 
 import java.util.HashSet;
@@ -42,8 +45,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-
-import io.realm.Realm;
 
 public class InternalApplicationBootstrapper extends MinimalBootstrapper
         implements ScannerListener, ResolverListener, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
@@ -156,6 +157,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         }
     }
 
+    //TODO what is with this method having no access modifier.
     public void presentBeaconEvent(BeaconEvent beaconEvent) {
         if (beaconEvent != null && beaconEvent.getAction() != null) {
             Action beaconEventAction = beaconEvent.getAction();
@@ -165,6 +167,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
             } else if (beaconEventAction.getDelayTime() > 0) {
                 serviceScheduler.postToServiceDelayed(beaconEventAction.getDelayTime(), SensorbergService.GENERIC_TYPE_BEACON_ACTION, beaconEvent,
                         SURVIVE_REBOOT);
+
                 Logger.log.beaconResolveState(beaconEvent, "delaying the display of this BeaconEvent");
             } else {
                 presentEventDirectly(beaconEvent);
@@ -201,21 +204,21 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     @Override
     public void onResolutionsFinished(List<BeaconEvent> beaconEvents) {
-        final Realm realm = Realm.getInstance(context, BeaconActionHistoryPublisher.REALM_FILENAME);
         List<BeaconEvent> events = ListUtils.filter(beaconEvents, new ListUtils.Filter<BeaconEvent>() {
             @Override
             public boolean matches(BeaconEvent beaconEvent) {
                 if (beaconEvent.getSuppressionTimeMillis() > 0) {
                     long lastAllowedPresentationTime = clock.now() - beaconEvent.getSuppressionTimeMillis();
-                    if (RealmAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid(), realm)) {
+                    if (SugarAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid())) {
                         return false;
                     }
                 }
                 if (beaconEvent.sendOnlyOnce) {
-                    if (RealmAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid(), realm)) {
+                    Log.i("this", "sendOnlyOnce");
+                    System.out.print("sendOnlyOnce");
+                    if (SugarAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid())) {
                         return false;
                     }
-
                 }
                 return true;
             }

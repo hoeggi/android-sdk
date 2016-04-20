@@ -72,5 +72,4 @@ public class TheAndroidPlatformShould extends SensorbergApplicationTest {
 
         Assertions.assertThat(list).hasSize(2);
     }
-
 }

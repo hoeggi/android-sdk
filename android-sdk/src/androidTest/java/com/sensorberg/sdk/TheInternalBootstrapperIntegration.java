@@ -1,5 +1,7 @@
 package com.sensorberg.sdk;
 
+import android.content.IntentFilter;
+
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
@@ -25,7 +27,6 @@ import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 
 import java.io.IOException;

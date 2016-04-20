@@ -11,7 +11,6 @@ import com.sensorberg.sdk.internal.http.OkHttpUserAgentTest;
 import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettings;
 import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettingsWithEtags;
 import com.sensorberg.sdk.internal.http.TransportShould;
-import com.sensorberg.sdk.model.realm.TheRealmActionObjectShould;
 import com.sensorberg.sdk.resolver.TheResolverShould;
 import com.sensorberg.sdk.scanner.ScannerWithLongScanTime;
 import com.sensorberg.sdk.scanner.TheBackgroundScannerShould;
@@ -75,8 +74,6 @@ public interface TestComponent extends Component {
     void inject(TheIntentSchedulingShould theIntentSchedulingShould);
 
     void inject(TheBeaconActionHistoryPublisherIntegrationShould theBeaconActionHistoryPublisherIntegrationShould);
-
-    void inject(TheRealmActionObjectShould theRealmActionObjectShould);
 
     void inject(TheResolverShould theResolverShould);
 

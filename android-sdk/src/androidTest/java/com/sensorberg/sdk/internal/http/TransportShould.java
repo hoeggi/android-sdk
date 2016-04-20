@@ -14,8 +14,8 @@ import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.BeaconId;
-import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
@@ -81,7 +81,6 @@ public class TransportShould extends SensorbergApplicationTest {
         tested = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), clock, testPlatformIdentifier, true);
         tested.setBeaconHistoryUploadIntervalListener(listener);
         tested.setApiToken(TestConstants.API_TOKEN);
-
     }
 
     public void test_should_forward_the_layout_upload_interval_to_the_settings() throws Exception {
@@ -173,12 +172,12 @@ public class TransportShould extends SensorbergApplicationTest {
     }
 
     public void test_publish_data_to_the_server() throws Exception {
-        List<RealmScan> scans = new ArrayList<>();
-        List<RealmAction> actions = new ArrayList<>();
+        List<SugarScan> scans = new ArrayList<>();
+        List<SugarAction> actions = new ArrayList<>();
 
-        RealmScan scan1 = new RealmScan();
+        SugarScan scan1 = new SugarScan();
         scan1.setCreatedAt(System.currentTimeMillis() - Constants.Time.ONE_HOUR);
-        scan1.setEntry(true);
+        scan1.setIsEntry(true);
         scan1.setProximityUUID(TestConstants.ANY_BEACON_ID.getUuid().toString());
         scan1.setProximityMajor(TestConstants.ANY_BEACON_ID.getMajorId());
         scan1.setProximityMinor(TestConstants.ANY_BEACON_ID.getMinorId());
@@ -198,7 +197,7 @@ public class TransportShould extends SensorbergApplicationTest {
             }
 
             @Override
-            public void onSuccess(List<RealmScan> scans, List<RealmAction> actions) {
+            public void onSuccess(List<SugarScan> scans, List<SugarAction> actions) {
 
             }
         });

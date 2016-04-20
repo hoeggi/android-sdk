@@ -1,13 +1,15 @@
 package com.sensorberg.sdk.scanner;
 
+import android.util.Log;
+
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.DefaultSettings;
@@ -17,14 +19,14 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import io.realm.RealmResults;
 import util.TestConstants;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import java.util.List;
+import static util.Verfier.hasSize;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static util.Verfier.hasSize;
 
 public class TheBeaconActionHistoryPublisherShould extends SensorbergApplicationTest {
 
@@ -41,6 +43,8 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         testHandlerManager.getCustomClock().setNowInMillis(System.currentTimeMillis());
+        SugarAction.deleteAll(SugarAction.class);
+        SugarScan.deleteAll(SugarScan.class);
         transport = mock(Transport.class);
         tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, DefaultSettings.DEFAULT_CACHE_TTL, testHandlerManager.getCustomClock(), testHandlerManager);
 
@@ -57,12 +61,13 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
     }
 
     public void test_should_persist_scans_that_need_queing() throws Exception {
-        RealmResults<RealmScan> notSentObjects = RealmScan.notSentScans(getRealmInstance());
+        List<SugarScan> notSentObjects = SugarScan.notSentScans();
         assertThat(notSentObjects).hasSize(1);
     }
 
     public void test_should_persist_actions_that_need_queing() throws Exception {
-        RealmResults<RealmAction> notSentObjects = RealmAction.notSentScans(getRealmInstance());
+        //SugarAction.deleteAll(SugarAction.class);
+        List<SugarAction> notSentObjects = SugarAction.notSentScans();
         assertThat(notSentObjects).hasSize(1);
     }
 
@@ -70,5 +75,4 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
         tested.publishHistory();
         verify(transport).publishHistory(hasSize(1), hasSize(1), any(HistoryCallback.class));
     }
-
 }

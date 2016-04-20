@@ -5,8 +5,8 @@ import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
-import com.sensorberg.sdk.model.realm.RealmAction;
-import com.sensorberg.sdk.model.realm.RealmScan;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class DumbSucessTransport implements Transport {
     }
 
     @Override
-    public void publishHistory(List<RealmScan> scans, List<RealmAction> actions, HistoryCallback callback) {
+    public void publishHistory(List<SugarScan> scans, List<SugarAction> actions, HistoryCallback callback) {
         callback.onSuccess(scans,actions);
     }
 }

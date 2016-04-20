@@ -6,6 +6,9 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
+import com.sensorbergorm.SugarContext;
+
+import net.danlew.android.joda.JodaTimeAndroid;
 
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
@@ -43,6 +46,9 @@ public class AndroidPlatform implements Platform {
     public AndroidPlatform(Context context) {
         this.context = context;
         SensorbergApplication.getComponent().inject(this);
+
+        SugarContext.init(context);
+        JodaTimeAndroid.init(context);
     }
 
     @Override
