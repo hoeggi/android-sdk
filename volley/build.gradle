@@ -17,6 +17,7 @@ android {
     buildToolsVersion = project.ext.buildToolsVersion
 
     lintOptions {
+        disable 'InvalidPackage'
         abortOnError false
     }
 }
