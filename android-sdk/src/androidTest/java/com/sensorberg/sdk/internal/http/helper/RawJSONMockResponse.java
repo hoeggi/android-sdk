@@ -1,7 +1,5 @@
 package com.sensorberg.sdk.internal.http.helper;
 
-import com.squareup.okhttp.mockwebserver.MockResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +7,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+
+import okhttp3.mockwebserver.MockResponse;
 
 public class RawJSONMockResponse {
     public static MockResponse fromRawResource(InputStream inputStream) throws IOException, JSONException {

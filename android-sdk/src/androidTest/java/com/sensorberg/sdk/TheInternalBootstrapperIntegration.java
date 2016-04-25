@@ -1,15 +1,14 @@
 package com.sensorberg.sdk;
 
-import android.content.IntentFilter;
+import com.google.gson.Gson;
 
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
+import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.model.server.ResolveAction;
 import com.sensorberg.sdk.model.server.ResolveResponse;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
@@ -17,16 +16,13 @@ import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
-import com.squareup.okhttp.CacheControl;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 
 import java.io.IOException;
@@ -37,8 +33,10 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import okhttp3.CacheControl;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.RecordedRequest;
 import util.TestConstants;
-import util.VolleyUtil;
 
 public class TheInternalBootstrapperIntegration extends SensorbergApplicationTest {
 
@@ -58,6 +56,9 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
 
     @Inject
     SharedPreferences sharedPreferences;
+
+    @Inject
+    Gson gson;
 
     InternalApplicationBootstrapper tested;
 
@@ -115,8 +116,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        TestPlatform platform = new TestPlatform();
-        Transport transport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), testHandlerManager.getCustomClock(),
+        Transport transport = new RetrofitApiTransport(getContext(), gson, testHandlerManager.getCustomClock(),
                 testPlatformIdentifier, true);
         tested = new InternalApplicationBootstrapper(transport, testServiceScheduler, testHandlerManager,
                 testHandlerManager.getCustomClock(),
@@ -133,8 +133,8 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     }
 
     public void test_the_gson_serialization() throws Exception {
-        String json = HeadersJsonObjectRequest.gson.toJson(PUBLISH_HISTORY_RESPONSE);
-        ResolveResponse response = HeadersJsonObjectRequest.gson.fromJson(json, ResolveResponse.class);
+        String json = gson.toJson(PUBLISH_HISTORY_RESPONSE);
+        ResolveResponse response = gson.fromJson(json, ResolveResponse.class);
         Assertions.assertThat(json).isNotEmpty();
         Assertions.assertThat(response).isNotNull().isEqualsToByComparingFields(PUBLISH_HISTORY_RESPONSE);
     }
@@ -145,7 +145,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
 
         //enqueue an event that can be cached
         server.enqueue(new MockResponse()
-                        .setBody(HeadersJsonObjectRequest.gson.toJson(RESOLVE_RESPONSE_WITH_ACTION))
+                        .setBody(gson.toJson(RESOLVE_RESPONSE_WITH_ACTION))
                         .setHeader("Cache-Control", new CacheControl.Builder()
                                 .maxAge(24, TimeUnit.HOURS)
                                 .noTransform()
@@ -176,12 +176,12 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     public void test_an_instant_action_workflow() throws Exception {
         //enqueue the layout with a beacon for report immediately
         server.enqueue(new MockResponse()
-                        .setBody(HeadersJsonObjectRequest.gson.toJson(RESOLVE_RESPONSE_WITH_REPORT_IMMEDIATELY))
+                        .setBody(gson.toJson(RESOLVE_RESPONSE_WITH_REPORT_IMMEDIATELY))
         );
 
         //enqueue the reporting result
         server.enqueue(new MockResponse()
-                .setBody(HeadersJsonObjectRequest.gson.toJson(PUBLISH_HISTORY_RESPONSE)));
+                .setBody(gson.toJson(PUBLISH_HISTORY_RESPONSE)));
 
         //simulate the entry
         tested.onScanEventDetected(new ScanEvent.Builder()

@@ -1,20 +1,33 @@
 package com.sensorberg.sdk.model.server;
 
+import com.google.gson.Gson;
+
 import com.sensorberg.sdk.SensorbergApplicationTest;
-import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
-import util.Utils;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
+
+import javax.inject.Inject;
+
+import util.Utils;
 
 import static util.Conditions.size;
 
 public class ResolveActionTest extends SensorbergApplicationTest {
 
+    @Inject
+    Gson gson;
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+    }
 
     public void test_should_be_parseable() throws Exception {
-        ResolveAction tested = HeadersJsonObjectRequest.gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_001, getContext()), ResolveAction.class);
+        ResolveAction tested = gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_001, getContext()), ResolveAction.class);
 
         Assertions.assertThat(tested.content.getString("url")).isNotNull();
 
@@ -36,8 +49,7 @@ public class ResolveActionTest extends SensorbergApplicationTest {
 
     public void test_should_be_parcelable_as_a_list() throws Exception {
 
-
-        ResolveAction[] tested = HeadersJsonObjectRequest.gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_002, getContext()), ResolveAction[].class);
+        ResolveAction[] tested = gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_002, getContext()), ResolveAction[].class);
 
         Assertions.assertThat(tested).hasSize(2);
 

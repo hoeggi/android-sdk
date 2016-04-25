@@ -1,7 +1,10 @@
 package com.sensorberg.sdk.model.sugar;
 
+import com.google.gson.Gson;
+
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
-import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
@@ -15,9 +18,14 @@ import android.test.AndroidTestCase;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import util.TestConstants;
 
 public class TheSugarScanobjectShould extends AndroidTestCase {
+
+    @Inject
+    Gson gson;
 
     private SugarScan tested;
     private Clock clock;
@@ -26,6 +34,8 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
         SugarScan.deleteAll(SugarScan.class);
         ScanEvent scanevent = new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())
@@ -41,7 +51,7 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
     }
 
     public void test_should_be_json_serializeable() throws Exception {
-        String objectAsJSON = HeadersJsonObjectRequest.gson.toJson(tested);
+        String objectAsJSON = gson.toJson(tested);
 
        Assertions.assertThat(objectAsJSON)
                 .isNotEmpty()
@@ -52,7 +62,7 @@ public class TheSugarScanobjectShould extends AndroidTestCase {
         tested.save();
         List<SugarScan> objects = SugarRecord.find(SugarScan.class, "");
         Select.from(SugarScan.class).list();
-        String objectsAsJson = HeadersJsonObjectRequest.gson.toJson(objects);
+        String objectsAsJson = gson.toJson(objects);
 
         Assertions.assertThat(objectsAsJson)
                .isNotEmpty()

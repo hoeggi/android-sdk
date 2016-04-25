@@ -1,6 +1,5 @@
 package util;
 
-import com.android.sensorbergVolley.ServerError;
 import com.sensorberg.sdk.model.BeaconId;
 
 import org.apache.commons.io.IOUtils;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.util.Random;
 
 import static java.lang.System.arraycopy;
-import static junit.framework.Assert.fail;
 
 public class Utils {
 
@@ -65,18 +63,4 @@ public class Utils {
         return value;
     }
 
-    public static void failWithVolleyError(Exception volleyError, String s){
-        Throwable error = volleyError;
-        while (error.getCause() != null){
-            error = error.getCause();
-            if (error instanceof ServerError){
-                ServerError serverError = (ServerError) error;
-                if (serverError.networkResponse != null) {
-                    fail(String.format("%1$s:\nStatus:%2$d\nData:%3$s",s , serverError.networkResponse.statusCode, new String(serverError.networkResponse.data)));
-                    return;
-                }
-            }
-        }
-        fail(volleyError.getMessage());
-    }
 }

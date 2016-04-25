@@ -1,17 +1,9 @@
 package com.sensorberg.sdk.testUtils;
 
-import android.annotation.TargetApi;
-import android.app.NotificationManager;
-import android.os.Build;
-import android.test.AndroidTestCase;
-import android.util.Log;
-
-import com.android.sensorbergVolley.Cache;
-import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import com.sensorberg.sdk.InternalApplicationBootstrapper;
-import util.TestConstants;
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.model.server.ResolveAction;
@@ -22,6 +14,12 @@ import com.sensorberg.sdk.scanner.ScanEventType;
 import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.annotation.TargetApi;
+import android.app.NotificationManager;
+import android.os.Build;
+import android.test.AndroidTestCase;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -34,11 +32,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
+import util.TestConstants;
 import util.Utils;
 
 public class ResolveResponsePerformanceTest  extends AndroidTestCase {
@@ -132,48 +129,48 @@ public class ResolveResponsePerformanceTest  extends AndroidTestCase {
 
                 Assertions.assertThat(deserialized).isEqualsToByComparingFields(resolveResponse);
 
-                File diskFolder = new File(getContext().getCacheDir(), "testrun-Cache" + System.currentTimeMillis());
-                DiskBasedCache diskBasedCache = new DiskBasedCache(diskFolder);
-                diskBasedCache.initialize();
-
-                Cache.Entry entry = new Cache.Entry();
-                entry.data = jsonString.getBytes();
-                entry.etag = "1";
-                entry.softTtl = 1000L;
-                entry.ttl = entry.softTtl;
-                entry.serverDate = System.currentTimeMillis();
-                entry.responseHeaders = Collections.emptyMap();
-
-                long startCacheWrite = System.nanoTime();
-                diskBasedCache.put("foo", entry);
-                long endCacheWrite = System.nanoTime();
-                diskBasedCache.get("foo");
-                long endCacheRead = System.nanoTime();
-
-                long nanoStartParse = System.nanoTime();
-                ResolveResponse rParsed = gson.fromJson(jsonString, ResolveResponse.class);
-                long nanoEndParse = System.nanoTime();
-                resolveResponse.resolve(validScanEvent, 0);
-                long nanoEndFirstEntry = System.nanoTime();
-                resolveResponse.resolve(invalidScanEvent, 0);
-                long nanoEndTest = System.nanoTime();
-
-
-                long jsonParseTimeMillis = TimeUnit.NANOSECONDS.toMillis(nanoEndParse - nanoStartParse);
-                long matchingExistingInMillis = TimeUnit.NANOSECONDS.toMillis(nanoEndFirstEntry - nanoEndParse);
-                long matchingNonExistentInMillis = TimeUnit.NANOSECONDS.toMillis(nanoEndTest - nanoEndFirstEntry);
-
-                long serializeTime = TimeUnit.NANOSECONDS.toMillis(nanoEndWriteSerializeable - nanoStartWriteSerializeable);
-                long deserializeTime = TimeUnit.NANOSECONDS.toMillis(nanoEndDeserialize - nanoEndWriteSerializeable);
-
-                long diskCacheSerializeTime = TimeUnit.NANOSECONDS.toMillis(endCacheWrite - startCacheWrite);
-                long diskCacheDeSerializeTime = TimeUnit.NANOSECONDS.toMillis(endCacheRead - endCacheWrite);
-
-
-                jsonParseTimes[j] = jsonParseTimeMillis;
-
-                matchingKnown[j] = matchingExistingInMillis;
-                matchingUnknown[j] = matchingNonExistentInMillis;
+//                File diskFolder = new File(getContext().getCacheDir(), "testrun-Cache" + System.currentTimeMillis());
+//                DiskBasedCache diskBasedCache = new DiskBasedCache(diskFolder);
+//                diskBasedCache.initialize();
+//
+//                Cache.Entry entry = new Cache.Entry();
+//                entry.data = jsonString.getBytes();
+//                entry.etag = "1";
+//                entry.softTtl = 1000L;
+//                entry.ttl = entry.softTtl;
+//                entry.serverDate = System.currentTimeMillis();
+//                entry.responseHeaders = Collections.emptyMap();
+//
+//                long startCacheWrite = System.nanoTime();
+//                diskBasedCache.put("foo", entry);
+//                long endCacheWrite = System.nanoTime();
+//                diskBasedCache.get("foo");
+//                long endCacheRead = System.nanoTime();
+//
+//                long nanoStartParse = System.nanoTime();
+//                ResolveResponse rParsed = gson.fromJson(jsonString, ResolveResponse.class);
+//                long nanoEndParse = System.nanoTime();
+//                resolveResponse.resolve(validScanEvent, 0);
+//                long nanoEndFirstEntry = System.nanoTime();
+//                resolveResponse.resolve(invalidScanEvent, 0);
+//                long nanoEndTest = System.nanoTime();
+//
+//
+//                long jsonParseTimeMillis = TimeUnit.NANOSECONDS.toMillis(nanoEndParse - nanoStartParse);
+//                long matchingExistingInMillis = TimeUnit.NANOSECONDS.toMillis(nanoEndFirstEntry - nanoEndParse);
+//                long matchingNonExistentInMillis = TimeUnit.NANOSECONDS.toMillis(nanoEndTest - nanoEndFirstEntry);
+//
+//                long serializeTime = TimeUnit.NANOSECONDS.toMillis(nanoEndWriteSerializeable - nanoStartWriteSerializeable);
+//                long deserializeTime = TimeUnit.NANOSECONDS.toMillis(nanoEndDeserialize - nanoEndWriteSerializeable);
+//
+//                long diskCacheSerializeTime = TimeUnit.NANOSECONDS.toMillis(endCacheWrite - startCacheWrite);
+//                long diskCacheDeSerializeTime = TimeUnit.NANOSECONDS.toMillis(endCacheRead - endCacheWrite);
+//
+//
+//                jsonParseTimes[j] = jsonParseTimeMillis;
+//
+//                matchingKnown[j] = matchingExistingInMillis;
+//                matchingUnknown[j] = matchingNonExistentInMillis;
 
 
                 Log.wtf("MeasuredTimeCSV", itemcount[j] + ";" + bytesInJson[j] + ";" + matchingKnown[j] + ";" + matchingUnknown[j]);
@@ -181,17 +178,17 @@ public class ResolveResponsePerformanceTest  extends AndroidTestCase {
                 Log.wtf("MeasuredTime", "Testing over : " + itemcount[j] + " items.");
                 Log.wtf("MeasuredTime", "JSON Size : " + jsonCharSize + " bytes.");
                 Log.wtf("MeasuredTime", "JSON Size Gzipped : " + gzipBytesSize + " bytes.");
-                Log.wtf("MeasuredTime", "Actual gson JSON parsing of the response : " + jsonParseTimeMillis + " Millis.");
-
-                Log.wtf("MeasuredTime", "Actual writing it to disk as serializeable: " + serializeTime + " Millis.");
-                Log.wtf("MeasuredTime", "Actual reading from disk as serializeable: " + deserializeTime + " Millis.");
-
-                Log.wtf("MeasuredTime", "Actual writing it to volley diskcache: " + diskCacheSerializeTime + " Millis.");
-                Log.wtf("MeasuredTime", "Actual reading from volley diskcache: " + diskCacheDeSerializeTime + " Millis.");
-
-
-                Log.wtf("MeasuredTime", "Actual matching of a known Beacon Scan event : " + matchingExistingInMillis + " Millis.");
-                Log.wtf("MeasuredTime", "Actual matching of an unknown Beacon Scan event : " + matchingNonExistentInMillis + " Millis.");
+//                Log.wtf("MeasuredTime", "Actual gson JSON parsing of the response : " + jsonParseTimeMillis + " Millis.");
+//
+//                Log.wtf("MeasuredTime", "Actual writing it to disk as serializeable: " + serializeTime + " Millis.");
+//                Log.wtf("MeasuredTime", "Actual reading from disk as serializeable: " + deserializeTime + " Millis.");
+//
+//                Log.wtf("MeasuredTime", "Actual writing it to volley diskcache: " + diskCacheSerializeTime + " Millis.");
+//                Log.wtf("MeasuredTime", "Actual reading from volley diskcache: " + diskCacheDeSerializeTime + " Millis.");
+//
+//
+//                Log.wtf("MeasuredTime", "Actual matching of a known Beacon Scan event : " + matchingExistingInMillis + " Millis.");
+//                Log.wtf("MeasuredTime", "Actual matching of an unknown Beacon Scan event : " + matchingNonExistentInMillis + " Millis.");
                 Log.wtf("MeasuredTime", "---------------------------------------------");
             }catch (OutOfMemoryError e){
                 Log.wtf("MeasuredTime", e.getLocalizedMessage());

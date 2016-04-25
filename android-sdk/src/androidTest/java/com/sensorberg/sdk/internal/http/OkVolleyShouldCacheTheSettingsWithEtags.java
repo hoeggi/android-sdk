@@ -1,33 +1,27 @@
 package com.sensorberg.sdk.internal.http;
 
-import com.android.sensorbergVolley.RequestQueue;
-import com.android.sensorbergVolley.toolbox.BasicNetwork;
-import com.android.sensorbergVolley.toolbox.DiskBasedCache;
-import com.sensorberg.android.okvolley.OkHttpStack;
+import com.google.gson.Gson;
+
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.OkHttpClientTransport;
-import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
+import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.test.R;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.fest.assertions.api.Assertions;
-import org.json.JSONObject;
 
-import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import okhttp3.mockwebserver.RecordedRequest;
 import util.TestConstants;
-
-import static org.mockito.Mockito.spy;
 
 public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicationTest {
 
@@ -43,8 +37,8 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
         }
 
         @Override
-        public void onSettingsFound(JSONObject settings) {
-            Assertions.assertThat(settings.length()).isNotZero();
+        public void onSettingsFound(Settings settings) {
+            Assertions.assertThat(settings).isNotNull();
         }
     };
 
@@ -56,24 +50,27 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
     @Named("testPlatformIdentifier")
     PlatformIdentifier testPlatformIdentifier;
 
+    @Inject
+    Gson gson;
+
     protected Transport tested;
-    private OkHttpStack stack;
-    private RequestQueue queue;
+//    private OkHttpStack stack;
+//    private RequestQueue queue;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        stack = spy(new OkHttpStack());
+//        stack = spy(new OkHttpStack());
+//
+//        BasicNetwork network = new BasicNetwork(stack);
+//
+//        File cacheDir = new File(getContext().getCacheDir(), "volley-test-" + String.valueOf(System.currentTimeMillis()));
+//        queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
+//        queue.start();
 
-        BasicNetwork network = new BasicNetwork(stack);
-
-        File cacheDir = new File(getContext().getCacheDir(), "volley-test-" + String.valueOf(System.currentTimeMillis()));
-        queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
-        queue.start();
-
-        tested = new OkHttpClientTransport(queue, clock, testPlatformIdentifier, true);
+        tested = new RetrofitApiTransport(getContext(), gson, clock, testPlatformIdentifier, true);
         tested.setApiToken(TestConstants.API_TOKEN);
         startWebserver();
     }
@@ -120,9 +117,10 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
         enqueue(R.raw.response_etag_001, R.raw.response_etag_001);
         tested.loadSettings(MUST_NOT_FAIL);
 
-        queue.getCache().invalidate(URLFactory.getSettingsURLString(TestConstants.API_TOKEN), true);
+//        queue.getCache().invalidate(URLFactory.getSettingsURLString(TestConstants.API_TOKEN), true);
 
         tested.loadSettings(MUST_NOT_FAIL);
         Assertions.assertThat(server.getRequestCount()).overridingErrorMessage("there should be two request. after invalidating the cache").isEqualTo(2);
+        fail();
     }
 }

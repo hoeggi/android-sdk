@@ -8,14 +8,14 @@ import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.resolver.ResolverListener;
 import com.sensorberg.sdk.settings.DefaultSettings;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.RecordedRequest;
 import util.TestConstants;
 
 import static com.sensorberg.sdk.scanner.RecordedRequestAssert.assertThat;

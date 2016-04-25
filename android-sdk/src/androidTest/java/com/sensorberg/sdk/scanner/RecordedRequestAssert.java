@@ -1,21 +1,19 @@
 package com.sensorberg.sdk.scanner;
 
-import android.content.Context;
-
-import util.Utils;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
-
 import org.fest.assertions.api.AbstractAssert;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import okhttp3.mockwebserver.RecordedRequest;
+import util.Utils;
 
 
 public class RecordedRequestAssert extends AbstractAssert<RecordedRequestAssert, RecordedRequest> {
@@ -30,7 +28,7 @@ public class RecordedRequestAssert extends AbstractAssert<RecordedRequestAssert,
 
     public RecordedRequestAssert matchesRawResourceRequest(int rawResourceID, Context context) throws IOException, JSONException {
         JSONObject expectedRequest = Utils.getRawResourceAsJSON(rawResourceID, context);
-        JSONObject body = new JSONObject(new String(actual.getBody()));
+        JSONObject body = new JSONObject(actual.getBody().toString());
 
         jsonObjsAreEqual(expectedRequest.getJSONObject("body"), body);
 

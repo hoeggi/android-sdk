@@ -1,15 +1,17 @@
 package com.sensorberg.sdk.internal.http;
 
-import com.android.sensorbergVolley.VolleyError;
+import com.google.gson.Gson;
+
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.OkHttpClientTransport;
+import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.BeaconId;
@@ -19,12 +21,12 @@ import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.joda.time.DateTime;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,18 +36,19 @@ import java.util.concurrent.CountDownLatch;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import retrofit2.http.HEAD;
 import util.TestConstants;
-import util.VolleyUtil;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static util.Utils.failWithVolleyError;
 
 public class TransportShould extends SensorbergApplicationTest {
 
     private static final UUID BEACON_ID = UUID.fromString("192E463C-9B8E-4590-A23F-D32007299EF5");
+
     private static final int MAJOR = 1337;
+
     private static final int MINOR = 1337;
 
     @Inject
@@ -56,9 +59,15 @@ public class TransportShould extends SensorbergApplicationTest {
     @Named("testPlatformIdentifier")
     PlatformIdentifier testPlatformIdentifier;
 
+    @Inject
+    Gson gson;
+
     protected Transport tested;
+
     protected TestPlatform testPlattform;
+
     private ScanEvent scanEvent;
+
     private BeaconHistoryUploadIntervalListener listener;
 
     @Override
@@ -77,7 +86,7 @@ public class TransportShould extends SensorbergApplicationTest {
 
         listener = mock(BeaconHistoryUploadIntervalListener.class);
 
-        tested = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), clock, testPlatformIdentifier, true);
+        tested = new RetrofitApiTransport(getContext(), gson, clock, testPlatformIdentifier, true);
         tested.setBeaconHistoryUploadIntervalListener(listener);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
@@ -92,12 +101,12 @@ public class TransportShould extends SensorbergApplicationTest {
         verify(listener).historyUploadIntervalChanged(1337L * 1000);
     }
 
-    public void test_failures() throws VolleyError {
-
-        //TODO should rewrite this when we change the Http transport
+    public void test_failures() throws Exception {
+        fail();
+        //TODO
 
 //        Network network = spy(new BasicNetwork(new OkHttpStack()));
-//        doThrow(new VolleyError()).when(network).performRequest(any(HeadersJsonObjectRequest.class));
+//        doThrow(new Exception()).when(network).performRequest(any(HeadersJsonObjectRequest.class));
 //
 //        tested.loadSettings(new TransportSettingsCallback() {
 //            @Override
@@ -119,25 +128,25 @@ public class TransportShould extends SensorbergApplicationTest {
 
     // https://staging-manage.sensorberg.com/#/campaign/edit/29fa875c-66db-4957-be65-abc83f35538d
     // https://manage.sensorberg.com/#/campaign/edit/0ec64004-18a5-41df-a5dc-810d395dec83
-    public void test_a_beacon_request(){
-        //TODO should rewrite this when we change the Http transport
+    public void test_a_beacon_request() {
+        tested.getBeacon(new ResolutionConfiguration(scanEvent), new BeaconResponseHandler() {
+            @Override
+            public void onSuccess(List<BeaconEvent> foundBeaconEvents) {
+                Assertions.assertThat(foundBeaconEvents).overridingErrorMessage("There should be 1 action to the Beacon %s at %s there were %d",
+                        scanEvent.getBeaconId().toTraditionalString(), URLFactory.getResolveURLString(), foundBeaconEvents.size()).isNotNull()
+                        .hasSize(1);
+            }
 
-//        tested.getBeacon(new ResolutionConfiguration(scanEvent), new BeaconResponseHandler() {
-//            @Override
-//            public void onSuccess(List<BeaconEvent> foundBeaconEvents) {
-//                Assertions.assertThat(foundBeaconEvents).overridingErrorMessage("There should be 1 action to the Beacon %s at %s there were %d", scanEvent.getBeaconId().toTraditionalString(), URLFactory.getResolveURLString(), foundBeaconEvents.size()).isNotNull().hasSize(1);
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable cause) {
-//                fail("there was a failure with this request");
-//            }
-//        });
+            @Override
+            public void onFailure(Throwable cause) {
+                fail("there was a failure with this request");
+            }
+        });
     }
 
     // https://staging-manage.sensorberg.com/#/campaign/edit/29fa875c-66db-4957-be65-abc83f35538d
     // https://manage.sensorberg.com/#/campaign/edit/0ec64004-18a5-41df-a5dc-810d395dec83
-    public void test_should_be_synchronous(){
+    public void test_should_be_synchronous() {
         final CountDownLatch latch = new CountDownLatch(1);
         tested.getBeacon(new ResolutionConfiguration(scanEvent), new BeaconResponseHandler() {
             @Override
@@ -153,7 +162,7 @@ public class TransportShould extends SensorbergApplicationTest {
         Assertions.assertThat(latch.getCount()).isEqualTo(0);
     }
 
-    public void test_a_settings_request(){
+    public void test_a_settings_request() {
         tested.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
@@ -162,11 +171,11 @@ public class TransportShould extends SensorbergApplicationTest {
 
             @Override
             public void onFailure(Exception e) {
-                failWithVolleyError(e, "there was a failure with this request");
+                fail();
             }
 
             @Override
-            public void onSettingsFound(JSONObject settings) {
+            public void onSettingsFound(Settings settings) {
                 Assertions.assertThat(settings).isNotNull();
             }
         });
@@ -188,8 +197,8 @@ public class TransportShould extends SensorbergApplicationTest {
 
         tested.publishHistory(scans, actions, new TransportHistoryCallback() {
             @Override
-            public void onFailure(VolleyError volleyError) {
-                failWithVolleyError(volleyError, "Request failed");
+            public void onFailure(Exception volleyError) {
+                fail();
             }
 
             @Override

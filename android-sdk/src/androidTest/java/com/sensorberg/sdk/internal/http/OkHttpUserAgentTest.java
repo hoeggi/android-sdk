@@ -1,24 +1,25 @@
 package com.sensorberg.sdk.internal.http;
 
-import com.android.sensorbergVolley.VolleyError;
+import com.google.gson.Gson;
+
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
+import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.fest.assertions.api.Assertions;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import util.VolleyUtil;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.mockito.Mockito.spy;
 
@@ -32,8 +33,10 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
     @Named("testPlatformIdentifier")
     PlatformIdentifier testPlatformIdentifier;
 
-    private OkHttpClientTransport transport;
+    @Inject
+    Gson gson;
 
+    private Transport transport;
     TestPlatform plattform;
 
     @Override
@@ -43,21 +46,26 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         plattform = spy(new TestPlatform());
 
-        transport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), clock, testPlatformIdentifier, true);
+        transport = new RetrofitApiTransport(getContext(), gson, clock, testPlatformIdentifier, true);
         startWebserver();
     }
 
     public void testUserAgentIsSetInVolleyOkHttpHeader() throws Exception {
 
         server.enqueue(new MockResponse().setBody("{}"));
-        transport.perform(getUrl("/layout").toString(), new com.android.sensorbergVolley.Response.Listener<JSONObject>() {
+        transport.loadSettings(new TransportSettingsCallback() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void nothingChanged() {
 
             }
-        }, new com.android.sensorbergVolley.Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSettingsFound(Settings settings) {
 
             }
         });
@@ -69,14 +77,19 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
     public void testInstallationIdentifierIsSetInVolleyOkHttpHeader() throws Exception {
 
         server.enqueue(new MockResponse().setBody("{}"));
-        transport.perform(getUrl("/layout").toString(), new com.android.sensorbergVolley.Response.Listener<JSONObject>() {
+        transport.loadSettings(new TransportSettingsCallback() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void nothingChanged() {
 
             }
-        }, new com.android.sensorbergVolley.Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSettingsFound(Settings settings) {
 
             }
         });
@@ -88,40 +101,24 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
     public void testAdvertiserIdentifierIsSetInVolleyOkHttpHeader() throws Exception {
 
         server.enqueue(new MockResponse().setBody("{}"));
-        transport.perform(getUrl("/layout").toString(), new com.android.sensorbergVolley.Response.Listener<JSONObject>() {
+        transport.loadSettings(new TransportSettingsCallback() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void nothingChanged() {
 
             }
-        }, new com.android.sensorbergVolley.Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSettingsFound(Settings settings) {
 
             }
         });
 
         RecordedRequest request = waitForRequests(1).get(0);
         Assertions.assertThat(request.getHeader("X-aid")).isEqualTo(testPlatformIdentifier.getAdvertiserIdentifier());
-    }
-
-    public void testAdvertisingIdIsSetInVolleyOkHttpHeader() throws Exception {
-
-        testPlatformIdentifier.setAdvertisingIdentifier("ADVERTISING_ID_TEST");
-
-        server.enqueue(new MockResponse().setBody("{}"));
-        transport.perform(getUrl("/layout").toString(), new com.android.sensorbergVolley.Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-
-            }
-        }, new com.android.sensorbergVolley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-
-        RecordedRequest request = waitForRequests(1).get(0);
-        Assertions.assertThat(request.getHeader(Transport.ADVERTISING_IDENTIFIER)).isEqualTo("ADVERTISING_ID_TEST");
     }
 }

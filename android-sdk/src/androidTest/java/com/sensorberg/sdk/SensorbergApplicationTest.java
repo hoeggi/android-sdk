@@ -1,22 +1,23 @@
 package com.sensorberg.sdk;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.http.helper.RawJSONMockResponse;
-import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
 
+import android.app.Application;
+import android.test.ApplicationTestCase;
+
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 
 public abstract class SensorbergApplicationTest extends ApplicationTestCase<Application> {
     protected MockWebServer server;
@@ -46,12 +47,8 @@ public abstract class SensorbergApplicationTest extends ApplicationTestCase<Appl
     protected void startWebserver(int... rawRequestsResourceIds) throws IOException, JSONException {
         server = new MockWebServer();
         enqueue(rawRequestsResourceIds);
-        server.play();
-        previousConfiguration = URLFactory.switchToMockEnvironment(server.getUrl("/"));
-    }
-
-    protected java.net.URL getUrl(String path) {
-        return server.getUrl(path);
+        server.start();
+        previousConfiguration = URLFactory.switchToMockEnvironment(new URL(server.getHostName()));
     }
 
     public void enqueue(int... rawRequestsResourceIds) throws IOException, JSONException {

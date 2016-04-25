@@ -24,6 +24,11 @@ public class DumbSucessTransport implements Transport {
     }
 
     @Override
+    public void setLoggingEnabled(boolean enabled) {
+
+    }
+
+    @Override
     public void setBeaconReportHandler(BeaconReportHandler beaconReportHandler) {
 
     }

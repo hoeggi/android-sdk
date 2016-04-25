@@ -1,8 +1,11 @@
 package com.sensorberg.sdk.model.sugar;
 
+import com.google.gson.Gson;
+
+import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.action.InAppAction;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
-import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
@@ -22,11 +25,16 @@ import android.support.test.runner.AndroidJUnit4;
 import java.util.List;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import util.TestConstants;
 import util.TestDatabaseHelper;
 
 @RunWith(AndroidJUnit4.class)
 public class TheSugarActionObjectShould {
+
+    @Inject
+    Gson gson;
 
     private SugarAction tested;
     private UUID uuid = UUID.fromString("6133172D-935F-437F-B932-A901265C24B0");
@@ -45,6 +53,9 @@ public class TheSugarActionObjectShould {
                 .withTrigger(ScanEventType.ENTRY.getMask())
                 .build();
         beaconEvent.setBeaconId(TestConstants.ANY_BEACON_ID);
+
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
         clock = NoClock.CLOCK;
         tested = SugarAction.from(beaconEvent, clock);
     }
@@ -56,7 +67,7 @@ public class TheSugarActionObjectShould {
 
     @Test
     public void test_should_be_json_serializeable() throws Exception {
-        String objectAsJSON = HeadersJsonObjectRequest.gson.toJson(tested);
+        String objectAsJSON = gson.toJson(tested);
 
         Assertions.assertThat(objectAsJSON)
                 .isNotEmpty()
@@ -70,7 +81,7 @@ public class TheSugarActionObjectShould {
         List<SugarAction> objects = SugarRecord.find(SugarAction.class, "");
         Select.from(SugarAction.class).list();
 
-        String objectsAsJson = HeadersJsonObjectRequest.gson.toJson(objects);
+        String objectsAsJson = gson.toJson(objects);
 
         Assertions.assertThat(objectsAsJson)
                 .isNotEmpty()

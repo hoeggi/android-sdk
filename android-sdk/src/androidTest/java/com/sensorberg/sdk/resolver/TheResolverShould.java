@@ -1,11 +1,13 @@
 package com.sensorberg.sdk.resolver;
 
+import com.google.gson.Gson;
+
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
@@ -25,7 +27,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import util.TestConstants;
-import util.VolleyUtil;
 
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,9 @@ public class TheResolverShould extends AndroidTestCase {
     @Inject
     @Named("testPlatformIdentifier")
     PlatformIdentifier testPlatformIdentifier;
+
+    @Inject
+    Gson gson;
 
     private Resolver testedWithFakeBackend;
 
@@ -57,7 +61,7 @@ public class TheResolverShould extends AndroidTestCase {
 
         testHandlerManager = new TestHandlerManager();
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
-        testTransport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()),
+        testTransport = new RetrofitApiTransport(getContext(), gson,
                 testHandlerManager.getCustomClock(), testPlatformIdentifier, true);
         testTransport.setApiToken(TestConstants.API_TOKEN);
         testHandlerManager.getCustomClock().setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
