@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal.transport;
 
-import org.json.JSONObject;
+import com.sensorberg.sdk.settings.Settings;
 
 public interface TransportSettingsCallback {
     TransportSettingsCallback NONE = new TransportSettingsCallback() {
@@ -15,7 +15,7 @@ public interface TransportSettingsCallback {
         }
 
         @Override
-        public void onSettingsFound(JSONObject settings) {
+        public void onSettingsFound(Settings settings) {
 
         }
     };
@@ -24,5 +24,5 @@ public interface TransportSettingsCallback {
 
     void onFailure(Exception e);
 
-    void onSettingsFound(JSONObject settings);
+    void onSettingsFound(Settings settings);
 }

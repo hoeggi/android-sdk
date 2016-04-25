@@ -2,8 +2,6 @@ package com.sensorberg.sdk.settings;
 
 import com.sensorberg.sdk.Constants;
 
-import org.json.JSONObject;
-
 import android.content.SharedPreferences;
 
 import lombok.Getter;
@@ -92,6 +90,7 @@ public class Settings {
         }
     }
 
+<<<<<<< HEAD
     public Settings(JSONObject settings, SettingsUpdateCallback settingsUpdateCallback) {
         exitTimeoutMillis = settings.optLong("scanner.exitTimeoutMillis", DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
         foreGroundScanTime = settings.optLong("scanner.foreGroundScanTime", DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
@@ -101,29 +100,36 @@ public class Settings {
 
         cleanBeaconMapRestartTimeout = settings
                 .optLong("scanner.cleanBeaconMapRestartTimeout", DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT);
+=======
+    public Settings(Settings newSettings, SettingsUpdateCallback settingsUpdateCallback) {
+        exitTimeoutMillis = newSettings.getExitTimeoutMillis();
+        foreGroundScanTime = newSettings.getForeGroundScanTime();
+        foreGroundWaitTime = newSettings.getForeGroundWaitTime();
+        backgroundScanTime = newSettings.getBackgroundScanTime();
+        backgroundWaitTime = newSettings.getBackgroundWaitTime();
 
-        messageDelayWindowLength = settings.optLong("presenter.messageDelayWindowLength", DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT);
-        cacheTtl = settings.optLong("cache.objectTTL", DefaultSettings.DEFAULT_CACHE_TTL);
-        maxRetries = settings.optInt("network.maximumResolveRetries", DefaultSettings.DEFAULT_MAX_RETRIES);
-        millisBetweenRetries = settings.optLong("network.millisBetweenRetries", DefaultSettings.DEFAULT_MILLIS_BEETWEEN_RETRIES);
-        shouldRestoreBeaconStates = settings.optBoolean("scanner.restoreBeaconStates", DefaultSettings.DEFAULT_SHOULD_RESTORE_BEACON_STATE);
+        cleanBeaconMapRestartTimeout = newSettings.getCleanBeaconMapRestartTimeout();
+>>>>>>> replaced OkHttpClientTransport with RetrofitApiTransport
 
-        long newHistoryUploadIntervalMillis = settings.optLong("network.historyUploadInterval", DefaultSettings.DEFAULT_HISTORY_UPLOAD_INTERVAL);
-        if (newHistoryUploadIntervalMillis != historyUploadInterval) {
-            historyUploadInterval = newHistoryUploadIntervalMillis;
-            settingsUpdateCallback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
+        messageDelayWindowLength = newSettings.getMessageDelayWindowLength();
+        cacheTtl = newSettings.getCacheTtl();
+        maxRetries = newSettings.getMaxRetries();
+        millisBetweenRetries = newSettings.getMillisBetweenRetries();
+        shouldRestoreBeaconStates = newSettings.isShouldRestoreBeaconStates();
+
+        if (newSettings.getHistoryUploadInterval() != historyUploadInterval) {
+            historyUploadInterval = newSettings.getHistoryUploadInterval();
+            settingsUpdateCallback.onHistoryUploadIntervalChange(historyUploadInterval);
         }
 
-        long newLayoutUpdateInterval = settings.optLong("network.beaconLayoutUpdateInterval", DefaultSettings.DEFAULT_LAYOUT_UPDATE_INTERVAL);
-        if (newLayoutUpdateInterval != layoutUpdateInterval) {
-            layoutUpdateInterval = newLayoutUpdateInterval;
-            settingsUpdateCallback.onSettingsBeaconLayoutUpdateIntervalChange(newLayoutUpdateInterval);
+        if (newSettings.getLayoutUpdateInterval() != layoutUpdateInterval) {
+            layoutUpdateInterval = newSettings.getLayoutUpdateInterval();
+            settingsUpdateCallback.onSettingsBeaconLayoutUpdateIntervalChange(layoutUpdateInterval);
         }
 
-        final long newSettingsUpdateInterval = settings.optLong("settings.updateTime", DefaultSettings.DEFAULT_SETTINGS_UPDATE_INTERVAL);
-        if (newSettingsUpdateInterval != settingsUpdateInterval) {
-            settingsUpdateInterval = newSettingsUpdateInterval;
-            settingsUpdateCallback.onSettingsUpdateIntervalChange(newSettingsUpdateInterval);
+        if (newSettings.getSettingsUpdateInterval() != settingsUpdateInterval) {
+            settingsUpdateInterval = newSettings.getSettingsUpdateInterval();
+            settingsUpdateCallback.onSettingsUpdateIntervalChange(settingsUpdateInterval);
         }
 
     }

@@ -6,8 +6,6 @@ import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 
-import org.json.JSONObject;
-
 import android.content.SharedPreferences;
 
 import lombok.Setter;
@@ -58,14 +56,14 @@ public class SettingsManager {
         }
 
         @Override
-        public void onSettingsFound(JSONObject jsonSettings) {
+        public void onSettingsFound(Settings networkSettings) {
             Settings newSettings;
 
-            if (jsonSettings == null) {
+            if (networkSettings == null) {
                 newSettings = new Settings();
                 preferences.edit().clear().apply();
             } else {
-                newSettings = new Settings(jsonSettings, settingsUpdateCallback);
+                newSettings = new Settings(networkSettings, settingsUpdateCallback);
             }
 
             updateSettings(newSettings);

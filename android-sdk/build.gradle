@@ -43,8 +43,11 @@ dependencies {
     compile files('libs/sensorberg_orm-0.7.1.201405082137.jar')
 
     compile project(':networkstate')
-    compile project(':okvolley')
-    compile project(':volley')
+
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.retrofit2:retrofit:2.0.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.1.2'
 
     apt 'com.google.dagger:dagger-compiler:2.0'
     compile('com.google.dagger:dagger:2.0') {

@@ -1,6 +1,8 @@
 package com.sensorberg.di;
 
-import com.sensorberg.android.okvolley.OkVolley;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.internal.AndroidBluetoothPlatform;
 import com.sensorberg.sdk.internal.AndroidClock;
@@ -8,7 +10,6 @@ import com.sensorberg.sdk.internal.AndroidFileManager;
 import com.sensorberg.sdk.internal.AndroidHandlerManager;
 import com.sensorberg.sdk.internal.AndroidPlatformIdentifier;
 import com.sensorberg.sdk.internal.AndroidServiceScheduler;
-import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
@@ -18,6 +19,10 @@ import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
+import com.sensorberg.sdk.model.ISO8601TypeAdapter;
+import com.sensorberg.sdk.model.sugarorm.SugarAction;
+import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.settings.DefaultSettings;
 
 import android.app.AlarmManager;
@@ -29,6 +34,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
+import java.util.Date;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -146,8 +153,19 @@ public class ProvidersModule {
     @Provides
     @Named("realTransport")
     @Singleton
-    public Transport provideRealTransport(Context context, @Named("realClock") Clock clock,
+    public Transport provideRealTransport(Context context, Gson gson, @Named("realClock") Clock clock,
             @Named("androidPlatformIdentifier") PlatformIdentifier platformIdentifier) {
-        return new OkHttpClientTransport(OkVolley.newRequestQueue(context, true), clock, platformIdentifier, false);
+        return new RetrofitApiTransport(context, gson, clock, platformIdentifier, false);
+    }
+
+    @Provides
+    @Singleton
+    public Gson provideGson() {
+        return new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, ISO8601TypeAdapter.DATE_ADAPTER)
+                .registerTypeAdapter(SugarScan.class, new SugarScan.SugarScanObjectTypeAdapter())
+                .registerTypeAdapter(SugarAction.class, new SugarAction.SugarActionTypeAdapter())
+                .create();
     }
 }
