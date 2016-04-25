@@ -44,7 +44,7 @@ public class SensorbergService extends Service {
     public static final int MSG_SDK_SCANNER_MESSAGE             = 9;
     public static final int MSG_UPLOAD_HISTORY                  = 10;
     public static final int MSG_BEACON_LAYOUT_UPDATE            = 11;
-    public static final int MSG_SET_API_ADVERTSING_IDENTIFIER   = 12;
+    public static final int MSG_SET_API_ADVERTISING_IDENTIFIER = 12;
 
 
     public static final int GENERIC_TYPE_BEACON_ACTION              = 1001;
@@ -61,7 +61,7 @@ public class SensorbergService extends Service {
     public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
     public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL = "com.sensorberg.android.sdk.intent.recolverEndpoint";
     public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
-    public static final String MSG_SET_API_ADVERTSING_IDENTIFIER_ADVERTISING_IDENTIFIERR = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
+    public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
 
@@ -107,8 +107,8 @@ public class SensorbergService extends Service {
                     return "MSG_BEACON_LAYOUT_UPDATE";
                 case MSG_TYPE_SET_RESOLVER_ENDPOINT:
                     return "MSG_TYPE_SET_RESOLVER_ENDPOINT";
-                case MSG_SET_API_ADVERTSING_IDENTIFIER:
-                    return "MSG_SET_API_ADVERTSING_IDENTIFIER";
+                case MSG_SET_API_ADVERTISING_IDENTIFIER:
+                    return "MSG_SET_API_ADVERTISING_IDENTIFIER";
                 default:
                     return "unknown message" + what;
             }
@@ -288,9 +288,9 @@ public class SensorbergService extends Service {
                         }
                         break;
                     }
-                    case MSG_SET_API_ADVERTSING_IDENTIFIER: {
-                        if (intent.hasExtra(MSG_SET_API_ADVERTSING_IDENTIFIER_ADVERTISING_IDENTIFIERR)) {
-                            String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTSING_IDENTIFIER_ADVERTISING_IDENTIFIERR);
+                    case MSG_SET_API_ADVERTISING_IDENTIFIER: {
+                        if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR)) {
+                            String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR);
                             bootstrapper.setAdvertisingIdentifier(advertisingIdentifier);
                         }
                         break;
@@ -352,9 +352,9 @@ public class SensorbergService extends Service {
                     }
                     break;
                 }
-                case MSG_SET_API_ADVERTSING_IDENTIFIER: {
-                    if (intent.hasExtra(MSG_SET_API_ADVERTSING_IDENTIFIER_ADVERTISING_IDENTIFIERR)) {
-                        String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTSING_IDENTIFIER_ADVERTISING_IDENTIFIERR);
+                case MSG_SET_API_ADVERTISING_IDENTIFIER: {
+                    if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR)) {
+                        String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR);
                         if (diskConf.resolverConfiguration == null){
                             diskConf.resolverConfiguration = new ResolverConfiguration();
                         }
