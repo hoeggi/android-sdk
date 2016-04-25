@@ -11,6 +11,8 @@ import java.util.List;
 
 public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
 
+    //TODO refactor this into the sdk
+
     public static NetworkInfo latestNetworkInfo = null;
     public static final List<NetworkInfoListener> listener = new ArrayList<NetworkInfoListener>();
     public static NotificationBuilder notificationBuilder = NotificationBuilder.NONE;
