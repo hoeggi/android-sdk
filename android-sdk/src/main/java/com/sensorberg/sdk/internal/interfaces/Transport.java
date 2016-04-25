@@ -48,4 +48,6 @@ public interface Transport {
     void updateBeaconLayout();
 
     void setBeaconHistoryUploadIntervalListener(BeaconHistoryUploadIntervalListener listener);
+
+    void setLoggingEnabled(boolean enabled);
 }

@@ -371,11 +371,13 @@ public class SensorbergService extends Service {
         switch (intent.getIntExtra(EXTRA_GENERIC_TYPE, -1)) {
             case MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
+                transport.setLoggingEnabled(false);
                 Toast.makeText(context, "Log disabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
                 break;
             }
             case MSG_TYPE_ENABLE_LOGGING: {
                 Logger.enableVerboseLogging();
+                transport.setLoggingEnabled(true);
                 Toast.makeText(context, "Log enabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
                 break;
             }

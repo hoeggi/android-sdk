@@ -3,8 +3,6 @@ package com.sensorberg.sdk.internal.transport;
 import com.google.gson.Gson;
 
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
-import com.sensorberg.sdk.BuildConfig;
-import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
@@ -73,6 +71,8 @@ public class RetrofitApiTransport implements Transport,
 
     private final boolean mShouldUseSyncClient;
 
+    private Context mContext;
+
     private HttpLoggingInterceptor.Level mApiServiceLogLevel = HttpLoggingInterceptor.Level.NONE;
 
     private RetrofitApiService mApiService;
@@ -87,25 +87,22 @@ public class RetrofitApiTransport implements Transport,
     private BeaconReportHandler mBeaconReportHandler;
 
     public RetrofitApiTransport(Context context, Gson gson, Clock clk, PlatformIdentifier platformId, boolean useSyncClient) {
+        mContext = context;
         mGson = gson;
-        mApiService = getApiService(URLFactory.getResolveURLString(), context);
+        mApiService = getApiService();
         mPlatformIdentifier = platformId;
 
         mClock = clk;
         mShouldUseSyncClient = useSyncClient;
 
-        if (Logger.isVerboseLoggingEnabled() && BuildConfig.BUILD_TYPE.equals("debug")) {
-            mApiServiceLogLevel = HttpLoggingInterceptor.Level.BODY;
-        }
-
         platformId.addAdvertiserIdentifierChangeListener(this);
         platformId.addDeviceInstallationIdentifierChangeListener(this);
     }
 
-    private RetrofitApiService getApiService(String endpoint, Context context) {
+    private RetrofitApiService getApiService() {
         Retrofit restAdapter = new Retrofit.Builder()
-                .baseUrl(endpoint)
-                .client(getOkHttpClient(context))
+                .baseUrl(URLFactory.getResolveURLString())
+                .client(getOkHttpClient(mContext))
                 .addConverterFactory(GsonConverterFactory.create(mGson))
                 .build();
 
@@ -304,6 +301,22 @@ public class RetrofitApiTransport implements Transport,
                 mProximityUUIDUpdateHandler.proximityUUIDListUpdated(Collections.EMPTY_LIST);
             }
         });
+    }
+
+    @Override
+    public void setLoggingEnabled(boolean enabled) {
+        synchronized (mGson) {
+
+            if (enabled) {
+                mApiServiceLogLevel = HttpLoggingInterceptor.Level.BODY;
+            } else {
+                mApiServiceLogLevel = HttpLoggingInterceptor.Level.NONE;
+            }
+
+            if (mApiService != null) {
+                mApiService = getApiService();
+            }
+        }
     }
 
 }
