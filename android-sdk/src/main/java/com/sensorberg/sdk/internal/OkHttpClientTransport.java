@@ -52,12 +52,15 @@ public class OkHttpClientTransport implements Transport {
     private ProximityUUIDUpdateHandler proximityUUIDUpdateHandler = ProximityUUIDUpdateHandler.NONE;
     private String apiToken;
 
+    private static final String INSTALLATION_IDENTIFIER = "X-iid";
+    private static final String ADVERTISING_IDENTIFIER = "X-aid";
+
     public OkHttpClientTransport(Platform platform, Settings settings) {
         this.platform = platform;
         this.settings = settings;
         this.queue = platform.getVolleyQueue();
         this.headers.put("User-Agent", platform.getUserAgentString());
-        this.headers.put("X-iid", platform.getDeviceInstallationIdentifier());
+        this.headers.put(INSTALLATION_IDENTIFIER, platform.getDeviceInstallationIdentifier());
     }
 
     @Override
@@ -199,6 +202,15 @@ public class OkHttpClientTransport implements Transport {
         } else {
             headers.remove("X-Api-Key");
             headers.remove("Authorization");
+        }
+    }
+
+    @Override
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+        if (advertisingIdentifier == null){
+            headers.remove(ADVERTISING_IDENTIFIER);
+        } else {
+            headers.put(ADVERTISING_IDENTIFIER, advertisingIdentifier);
         }
     }
 

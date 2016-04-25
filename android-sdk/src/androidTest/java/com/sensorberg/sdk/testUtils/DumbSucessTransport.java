@@ -38,6 +38,11 @@ public class DumbSucessTransport implements Transport {
     }
 
     @Override
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+
+    }
+
+    @Override
     public void getSettings(SettingsCallback settingsCallback) {
 
     }

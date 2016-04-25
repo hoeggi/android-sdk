@@ -39,6 +39,8 @@ public interface Transport {
 
     void setApiToken(String apiToken);
 
+    void setAdvertisingIdentifier(String advertisingIdentifier);
+
     void getSettings(SettingsCallback settingsCallback);
 
     void publishHistory(List<RealmScan> scans, List<RealmAction> actions, HistoryCallback callback);
