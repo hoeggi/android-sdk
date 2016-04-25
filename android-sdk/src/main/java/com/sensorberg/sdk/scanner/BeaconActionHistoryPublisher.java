@@ -1,13 +1,12 @@
 package com.sensorberg.sdk.scanner;
 
-import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.HistoryCallback;
+import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -96,7 +95,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
             Logger.log.verbose("nothing to report");
             return;
         }
-        transport.publishHistory(scans, actions, new HistoryCallback(){
+        transport.publishHistory(scans, actions, new TransportHistoryCallback(){
 
             @Override
             public void onSuccess(List<SugarScan> scanObjectList, List<SugarAction> actionList){
@@ -105,7 +104,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
             }
 
             @Override
-            public void onFailure(VolleyError throwable){
+            public void onFailure(Exception throwable){
                 Logger.log.logError("not able to publish history", throwable);
             }
 

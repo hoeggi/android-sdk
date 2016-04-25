@@ -10,7 +10,7 @@ import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListene
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.HistoryCallback;
+import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
@@ -186,7 +186,7 @@ public class TransportShould extends SensorbergApplicationTest {
 
         scans.add(scan1);
 
-        tested.publishHistory(scans, actions, new HistoryCallback() {
+        tested.publishHistory(scans, actions, new TransportHistoryCallback() {
             @Override
             public void onFailure(VolleyError volleyError) {
                 failWithVolleyError(volleyError, "Request failed");

@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal.interfaces;
 
-import com.sensorberg.sdk.internal.transport.HistoryCallback;
+import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
@@ -43,7 +43,7 @@ public interface Transport {
 
     void loadSettings(TransportSettingsCallback transportSettingsCallback);
 
-    void publishHistory(List<SugarScan> scans, List<SugarAction> actions, HistoryCallback callback);
+    void publishHistory(List<SugarScan> scans, List<SugarAction> actions, TransportHistoryCallback callback);
 
     void updateBeaconLayout();
 

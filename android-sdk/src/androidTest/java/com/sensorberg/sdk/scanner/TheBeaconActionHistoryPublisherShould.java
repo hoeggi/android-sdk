@@ -1,13 +1,11 @@
 package com.sensorberg.sdk.scanner;
 
-import android.util.Log;
-
 import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.HistoryCallback;
+import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -73,6 +71,6 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
 
     public void test_should_schedule_the_sending_of_one_the_unsent_objects() throws Exception {
         tested.publishHistory();
-        verify(transport).publishHistory(hasSize(1), hasSize(1), any(HistoryCallback.class));
+        verify(transport).publishHistory(hasSize(1), hasSize(1), any(TransportHistoryCallback.class));
     }
 }

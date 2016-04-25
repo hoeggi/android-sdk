@@ -14,7 +14,7 @@ import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
-import com.sensorberg.sdk.internal.transport.HistoryCallback;
+import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
 import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.model.server.BaseResolveResponse;
@@ -288,7 +288,7 @@ public class OkHttpClientTransport implements Transport,
     }
 
     @Override
-    public void publishHistory(final List<SugarScan> scans, final List<SugarAction> actions, final HistoryCallback callback) {
+    public void publishHistory(final List<SugarScan> scans, final List<SugarAction> actions, final TransportHistoryCallback callback) {
         Response.Listener<ResolveResponse> responseListener = new Response.Listener<ResolveResponse>() {
             @Override
             public void onResponse(ResolveResponse response) {

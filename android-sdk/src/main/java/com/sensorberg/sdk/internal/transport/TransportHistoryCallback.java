@@ -1,14 +1,13 @@
 package com.sensorberg.sdk.internal.transport;
 
-import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 
 import java.util.List;
 
-public interface HistoryCallback {
-    void onFailure(VolleyError throwable);
+public interface TransportHistoryCallback {
+    void onFailure(Exception throwable);
 
     void onInstantActions(List<BeaconEvent> instantActions);
 
