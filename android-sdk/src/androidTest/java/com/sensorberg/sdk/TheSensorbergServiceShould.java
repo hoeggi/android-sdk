@@ -64,6 +64,7 @@ public class TheSensorbergServiceShould extends AndroidTestCase {
 
     public void should_persist_the_settings_when_getting_a_new_advertising_id() throws Exception {
         tested.onStartCommand(CHANGE_ADVERTISING_ID_MESSAGE, -1, -1);
+        verify(testPlatform).write(any(ServiceConfiguration.class), any(String.class));
         verify(testPlatform.getTransport(), times(1)).setAdvertisingIdentifier(anyString());
     }
 }

@@ -292,6 +292,7 @@ public class SensorbergService extends Service {
                         if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
                             String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
                             bootstrapper.setAdvertisingIdentifier(advertisingIdentifier);
+                            persistConfiguration(bootstrapper);
                         }
                         break;
                     }
