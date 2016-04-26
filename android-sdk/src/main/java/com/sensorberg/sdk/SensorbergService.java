@@ -61,7 +61,7 @@ public class SensorbergService extends Service {
     public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
     public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL = "com.sensorberg.android.sdk.intent.recolverEndpoint";
     public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
-    public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
+    public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
 
@@ -289,8 +289,8 @@ public class SensorbergService extends Service {
                         break;
                     }
                     case MSG_SET_API_ADVERTISING_IDENTIFIER: {
-                        if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR)) {
-                            String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR);
+                        if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
+                            String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
                             bootstrapper.setAdvertisingIdentifier(advertisingIdentifier);
                         }
                         break;
@@ -353,8 +353,8 @@ public class SensorbergService extends Service {
                     break;
                 }
                 case MSG_SET_API_ADVERTISING_IDENTIFIER: {
-                    if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR)) {
-                        String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIERR);
+                    if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
+                        String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
                         if (diskConf.resolverConfiguration == null){
                             diskConf.resolverConfiguration = new ResolverConfiguration();
                         }
