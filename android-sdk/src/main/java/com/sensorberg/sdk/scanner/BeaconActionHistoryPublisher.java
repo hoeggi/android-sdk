@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.scanner;
 
 import com.android.sensorbergVolley.VolleyError;
-import com.sensorberg.SensorbergApplication;
+import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
@@ -41,7 +41,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private final long cacheTtl;
 
     public BeaconActionHistoryPublisher(Transport transport, ResolverListener resolverListener, long cacheTtl, Clock clock, HandlerManager handlerManager) {
-        SensorbergApplication.getComponent().inject(this);
+        SensorbergApplicationBootstrapper.getComponent().inject(this);
 
         this.resolverListener = resolverListener;
         this.cacheTtl = cacheTtl;

@@ -4,7 +4,7 @@
     package="com.sensorberg.sdk">
 
     <application
-        android:name="com.sensorberg.SensorbergApplication">
+        android:name="com.sensorberg.sdk.SensorbergTestApplication">
         <receiver android:name="com.sensorberg.sdk.internal.TestGenericBroadcastReceiver"
             android:enabled="true">
             <intent-filter>

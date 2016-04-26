@@ -1,5 +1,6 @@
 package com.sensorberg;
 
+import com.sensorberg.di.Component;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
@@ -7,6 +8,7 @@ import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,12 +18,19 @@ import android.os.Messenger;
 
 import java.net.URL;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class SensorbergApplicationBootstrapper implements Platform.ForegroundStateListener {
 
     protected final Context context;
 
     protected boolean presentationDelegationEnabled;
     protected final Messenger messenger = new Messenger(new IncomingHandler());
+
+    @Getter
+    @Setter
+    private static Component component;
 
     class IncomingHandler extends Handler {
 
@@ -46,6 +55,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     public SensorbergApplicationBootstrapper(Context context, boolean enablePresentationDelegation) {
         this.context = context;
         this.presentationDelegationEnabled = enablePresentationDelegation;
+        setComponent(buildComponentAndInject(context));
     }
 
     public void activateService() {
@@ -139,5 +149,9 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_TOKEN);
         service.putExtra(SensorbergService.MSG_SET_API_TOKEN_TOKEN, newApiToken);
         context.startService(service);
+    }
+
+    public Component buildComponentAndInject(Context context) {
+        return Component.Initializer.init((Application) context.getApplicationContext());
     }
 }

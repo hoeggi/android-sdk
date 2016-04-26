@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.SensorbergApplication;
+import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
@@ -45,7 +45,7 @@ public class AndroidPlatform implements Platform {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
         this.context = context;
-        SensorbergApplication.getComponent().inject(this);
+        SensorbergApplicationBootstrapper.getComponent().inject(this);
 
         SugarContext.init(context);
         JodaTimeAndroid.init(context);

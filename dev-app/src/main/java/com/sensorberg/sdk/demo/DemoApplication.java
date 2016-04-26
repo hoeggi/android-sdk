@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.demo;
 
 import com.sensorberg.BackgroundDetector;
-import com.sensorberg.SensorbergApplication;
 import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
@@ -16,11 +15,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 import android.widget.Toast;
 
 @SuppressWarnings("javadoc")
-public class DemoApplication extends SensorbergApplication {
+public class DemoApplication extends MultiDexApplication {
 
     private static final String TAG = "DemoApplication";
 

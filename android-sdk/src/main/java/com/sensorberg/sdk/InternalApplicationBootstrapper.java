@@ -1,6 +1,6 @@
 package com.sensorberg.sdk;
 
-import com.sensorberg.SensorbergApplication;
+import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
@@ -12,12 +12,6 @@ import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-
-import android.content.ContentResolver;
-import android.content.Intent;
-import android.content.SyncStatusObserver;
-import android.util.Log;
-
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
@@ -35,9 +29,13 @@ import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.settings.SettingsUpdateCallback;
 import com.sensorberg.utils.ListUtils;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SyncStatusObserver;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import java.util.HashSet;
 import java.util.List;
@@ -86,7 +84,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     public InternalApplicationBootstrapper(Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager,
             Clock clk, BluetoothPlatform btPlatform, SharedPreferences preferences) {
         super(scheduler);
-        SensorbergApplication.getComponent().inject(this);
+        SensorbergApplicationBootstrapper.getComponent().inject(this);
 
         this.transport = transport;
         settingsManager = new SettingsManager(transport, preferences);

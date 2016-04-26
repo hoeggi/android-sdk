@@ -1,14 +1,14 @@
 package com.sensorberg.sdk;
 
-import com.sensorberg.SensorbergApplication;
+import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.AndroidPlatform;
+import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
-import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -185,7 +185,7 @@ public class SensorbergService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        SensorbergApplication.getComponent().inject(this);
+        SensorbergApplicationBootstrapper.getComponent().inject(this);
         platform = new AndroidPlatform(getApplicationContext());
         Logger.log.logServiceState("onCreate");
         JodaTimeAndroid.init(this);
