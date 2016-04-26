@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
@@ -11,13 +10,14 @@ import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
+import com.sensorberg.sdk.settings.SettingsManager;
 
 import android.content.Context;
 import android.os.Message;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import lombok.Setter;
 
 public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.MessageHandlerCallback {
 
@@ -28,22 +28,22 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private static final int MSG_MARK_ACTIONS_AS_SENT = 5;
     private static final int MSG_DELETE_ALL_DATA = 6;
 
-    @Inject
     Context context;
 
     Clock clock;
 
     private final RunLoop runloop;
+
     private final Transport transport;
 
-    private final ResolverListener resolverListener;
-    private final long cacheTtl;
+    @Setter
+    private ResolverListener resolverListener;
 
-    public BeaconActionHistoryPublisher(Transport transport, ResolverListener resolverListener, long cacheTtl, Clock clock, HandlerManager handlerManager) {
-        SensorbergApplicationBootstrapper.getComponent().inject(this);
+    private final SettingsManager settingsManager;
 
-        this.resolverListener = resolverListener;
-        this.cacheTtl = cacheTtl;
+    public BeaconActionHistoryPublisher(Context ctx, Transport transport, SettingsManager settingsManager, Clock clock, HandlerManager handlerManager) {
+        context = ctx;
+        this.settingsManager = settingsManager;
         this.transport = transport;
         this.clock = clock;
         runloop = handlerManager.getBeaconPublisherRunLoop(this);
@@ -69,11 +69,11 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
             case MSG_MARK_SCANS_AS_SENT:
                 //noinspection unchecked -> see useage of MSG_MARK_SCANS_AS_SENT
                 List<SugarScan> scans = (List<SugarScan>) queueEvent.obj;
-                SugarScan.maskAsSent(scans, now, cacheTtl);
+                SugarScan.maskAsSent(scans, now, settingsManager.getCacheTtl());
                 break;
             case MSG_MARK_ACTIONS_AS_SENT:
                 List<SugarAction> actions = (List<SugarAction>) queueEvent.obj;
-                SugarAction.markAsSent(actions, now, cacheTtl);
+                SugarAction.markAsSent(actions, now, settingsManager.getCacheTtl());
                 break;
             case MSG_PUBLISH_HISTORY:
                 publishHistorySynchronously();

@@ -23,7 +23,9 @@ import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
+import com.sensorberg.sdk.scanner.BeaconActionHistoryPublisher;
 import com.sensorberg.sdk.settings.DefaultSettings;
+import com.sensorberg.sdk.settings.SettingsManager;
 
 import android.app.AlarmManager;
 import android.app.Application;
@@ -167,5 +169,21 @@ public class ProvidersModule {
                 .registerTypeAdapter(SugarScan.class, new SugarScan.SugarScanObjectTypeAdapter())
                 .registerTypeAdapter(SugarAction.class, new SugarAction.SugarActionTypeAdapter())
                 .create();
+    }
+
+    @Provides
+    @Named("realBeaconActionHistoryPublisher")
+    @Singleton
+    public BeaconActionHistoryPublisher provideBeaconActionHistoryPublisher(Context context, @Named("realTransport") Transport transport,
+            @Named("realSettingsManager") SettingsManager settingsManager, @Named("realClock") Clock clock,
+            @Named("realHandlerManager") HandlerManager handlerManager) {
+        return new BeaconActionHistoryPublisher(context, transport, settingsManager, clock, handlerManager);
+    }
+
+    @Provides
+    @Named("realSettingsManager")
+    @Singleton
+    public SettingsManager provideSettingsManager(@Named("realTransport") Transport transport, SharedPreferences sharedPreferences) {
+        return new SettingsManager(transport, sharedPreferences);
     }
 }
