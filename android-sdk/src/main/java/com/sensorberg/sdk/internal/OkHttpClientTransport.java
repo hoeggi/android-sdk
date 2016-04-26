@@ -53,7 +53,6 @@ public class OkHttpClientTransport implements Transport {
     private String apiToken;
 
     private static final String INSTALLATION_IDENTIFIER = "X-iid";
-    private static final String ADVERTISING_IDENTIFIER = "X-aid";
 
     public OkHttpClientTransport(Platform platform, Settings settings) {
         this.platform = platform;
