@@ -5,8 +5,6 @@ import com.sensorberg.sdk.BuildConfig;
 import android.net.Uri;
 import android.os.Build;
 
-import java.net.URL;
-
 public class URLFactory {
 
     private static final String PRODUCTION_BASE_URL     = "connect.sensorberg.com";
@@ -58,10 +56,10 @@ public class URLFactory {
         return previousConf;
     }
 
-    public static Conf switchToMockEnvironment(URL url) {
+    public static Conf switchToMockEnvironment(Uri url) {
         Conf previousConf = new Conf(BASE_URL, SCHEME, customResolverURL);
         BASE_URL = url.getHost() + (url.getPort() != -1 ? ":" + url.getPort() : "");
-        SCHEME = url.getProtocol();
+        SCHEME = url.getScheme();
         customResolverURL = null;
         return previousConf;
     }

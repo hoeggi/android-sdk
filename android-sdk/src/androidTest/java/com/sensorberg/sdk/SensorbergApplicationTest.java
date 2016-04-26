@@ -7,10 +7,10 @@ import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
 
 import android.app.Application;
+import android.net.Uri;
 import android.test.ApplicationTestCase;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +48,7 @@ public abstract class SensorbergApplicationTest extends ApplicationTestCase<Appl
         server = new MockWebServer();
         enqueue(rawRequestsResourceIds);
         server.start();
-        previousConfiguration = URLFactory.switchToMockEnvironment(new URL(server.getHostName()));
+        previousConfiguration = URLFactory.switchToMockEnvironment(Uri.parse("https://test-resolver.sensorberg.com/layout/"));
     }
 
     public void enqueue(int... rawRequestsResourceIds) throws IOException, JSONException {
