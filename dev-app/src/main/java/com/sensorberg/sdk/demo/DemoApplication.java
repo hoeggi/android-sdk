@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;
@@ -18,6 +21,8 @@ import com.sensorberg.sdk.bootstrapper.BackgroundDetector;
 import com.sensorberg.sdk.bootstrapper.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.testApp.BuildConfig;
 import com.sensorberg.sdk.resolver.BeaconEvent;
+
+import java.io.IOException;
 
 @SuppressWarnings("javadoc")
 public class DemoApplication extends Application
@@ -55,6 +60,33 @@ public class DemoApplication extends Application
 
         detector = new BackgroundDetector(boot);
         registerActivityLifecycleCallbacks(detector);
+
+        //consider this a bad sample, you may want to use another threading model, AsyncTask or something
+        // similar. This part is your responsibility.
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long timeBefore = System.currentTimeMillis();
+                try {
+                    AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
+                    if (info == null || info.getId() == null){
+                        Logger.log.logError("AdvertisingIdClient.getAdvertisingIdInfo returned null");
+                        return;
+                    }
+                    boot.setAdvertisingIdentifier(info.getId());
+                } catch (IOException e) {
+                    Logger.log.logError("could not fetch the advertising identifier beacuse of an IO Exception" , e);
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    Logger.log.logError("play services not available", e);
+                } catch (GooglePlayServicesRepairableException e) {
+                    Logger.log.logError("play services need repairing", e);
+                } catch (Exception e){
+                    Logger.log.logError("could not fetch the advertising identifier beacuse of an unknown error" , e);
+                }
+                Logger.log.verbose("fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
+
+            }
+        }).start();
 	}
 
     public void showAlert(Action action, Integer trigger) {
