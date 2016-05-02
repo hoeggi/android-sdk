@@ -4,9 +4,12 @@ import com.sensorberg.di.Component;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
-import com.sensorberg.sdk.internal.AndroidPlatform;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorbergorm.SugarContext;
+
+import net.danlew.android.joda.JodaTimeAndroid;
 
 import android.app.Application;
 import android.content.Context;
@@ -17,6 +20,9 @@ import android.os.Message;
 import android.os.Messenger;
 
 import java.net.URL;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +38,11 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     @Getter
     @Setter
     private static Component component;
+
+    @Inject
+    @Named("androidBluetoothPlatform")
+    BluetoothPlatform bluetoothPlatform;
+
 
     class IncomingHandler extends Handler {
 
@@ -57,6 +68,10 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         this.context = context;
         this.presentationDelegationEnabled = enablePresentationDelegation;
         setComponent(buildComponentAndInject(context));
+        getComponent().inject(this);
+
+        SugarContext.init(context);
+        JodaTimeAndroid.init(context);
     }
 
     public void activateService() {
@@ -64,7 +79,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     public void activateService(String apiKey) {
-        if (new AndroidPlatform(context).isBluetoothLowEnergySupported()) {
+        if (bluetoothPlatform.isBluetoothLowEnergySupported()) {
             Intent service = new Intent(context, SensorbergService.class);
             service.putExtra(SensorbergService.EXTRA_START_SERVICE, 1);
             if (apiKey != null) {

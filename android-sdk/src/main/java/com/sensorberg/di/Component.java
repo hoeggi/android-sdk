@@ -1,5 +1,6 @@
 package com.sensorberg.di;
 
+import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.InternalApplicationBootstrapper;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.AndroidPlatform;
@@ -26,6 +27,8 @@ public interface Component {
     void inject(SensorbergService sensorbergService);
 
     void inject(BeaconMap beaconMap);
+
+    void inject(SensorbergApplicationBootstrapper sensorbergApplicationBootstrapper);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

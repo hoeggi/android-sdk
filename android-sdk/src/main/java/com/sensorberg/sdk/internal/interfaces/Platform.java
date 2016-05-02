@@ -31,11 +31,4 @@ public interface Platform {
         void hostApplicationInForeground();
     }
 
-    /**
-     * Returns a flag indicating whether Bluetooth is supported.
-     *
-     * @return a flag indicating whether Bluetooth is supported
-     */
-    boolean isBluetoothLowEnergySupported(); //TODO remove after integrating Bootstrapper
-
 }
