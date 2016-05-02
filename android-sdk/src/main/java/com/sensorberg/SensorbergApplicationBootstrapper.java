@@ -5,7 +5,7 @@ import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.AndroidPlatform;
-import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 
 import android.app.Application;

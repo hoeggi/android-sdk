@@ -3,7 +3,7 @@ package com.sensorberg.sdk;
 import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.AndroidPlatform;
-import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;

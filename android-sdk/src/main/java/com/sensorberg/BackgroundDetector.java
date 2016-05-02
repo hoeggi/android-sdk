@@ -1,6 +1,6 @@
 package com.sensorberg;
 
-import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
