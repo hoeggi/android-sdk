@@ -1,4 +1,4 @@
-package com.sensorberg.sdk.internal.transport;
+package com.sensorberg.sdk.internal.transport.interfaces;
 
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.internal.transport.model.SettingsResponse;

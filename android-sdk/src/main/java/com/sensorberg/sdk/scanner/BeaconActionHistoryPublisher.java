@@ -5,7 +5,7 @@ import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.RunLoop;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportHistoryCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;

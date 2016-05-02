@@ -1,14 +1,12 @@
 package com.sensorberg.sdk.internal.transport;
 
-import com.google.gson.Gson;
-
 import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
-import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Clock;
-import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportHistoryCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.internal.transport.model.SettingsResponse;
 import com.sensorberg.sdk.model.server.BaseResolveResponse;
@@ -19,141 +17,42 @@ import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 
-import android.content.Context;
+import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.Pair;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Setter;
-import okhttp3.Cache;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
-import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
 
-public class RetrofitApiTransport implements Transport,
-        PlatformIdentifier.DeviceInstallationIdentifierChangeListener,
-        PlatformIdentifier.AdvertiserIdentifierChangeListener {
-
-    private static final int CONNECTION_TIMEOUT = 30; //seconds
-
-    private static final long HTTP_RESPONSE_DISK_CACHE_MAX_SIZE = 5 * 1024 * 1024; //5MB
-
-    private final Gson mGson;
-
-    private final PlatformIdentifier mPlatformIdentifier;
+public class RetrofitApiTransport implements Transport {
 
     private final Clock mClock;
 
-    private final boolean mShouldUseSyncClient;
-
-    private Context mContext;
-
-    private HttpLoggingInterceptor.Level mApiServiceLogLevel = HttpLoggingInterceptor.Level.NONE;
-
-    private RetrofitApiService mApiService;
+    private RetrofitApiServiceImpl apiService;
 
     @Setter
     private BeaconHistoryUploadIntervalListener beaconHistoryUploadIntervalListener = BeaconHistoryUploadIntervalListener.NONE;
-
-    private String mApiToken;
 
     private ProximityUUIDUpdateHandler mProximityUUIDUpdateHandler = ProximityUUIDUpdateHandler.NONE;
 
     private BeaconReportHandler mBeaconReportHandler;
 
-    public RetrofitApiTransport(Context context, Gson gson, Clock clk, PlatformIdentifier platformId, boolean useSyncClient) {
-        mContext = context;
-        mGson = gson;
-        mApiService = getApiService();
-        mPlatformIdentifier = platformId;
-
+    public RetrofitApiTransport(RetrofitApiServiceImpl retrofitApiService, Clock clk) {
+        apiService = retrofitApiService;
         mClock = clk;
-        mShouldUseSyncClient = useSyncClient;
-
-        platformId.addAdvertiserIdentifierChangeListener(this);
-        platformId.addDeviceInstallationIdentifierChangeListener(this);
     }
 
-    private RetrofitApiService getApiService() {
-        Retrofit restAdapter = new Retrofit.Builder()
-                .baseUrl(URLFactory.getResolveURLString())
-                .client(getOkHttpClient(mContext))
-                .addConverterFactory(GsonConverterFactory.create(mGson))
-                .build();
-
-        return restAdapter.create(RetrofitApiService.class);
-    }
-
-    Interceptor headerAuthorizationInterceptor = new Interceptor() {
-        @Override
-        public okhttp3.Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-
-            Headers.Builder headersBuilder = request.headers()
-                    .newBuilder()
-                    .add(HEADER_USER_AGENT, mPlatformIdentifier.getUserAgentString())
-                    .add(HEADER_INSTALLATION_IDENTIFIER, mPlatformIdentifier.getDeviceInstallationIdentifier());
-
-            if (mPlatformIdentifier.getAdvertiserIdentifier() != null) {
-                headersBuilder.add(HEADER_ADVERTISER_IDENTIFIER, mPlatformIdentifier.getAdvertiserIdentifier());
-            }
-
-            if (mApiToken != null) {
-                headersBuilder
-                        .add(HEADER_AUTHORIZATION, mApiToken)
-                        .add(HEADER_XAPIKEY, mApiToken);
-            }
-
-            request = request.newBuilder().headers(headersBuilder.build()).build();
-            return chain.proceed(request);
-        }
-    };
-
-    private OkHttpClient getOkHttpClient(Context context) {
-        OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder();
-
-        okClientBuilder.addInterceptor(headerAuthorizationInterceptor);
-
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(mApiServiceLogLevel);
-        okClientBuilder.addInterceptor(httpLoggingInterceptor);
-
-        final File baseDir = context.getCacheDir();
-        if (baseDir != null) {
-            final File cacheDir = new File(baseDir, "HttpResponseCache");
-            okClientBuilder.cache(new Cache(cacheDir, HTTP_RESPONSE_DISK_CACHE_MAX_SIZE));
-        }
-
-        okClientBuilder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS);
-        okClientBuilder.readTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS);
-        okClientBuilder.writeTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS);
-
-        return okClientBuilder.build();
-    }
-
-    @Override
-    public void advertiserIdentifierChanged(String advertiserIdentifier) {
-        //we don't care, it's always dynamic now
-    }
-
-    @Override
-    public void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier) {
-        //we don't care, it's always dynamic now
+    private RetrofitApiServiceImpl getApiService() {
+        return apiService;
     }
 
     @Override
@@ -175,31 +74,16 @@ public class RetrofitApiTransport implements Transport,
         String networkInfo = NetworkInfoBroadcastReceiver.latestNetworkInfo != null
                 ? NetworkInfoBroadcastReceiver.getNetworkInfoString() : "";
 
-        Call<ResolveResponse> call = mApiService
+        Call<ResolveResponse> call = getApiService()
                 .getBeacon(getResolveURLString(), resolutionConfiguration.getScanEvent().getBeaconId().getBid(), networkInfo);
 
         call.enqueue(new Callback<ResolveResponse>() {
             @Override
             public void onResponse(Call<ResolveResponse> call, Response<ResolveResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    boolean reportImmediately = false;
-                    List<ResolveAction> resolveActions = response.body().resolve(resolutionConfiguration.getScanEvent(), mClock.now());
-                    for (ResolveAction resolveAction : resolveActions) {
-                        reportImmediately |= resolveAction.reportImmediately;
-                    }
-                    List<BeaconEvent> beaconEvents = map(resolveActions, ResolveAction.BEACON_EVENT_MAPPER);
-                    for (BeaconEvent beaconEvent : beaconEvents) {
-                        beaconEvent.setBeaconId(resolutionConfiguration.getScanEvent().getBeaconId());
-                    }
-                    beaconResponseHandler.onSuccess(beaconEvents);
-                    if (reportImmediately) {
-                        mBeaconReportHandler.reportImmediately();
-                    }
-                    mProximityUUIDUpdateHandler.proximityUUIDListUpdated(response.body().getAccountProximityUUIDs());
-                    if (response.body().reportTriggerSeconds != null) {
-                        beaconHistoryUploadIntervalListener
-                                .historyUploadIntervalChanged(TimeUnit.SECONDS.toMillis(response.body().reportTriggerSeconds));
-                    }
+                    Pair<Boolean, List<BeaconEvent>> beaconEventPair = checkSuccessfulBeaconResponse(resolutionConfiguration, response.body());
+                    beaconResponseHandler.onSuccess(beaconEventPair.second);
+                    checkShouldCallBeaconResponseHandlers(beaconEventPair.first, response.body());
                 } else {
                     beaconResponseHandler.onFailure(new Throwable("No Content, Invalid Api Key"));
                 }
@@ -210,17 +94,49 @@ public class RetrofitApiTransport implements Transport,
                 beaconResponseHandler.onFailure(t);
             }
         });
+    }
 
+    @VisibleForTesting
+    private void checkShouldCallBeaconResponseHandlers(boolean shouldReportImmediately, ResolveResponse successfulResponse) {
+        if (shouldReportImmediately) {
+            mBeaconReportHandler.reportImmediately();
+        }
+
+        mProximityUUIDUpdateHandler.proximityUUIDListUpdated(successfulResponse.getAccountProximityUUIDs());
+
+        if (successfulResponse.reportTriggerSeconds != null) {
+            beaconHistoryUploadIntervalListener
+                    .historyUploadIntervalChanged(TimeUnit.SECONDS.toMillis(successfulResponse.reportTriggerSeconds));
+        }
+    }
+
+    @VisibleForTesting
+    private Pair<Boolean, List<BeaconEvent>> checkSuccessfulBeaconResponse(ResolutionConfiguration resolutionConfiguration,
+            ResolveResponse successfulResponse) {
+
+        boolean reportImmediately = false;
+
+        List<ResolveAction> resolveActions = successfulResponse.resolve(resolutionConfiguration.getScanEvent(), mClock.now());
+        for (ResolveAction resolveAction : resolveActions) {
+            reportImmediately |= resolveAction.reportImmediately;
+        }
+
+        List<BeaconEvent> beaconEvents = map(resolveActions, ResolveAction.BEACON_EVENT_MAPPER);
+        for (BeaconEvent beaconEvent : beaconEvents) {
+            beaconEvent.setBeaconId(resolutionConfiguration.getScanEvent().getBeaconId());
+        }
+
+        return new Pair<Boolean, List<BeaconEvent>>(reportImmediately, beaconEvents);
     }
 
     @Override
     public void setApiToken(String apiToken) {
-        mApiToken = apiToken;
+        getApiService().setApiToken(apiToken);
     }
 
     @Override
     public void loadSettings(final TransportSettingsCallback transportSettingsCallback) {
-        Call<SettingsResponse> call = mApiService.getSettings(getSettingsURLString(mApiToken));
+        Call<SettingsResponse> call = getApiService().getSettings();
 
         call.enqueue(new Callback<SettingsResponse>() {
             @Override
@@ -251,7 +167,7 @@ public class RetrofitApiTransport implements Transport,
     public void publishHistory(final List<SugarScan> scans, final List<SugarAction> actions, final TransportHistoryCallback callback) {
 
         HistoryBody body = new HistoryBody(scans, actions, mClock);
-        Call<ResolveResponse> call = mApiService.publishHistory(getResolveURLString(), body);
+        Call<ResolveResponse> call = getApiService().publishHistory(getResolveURLString(), body);
 
         call.enqueue(new Callback<ResolveResponse>() {
             @Override
@@ -274,7 +190,7 @@ public class RetrofitApiTransport implements Transport,
     @Override
     public void updateBeaconLayout() {
 
-        Call<BaseResolveResponse> call = mApiService.updateBeaconLayout(getResolveURLString());
+        Call<BaseResolveResponse> call = getApiService().updateBeaconLayout(getResolveURLString());
 
         call.enqueue(new Callback<BaseResolveResponse>() {
             @Override
@@ -295,18 +211,7 @@ public class RetrofitApiTransport implements Transport,
 
     @Override
     public void setLoggingEnabled(boolean enabled) {
-        synchronized (mGson) {
-
-            if (enabled) {
-                mApiServiceLogLevel = HttpLoggingInterceptor.Level.BODY;
-            } else {
-                mApiServiceLogLevel = HttpLoggingInterceptor.Level.NONE;
-            }
-
-            if (mApiService != null) {
-                mApiService = getApiService();
-            }
-        }
+        getApiService().setLoggingEnabled(enabled);
     }
 
 }

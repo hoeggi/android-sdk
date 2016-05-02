@@ -19,6 +19,7 @@ import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
 import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
@@ -155,9 +156,8 @@ public class ProvidersModule {
     @Provides
     @Named("realTransport")
     @Singleton
-    public Transport provideRealTransport(Context context, Gson gson, @Named("realClock") Clock clock,
-            @Named("androidPlatformIdentifier") PlatformIdentifier platformIdentifier) {
-        return new RetrofitApiTransport(context, gson, clock, platformIdentifier, false);
+    public Transport provideRealTransport(@Named("realRetrofitApiService") RetrofitApiServiceImpl retrofitApiService, @Named("realClock") Clock clock) {
+        return new RetrofitApiTransport(retrofitApiService, clock);
     }
 
     @Provides
@@ -185,5 +185,12 @@ public class ProvidersModule {
     @Singleton
     public SettingsManager provideSettingsManager(@Named("realTransport") Transport transport, SharedPreferences sharedPreferences) {
         return new SettingsManager(transport, sharedPreferences);
+    }
+
+    @Provides
+    @Named("realRetrofitApiService")
+    @Singleton
+    public RetrofitApiServiceImpl provideRealRetrofitApiService(Context context, Gson gson, @Named("androidPlatformIdentifier") PlatformIdentifier platformIdentifier) {
+        return new RetrofitApiServiceImpl(context, gson, platformIdentifier);
     }
 }

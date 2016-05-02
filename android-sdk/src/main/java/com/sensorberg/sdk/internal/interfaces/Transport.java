@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.internal.interfaces;
 
-import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
-import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportHistoryCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
