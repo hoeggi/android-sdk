@@ -71,7 +71,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
         });
 
         RecordedRequest request = waitForRequests(1).get(0);
-        Assertions.assertThat(request.getHeader("User-Agent")).isEqualTo(testPlatformIdentifier.getUserAgentString());
+        Assertions.assertThat(request.getHeader(Transport.HEADER_USER_AGENT)).isEqualTo(testPlatformIdentifier.getUserAgentString());
     }
 
     public void testInstallationIdentifierIsSetInVolleyOkHttpHeader() throws Exception {
@@ -95,12 +95,12 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
         });
 
         RecordedRequest request = waitForRequests(1).get(0);
-        Assertions.assertThat(request.getHeader("X-iid")).isEqualTo(testPlatformIdentifier.getDeviceInstallationIdentifier());
+        Assertions.assertThat(request.getHeader(Transport.HEADER_INSTALLATION_IDENTIFIER)).isEqualTo(testPlatformIdentifier.getDeviceInstallationIdentifier());
     }
 
     public void testAdvertiserIdentifierIsSetInVolleyOkHttpHeader() throws Exception {
 
-        server.enqueue(new MockResponse().setBody("{}"));
+        server.enqueue(new MockResponse().setBody("{}").setResponseCode(200));
         transport.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
@@ -119,6 +119,6 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
         });
 
         RecordedRequest request = waitForRequests(1).get(0);
-        Assertions.assertThat(request.getHeader("X-aid")).isEqualTo(testPlatformIdentifier.getAdvertiserIdentifier());
+        Assertions.assertThat(request.getHeader(Transport.HEADER_ADVERTISER_IDENTIFIER)).isEqualTo(testPlatformIdentifier.getAdvertiserIdentifier());
     }
 }
