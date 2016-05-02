@@ -144,24 +144,6 @@ public class TransportShould extends SensorbergApplicationTest {
         });
     }
 
-    // https://staging-manage.sensorberg.com/#/campaign/edit/29fa875c-66db-4957-be65-abc83f35538d
-    // https://manage.sensorberg.com/#/campaign/edit/0ec64004-18a5-41df-a5dc-810d395dec83
-    public void test_should_be_synchronous() {
-        final CountDownLatch latch = new CountDownLatch(1);
-        tested.getBeacon(new ResolutionConfiguration(scanEvent), new BeaconResponseHandler() {
-            @Override
-            public void onSuccess(List<BeaconEvent> foundBeaconEvents) {
-                latch.countDown();
-            }
-
-            @Override
-            public void onFailure(Throwable cause) {
-                latch.countDown();
-            }
-        });
-        Assertions.assertThat(latch.getCount()).isEqualTo(0);
-    }
-
     public void test_a_settings_request() {
         tested.loadSettings(new TransportSettingsCallback() {
             @Override
