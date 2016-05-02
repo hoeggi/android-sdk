@@ -1,12 +1,15 @@
 package com.sensorberg.sdk.di;
 
+import com.google.gson.Gson;
+
 import com.sensorberg.di.ProvidersModule;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
@@ -102,4 +105,12 @@ public class TestProvidersModule extends ProvidersModule {
     public SettingsManager provideDummyTransportSettingsManager(@Named("dumbSuccessTransport") Transport transport, SharedPreferences sharedPreferences) {
         return new SettingsManager(transport, sharedPreferences);
     }
+
+    @Provides
+    @Named("successfulRetrofitApiService")
+    @Singleton
+    public RetrofitApiServiceImpl provideSuccessfulRetrofitApiService(Context context, Gson gson, @Named("testPlatformIdentifier") PlatformIdentifier platformIdentifier) {
+        return new RetrofitApiServiceImpl(context, gson, platformIdentifier);
+    }
+
 }
