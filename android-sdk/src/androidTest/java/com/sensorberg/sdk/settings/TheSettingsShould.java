@@ -7,7 +7,8 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 
 import junit.framework.Assert;
@@ -36,6 +37,10 @@ public class TheSettingsShould extends AndroidTestCase {
     @Inject
     Gson gson;
 
+    @Inject
+    @Named("realRetrofitApiService")
+    RetrofitApiServiceImpl realRetrofitApiService;
+
     SettingsManager tested;
 
     SettingsManager untouched;
@@ -49,7 +54,7 @@ public class TheSettingsShould extends AndroidTestCase {
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        Transport transport = new RetrofitApiTransport(getContext(), gson, clock, testPlatformIdentifier, true);
+        Transport transport = new RetrofitApiTransport(realRetrofitApiService, clock);
         transport.setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
         tested = new SettingsManager(transport, testedSharedPreferences);

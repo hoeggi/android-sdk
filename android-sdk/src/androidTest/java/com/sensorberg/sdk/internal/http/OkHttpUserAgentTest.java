@@ -7,9 +7,10 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
-import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
@@ -23,7 +24,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.mockito.Mockito.spy;
 
-public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
+public class OkHttpUserAgentTest extends SensorbergApplicationTest {
 
     @Inject
     @Named("noClock")
@@ -34,9 +35,14 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
     PlatformIdentifier testPlatformIdentifier;
 
     @Inject
+    @Named("realRetrofitApiService")
+    RetrofitApiServiceImpl realRetrofitApiService;
+
+    @Inject
     Gson gson;
 
     private Transport transport;
+
     TestPlatform plattform;
 
     @Override
@@ -46,7 +52,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         plattform = spy(new TestPlatform());
 
-        transport = new RetrofitApiTransport(getContext(), gson, clock, testPlatformIdentifier, true);
+        transport = new RetrofitApiTransport(realRetrofitApiService, clock);
         startWebserver();
     }
 
@@ -95,7 +101,8 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
         });
 
         RecordedRequest request = waitForRequests(1).get(0);
-        Assertions.assertThat(request.getHeader(Transport.HEADER_INSTALLATION_IDENTIFIER)).isEqualTo(testPlatformIdentifier.getDeviceInstallationIdentifier());
+        Assertions.assertThat(request.getHeader(Transport.HEADER_INSTALLATION_IDENTIFIER))
+                .isEqualTo(testPlatformIdentifier.getDeviceInstallationIdentifier());
     }
 
     public void testAdvertiserIdentifierIsSetInVolleyOkHttpHeader() throws Exception {

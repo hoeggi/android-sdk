@@ -9,14 +9,13 @@ import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
+import com.sensorbergorm.SugarContext;
 
 import org.fest.assertions.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import android.content.SharedPreferences;
-import android.support.test.runner.AndroidJUnit4;
 
 import java.util.Arrays;
 
@@ -28,8 +27,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-@RunWith(AndroidJUnit4.class)
-public class TheInternalApplicationBootstrapperShould {
+public class TheInternalApplicationBootstrapperShould extends SensorbergApplicationTest {
 
     private static final java.util.UUID UUID = java.util.UUID.randomUUID();
 
@@ -56,11 +54,19 @@ public class TheInternalApplicationBootstrapperShould {
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
-        SugarScan.deleteAll(SugarScan.class);
-        SugarAction.deleteAll(SugarAction.class);
+        SugarContext.init(getApplication());
 
-        tested = spy(new InternalApplicationBootstrapper(new DumbSucessTransport(), testServiceScheduler, testHandlerManager, testHandlerManager.getCustomClock(),
+        try {
+            SugarScan.deleteAll(SugarScan.class);
+            SugarAction.deleteAll(SugarAction.class);
+        } catch (Exception e) {
+            //do nothing, it will throw an exception if there's no databasase or table to delete data from
+        }
+
+        tested = spy(new InternalApplicationBootstrapper(new DumbSucessTransport(), testServiceScheduler, testHandlerManager,
+                testHandlerManager.getCustomClock(),
                 bluetoothPlatform, sharedPreferences));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
@@ -98,7 +104,7 @@ public class TheInternalApplicationBootstrapperShould {
         verify(tested, times(1)).presentBeaconEvent(any(BeaconEvent.class));
     }
 
-    public void test_should_return_the_sync_setting(){
+    public void test_should_return_the_sync_setting() {
         Assertions.assertThat(tested.isSyncEnabled()).isTrue();
     }
 }

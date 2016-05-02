@@ -6,7 +6,8 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
@@ -44,6 +45,11 @@ public class TheResolverShould extends AndroidTestCase {
     @Inject
     Gson gson;
 
+    @Inject
+    @Named("realRetrofitApiService")
+    RetrofitApiServiceImpl realRetrofitApiService;
+
+
     private Resolver testedWithFakeBackend;
 
     private static final ScanEvent SCANEVENT_1 = new ScanEvent.Builder()
@@ -61,8 +67,7 @@ public class TheResolverShould extends AndroidTestCase {
 
         testHandlerManager = new TestHandlerManager();
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
-        testTransport = new RetrofitApiTransport(getContext(), gson,
-                testHandlerManager.getCustomClock(), testPlatformIdentifier, true);
+        testTransport = new RetrofitApiTransport(realRetrofitApiService, testHandlerManager.getCustomClock());
         testTransport.setApiToken(TestConstants.API_TOKEN);
         testHandlerManager.getCustomClock().setNowInMillis(new DateTime(2015, 7, 7, 1, 1, 1).getMillis());
 

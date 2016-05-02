@@ -7,9 +7,10 @@ import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
-import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.test.R;
 
@@ -53,6 +54,10 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
     @Inject
     Gson gson;
 
+    @Inject
+    @Named("realRetrofitApiService")
+    RetrofitApiServiceImpl realRetrofitApiService;
+
     protected Transport tested;
 //    private OkHttpStack stack;
 //    private RequestQueue queue;
@@ -70,7 +75,7 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
 //        queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
 //        queue.start();
 
-        tested = new RetrofitApiTransport(getContext(), gson, clock, testPlatformIdentifier, true);
+        tested = new RetrofitApiTransport(realRetrofitApiService, clock);
         tested.setApiToken(TestConstants.API_TOKEN);
         startWebserver();
     }

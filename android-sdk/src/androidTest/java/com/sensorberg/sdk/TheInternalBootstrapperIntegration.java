@@ -6,9 +6,9 @@ import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
-import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
 import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.model.server.ResolveAction;
 import com.sensorberg.sdk.model.server.ResolveResponse;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
@@ -47,8 +47,8 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     TestHandlerManager testHandlerManager;
 
     @Inject
-    @Named("testPlatformIdentifier")
-    PlatformIdentifier testPlatformIdentifier;
+    @Named("realRetrofitApiService")
+    RetrofitApiServiceImpl realRetrofitApiService;
 
     @Inject
     @Named("testBluetoothPlatform")
@@ -116,11 +116,9 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        Transport transport = new RetrofitApiTransport(getContext(), gson, testHandlerManager.getCustomClock(),
-                testPlatformIdentifier, true);
+        Transport transport = new RetrofitApiTransport(realRetrofitApiService, testHandlerManager.getCustomClock());
         tested = new InternalApplicationBootstrapper(transport, testServiceScheduler, testHandlerManager,
-                testHandlerManager.getCustomClock(),
-                bluetoothPlatform, sharedPreferences);
+                testHandlerManager.getCustomClock(), bluetoothPlatform, sharedPreferences);
 
         broadcastReceiver = new TestGenericBroadcastReceiver();
 

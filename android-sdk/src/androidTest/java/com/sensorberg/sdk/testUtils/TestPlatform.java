@@ -2,7 +2,7 @@ package com.sensorberg.sdk.testUtils;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.Platform;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 
 import android.content.BroadcastReceiver;
@@ -44,11 +44,6 @@ public class TestPlatform implements Platform {
     @Override
     public void registerBroadcastReceiver(List<BroadcastReceiver> broadcastReceiver) {
         android.util.Log.e(TAG, "NOT IMPLEMENTED");
-    }
-
-    @Override
-    public boolean isBluetoothLowEnergySupported() {
-        return bluetoothPlatform.isBluetoothLowEnergySupported();
     }
 
     public void cleanUp() {

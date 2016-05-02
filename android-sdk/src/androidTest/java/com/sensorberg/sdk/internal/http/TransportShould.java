@@ -10,10 +10,11 @@ import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
 import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
-import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
-import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportHistoryCallback;
+import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
@@ -31,7 +32,6 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -70,6 +70,8 @@ public class TransportShould extends SensorbergApplicationTest {
 
     private BeaconHistoryUploadIntervalListener listener;
 
+    RetrofitApiServiceImpl mockRetrofitApiService;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -86,16 +88,16 @@ public class TransportShould extends SensorbergApplicationTest {
 
         listener = mock(BeaconHistoryUploadIntervalListener.class);
 
-        tested = new RetrofitApiTransport(getContext(), gson, clock, testPlatformIdentifier, true);
+        mockRetrofitApiService = mock(RetrofitApiServiceImpl.class);
+
+        tested = new RetrofitApiTransport(mockRetrofitApiService, clock);
         tested.setBeaconHistoryUploadIntervalListener(listener);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 
     public void test_should_forward_the_layout_upload_interval_to_the_settings() throws Exception {
         startWebserver(com.sensorberg.sdk.test.R.raw.resolve_resolve_with_report_trigger);
-        tested.getBeacon(new ResolutionConfiguration.Builder()
-                .withScanEvent(scanEvent)
-                .build(), BeaconResponseHandler.NONE);
+        tested.getBeacon(new ResolutionConfiguration(scanEvent), BeaconResponseHandler.NONE);
 
         waitForRequests(1);
         verify(listener).historyUploadIntervalChanged(1337L * 1000);
