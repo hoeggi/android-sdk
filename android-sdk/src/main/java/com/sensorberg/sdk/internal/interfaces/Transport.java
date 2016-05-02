@@ -10,7 +10,15 @@ import java.util.List;
 
 public interface Transport {
 
-    String ADVERTISING_IDENTIFIER = "X-aid";
+    String HEADER_INSTALLATION_IDENTIFIER = "X-iid";
+
+    String HEADER_ADVERTISER_IDENTIFIER = "X-aid";
+
+    String HEADER_USER_AGENT = "User-Agent";
+
+    String HEADER_AUTHORIZATION = "Authorization";
+
+    String HEADER_XAPIKEY = "X-Api-Key";
 
     interface ProximityUUIDUpdateHandler{
         ProximityUUIDUpdateHandler NONE = new ProximityUUIDUpdateHandler() {

@@ -53,16 +53,6 @@ public class RetrofitApiTransport implements Transport,
 
     private static final long HTTP_RESPONSE_DISK_CACHE_MAX_SIZE = 5 * 1024 * 1024; //5MB
 
-    private static final String HEADER_INSTALLATION_IDENTIFIER = "X-iid";
-
-    private static final String HEADER_ADVERTISER_IDENTIFIER = "X-aid";
-
-    private static final String HEADER_USER_AGENT = "User-Agent";
-
-    private static final String HEADER_AUTHORIZATION = "Authorization";
-
-    private static final String HEADER_XAPIKEY = "X-Api-Key";
-
     private final Gson mGson;
 
     private final PlatformIdentifier mPlatformIdentifier;
