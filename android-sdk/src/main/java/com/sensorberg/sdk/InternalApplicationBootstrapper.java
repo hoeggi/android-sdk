@@ -44,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import lombok.Getter;
+
 public class InternalApplicationBootstrapper extends MinimalBootstrapper
         implements ScannerListener, Transport.BeaconReportHandler, SyncStatusObserver, Transport.ProximityUUIDUpdateHandler {
 
@@ -281,6 +283,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         }
     }
 
+    @Getter
     ResolverListener resolverListener = new ResolverListener() {
         @Override
         public void onResolutionFailed(Resolution resolution, Throwable cause) {

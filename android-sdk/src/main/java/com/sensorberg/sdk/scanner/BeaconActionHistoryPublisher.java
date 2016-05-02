@@ -37,7 +37,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     private final Transport transport;
 
     @Setter
-    private ResolverListener resolverListener;
+    private ResolverListener resolverListener = ResolverListener.NONE;
 
     private final SettingsManager settingsManager;
 

@@ -9,22 +9,23 @@ import com.sensorberg.sdk.internal.transport.TransportHistoryCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
-import com.sensorberg.sdk.resolver.ResolverListener;
-import com.sensorberg.sdk.settings.DefaultSettings;
+import com.sensorberg.sdk.settings.SettingsManager;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import java.util.List;
-import static util.Verfier.hasSize;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static util.Verfier.hasSize;
 
 public class TheBeaconActionHistoryPublisherShould extends SensorbergApplicationTest {
 
@@ -35,6 +36,10 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
 
     private Transport transport;
 
+    @Inject
+    @Named("dummyTransportSettingsManager")
+    SettingsManager testSettingsManager;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -44,7 +49,8 @@ public class TheBeaconActionHistoryPublisherShould extends SensorbergApplication
         SugarAction.deleteAll(SugarAction.class);
         SugarScan.deleteAll(SugarScan.class);
         transport = mock(Transport.class);
-        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, DefaultSettings.DEFAULT_CACHE_TTL, testHandlerManager.getCustomClock(), testHandlerManager);
+        tested = new BeaconActionHistoryPublisher(getContext(), new DumbSucessTransport(), testSettingsManager, testHandlerManager.getCustomClock(),
+                testHandlerManager);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())

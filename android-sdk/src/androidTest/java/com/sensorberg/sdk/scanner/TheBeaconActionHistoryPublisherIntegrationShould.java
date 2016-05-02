@@ -6,8 +6,8 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.Transport;
-import com.sensorberg.sdk.resolver.ResolverListener;
-import com.sensorberg.sdk.settings.DefaultSettings;
+import com.sensorberg.sdk.settings.SettingsManager;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 
 import android.content.SharedPreferences;
 
@@ -24,7 +24,7 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
 
     @Inject
     @Named("realHandlerManager")
-    HandlerManager testHandleManager;
+    HandlerManager testHandlerManager;
 
     @Inject
     @Named("realClock")
@@ -37,6 +37,10 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
     @Named("realTransport")
     Transport transport;
 
+    @Inject
+    @Named("dummyTransportSettingsManager")
+    SettingsManager testSettingsManager;
+
     private ScanEvent SCAN_EVENT;
 
     private BeaconActionHistoryPublisher tested;
@@ -46,7 +50,8 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
         super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, DefaultSettings.DEFAULT_CACHE_TTL, clock, testHandleManager);
+        tested = new BeaconActionHistoryPublisher(getContext(), new DumbSucessTransport(), testSettingsManager, clock,
+                testHandlerManager);
 
         startWebserver();
         server.enqueue(new MockResponse().setBody("{}"));
