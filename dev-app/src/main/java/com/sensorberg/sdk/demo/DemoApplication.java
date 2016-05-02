@@ -58,7 +58,6 @@ public class DemoApplication extends MultiDexApplication {
             }
         };
         boot.activateService(API_KEY);
-        boot.hostApplicationInForeground();
 
         detector = new BackgroundDetector(boot);
         registerActivityLifecycleCallbacks(detector);
