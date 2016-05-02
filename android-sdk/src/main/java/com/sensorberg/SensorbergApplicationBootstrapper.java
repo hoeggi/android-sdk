@@ -158,6 +158,13 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         context.startService(service);
     }
 
+    public void setLogging(boolean enableLogging) {
+        Intent service = new Intent(context, SensorbergService.class);
+        int message = enableLogging ? SensorbergService.MSG_TYPE_ENABLE_LOGGING : SensorbergService.MSG_TYPE_DISABLE_LOGGING;
+        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, message);
+        context.startService(service);
+    }
+
     public Component buildComponentAndInject(Context context) {
         return Component.Initializer.init((Application) context.getApplicationContext());
     }
