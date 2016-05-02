@@ -3,7 +3,7 @@ package com.sensorberg.sdk.settings;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
 
 import android.content.SharedPreferences;

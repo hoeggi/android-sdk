@@ -1,5 +1,7 @@
-package com.sensorberg.sdk.internal.interfaces;
+package com.sensorberg.sdk.internal.transport.interfaces;
 
+import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
+import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.transport.interfaces.TransportHistoryCallback;
 import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
