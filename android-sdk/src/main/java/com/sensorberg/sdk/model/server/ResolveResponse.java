@@ -72,16 +72,18 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
     }
 
 
-    private ResolveResponse(List<String> accountProximityUUIDs, List<ResolveAction> actions, List<ResolveAction> instantActions) {
+    private ResolveResponse(List<String> accountProximityUUIDs, List<ResolveAction> actions, List<ResolveAction> instantActions, Long reportTriggerSeconds) {
         super(accountProximityUUIDs);
         this.actions = actions;
         this.instantActions = instantActions;
+        this.reportTriggerSeconds = reportTriggerSeconds;
     }
 
     public static class Builder {
         List<String> accountProximityUUIDs = Collections.emptyList();
         List<ResolveAction> actions = Collections.emptyList();
         List<ResolveAction> instantActions = Collections.emptyList();
+        Long reportTrigger = 0L;
 
         public Builder() {
         }
@@ -101,9 +103,13 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
             return this;
         }
 
+        public Builder withReportTrigger(long reportTrigger) {
+            this.reportTrigger = reportTrigger;
+            return this;
+        }
 
         public ResolveResponse build() {
-            return new ResolveResponse(accountProximityUUIDs, actions, instantActions);
+            return new ResolveResponse(accountProximityUUIDs, actions, instantActions, reportTrigger);
         }
     }
 }
