@@ -111,10 +111,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
-    jacoco {
-        version = '0.6.2.201302030002'
-    }
-
     dexOptions {
         javaMaxHeapSize "4g"
     }
