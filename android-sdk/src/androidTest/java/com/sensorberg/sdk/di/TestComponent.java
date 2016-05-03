@@ -6,8 +6,8 @@ import com.sensorberg.sdk.TheInternalBootstrapperIntegration;
 import com.sensorberg.sdk.TheSensorbergServiceShould;
 import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
+import com.sensorberg.sdk.internal.http.ApiServiceShould;
 import com.sensorberg.sdk.internal.http.OkHttpClientTransportWithRetries;
-import com.sensorberg.sdk.internal.http.OkHttpUserAgentTest;
 import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettings;
 import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettingsWithEtags;
 import com.sensorberg.sdk.internal.http.TransportShould;
@@ -91,8 +91,6 @@ public interface TestComponent extends Component {
 
     void inject(OkHttpClientTransportWithRetries okHttpClientTransportWithRetries);
 
-    void inject(OkHttpUserAgentTest okHttpUserAgentTest);
-
     void inject(OkVolleyShouldCacheTheSettings okVolleyShouldCacheTheSettings);
 
     void inject(OkVolleyShouldCacheTheSettingsWithEtags okVolleyShouldCacheTheSettingsWithEtags);
@@ -110,6 +108,8 @@ public interface TestComponent extends Component {
     void inject(TheSugarScanobjectShould theSugarScanobjectShould);
 
     void inject(TheResolveResponseShould theResolveResponseShould);
+
+    void inject(ApiServiceShould apiServiceShould);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {
