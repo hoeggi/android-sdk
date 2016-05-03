@@ -12,6 +12,7 @@ import com.sensorberg.sdk.internal.AndroidPlatformIdentifier;
 import com.sensorberg.sdk.internal.AndroidServiceScheduler;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
+import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
@@ -168,6 +169,7 @@ public class ProvidersModule {
                 .registerTypeAdapter(Date.class, ISO8601TypeAdapter.DATE_ADAPTER)
                 .registerTypeAdapter(SugarScan.class, new SugarScan.SugarScanObjectTypeAdapter())
                 .registerTypeAdapter(SugarAction.class, new SugarAction.SugarActionTypeAdapter())
+                .setLenient()
                 .create();
     }
 
@@ -191,6 +193,6 @@ public class ProvidersModule {
     @Named("realRetrofitApiService")
     @Singleton
     public RetrofitApiServiceImpl provideRealRetrofitApiService(Context context, Gson gson, @Named("androidPlatformIdentifier") PlatformIdentifier platformIdentifier) {
-        return new RetrofitApiServiceImpl(context, gson, platformIdentifier);
+        return new RetrofitApiServiceImpl(context, gson, platformIdentifier, URLFactory.getResolveURLString());
     }
 }

@@ -2,10 +2,9 @@ package com.sensorberg.sdk.internal.transport;
 
 import com.google.gson.Gson;
 
-import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.interfaces.RetrofitApiService;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.internal.transport.model.SettingsResponse;
 import com.sensorberg.sdk.model.server.BaseResolveResponse;
@@ -48,6 +47,8 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
 
     private final PlatformIdentifier mPlatformIdentifier;
 
+    private final String mBaseUrl;
+
     @Setter
     private String mApiToken;
 
@@ -55,10 +56,11 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
 
     private RetrofitApiService mApiService;
 
-    public RetrofitApiServiceImpl(Context ctx, Gson gson, PlatformIdentifier platformId) {
+    public RetrofitApiServiceImpl(Context ctx, Gson gson, PlatformIdentifier platformId, String baseUrl) {
         mContext = ctx;
         mGson = gson;
         mPlatformIdentifier = platformId;
+        mBaseUrl = baseUrl;
 
         platformId.addAdvertiserIdentifierChangeListener(this);
         platformId.addDeviceInstallationIdentifierChangeListener(this);
@@ -67,7 +69,7 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
     private RetrofitApiService getApiService() {
         if (mApiService == null) {
             Retrofit restAdapter = new Retrofit.Builder()
-                    .baseUrl(URLFactory.getResolveURLString())
+                    .baseUrl(mBaseUrl)
                     .client(getOkHttpClient(mContext))
                     .addConverterFactory(GsonConverterFactory.create(mGson))
                     .build();
@@ -103,7 +105,7 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
         }
     };
 
-    private OkHttpClient getOkHttpClient(Context context) {
+    protected OkHttpClient getOkHttpClient(Context context) {
         OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder();
 
         okClientBuilder.addInterceptor(headerAuthorizationInterceptor);
