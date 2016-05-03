@@ -7,23 +7,22 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
-import com.sensorberg.sdk.internal.transport.model.SettingsResponse;
+import com.sensorberg.sdk.model.server.BaseResolveResponse;
+
+import junit.framework.Assert;
 
 import org.fest.assertions.api.Assertions;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.content.Context;
 import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 @RunWith(AndroidJUnit4.class)
@@ -33,12 +32,15 @@ public class ApiServiceShould {
     Gson gson;
 
     @Inject
-    @Named("realRetrofitApiService")
-    RetrofitApiServiceImpl realRetrofitApiService;
+    Context mContext;
 
     @Inject
-    @Named("testPlatformIdentifier")
-    PlatformIdentifier testPlatformIdentifier;
+    @Named("androidPlatformIdentifier")
+    PlatformIdentifier realPlatformIdentifier;
+
+    @Inject
+    @Named("realRetrofitApiService")
+    RetrofitApiServiceImpl realRetrofitApiService;
 
     @Before
     public void setUp() throws Exception {
@@ -47,76 +49,93 @@ public class ApiServiceShould {
 
     @Test
     public void apiservice_should_have_valid_useragent_in_header() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.start();
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{}"));
+        Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
+        Response<BaseResolveResponse> response = call.execute();
 
-        Call<SettingsResponse> call = realRetrofitApiService.getSettings();
-
-        call.enqueue(new Callback<SettingsResponse>() {
-            @Override
-            public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                Assertions.assertThat(response.isSuccessful()).isTrue();
-                Assertions.assertThat(response.headers().get(Transport.HEADER_USER_AGENT)).isEqualTo(testPlatformIdentifier.getUserAgentString());
-            }
-
-            @Override
-            public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                Assert.fail();
-            }
-        });
+        Assertions.assertThat(response.raw().request().headers()).isNotNull();
+        Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_USER_AGENT))
+                .isEqualTo(realPlatformIdentifier.getUserAgentString());
     }
 
     @Test
     public void apiservice_should_have_advertiserid_in_header() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.start();
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{}"));
+        Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
+        Response<BaseResolveResponse> response = call.execute();
 
-        Call<SettingsResponse> call = realRetrofitApiService.getSettings();
+        Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_ADVERTISER_IDENTIFIER))
+                .isNull();
 
-        call.enqueue(new Callback<SettingsResponse>() {
-            @Override
-            public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                Assertions.assertThat(response.isSuccessful()).isTrue();
-                Assertions.assertThat(response.headers().get(Transport.HEADER_ADVERTISER_IDENTIFIER))
-                        .isEqualTo(testPlatformIdentifier.getAdvertiserIdentifier());
-            }
+        Thread.sleep(2000); //we wait for google to give us the advertiser id
 
-            @Override
-            public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                Assert.fail();
-            }
-        });
+        Assertions.assertThat(realPlatformIdentifier.getAdvertiserIdentifier())
+                .isNotNull();
+        Response<BaseResolveResponse> responseWithAdvertiserId = call.clone().execute();
+
+        Assertions.assertThat(responseWithAdvertiserId.raw().request().headers().get(Transport.HEADER_ADVERTISER_IDENTIFIER))
+                .isEqualTo(realPlatformIdentifier.getAdvertiserIdentifier());
     }
 
     @Test
     public void apiservice_should_have_valid_installationid_in_header() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.start();
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{}"));
+        Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
+        Response<BaseResolveResponse> response = call.execute();
 
-        Call<SettingsResponse> call = realRetrofitApiService.getSettings();
+        Assertions.assertThat(response.raw().request().headers()).isNotNull();
+        Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_INSTALLATION_IDENTIFIER))
+                .isEqualTo(realPlatformIdentifier.getDeviceInstallationIdentifier());
 
-        call.enqueue(new Callback<SettingsResponse>() {
-            @Override
-            public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                Assertions.assertThat(response.isSuccessful()).isTrue();
-                Assertions.assertThat(response.headers().get(Transport.HEADER_INSTALLATION_IDENTIFIER))
-                        .isEqualTo(testPlatformIdentifier.getDeviceInstallationIdentifier());
-            }
-
-            @Override
-            public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                Assert.fail();
-            }
-        });
     }
+
+    @Test
+    public void apiservice_should_have_apitoken_header() throws Exception {
+        final String API_TOKEN = "test_api_token";
+        realRetrofitApiService.setApiToken(API_TOKEN);
+        Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
+        Response<BaseResolveResponse> response = call.execute();
+
+        Assertions.assertThat(response.raw().request().headers()).isNotNull();
+        Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_XAPIKEY))
+                .isEqualTo(API_TOKEN);
+        Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_AUTHORIZATION))
+                .isEqualTo(API_TOKEN);
+    }
+
+    @Test
+    public void apiservice_should_retry_three_times() throws Exception {
+        //TODO apiservice_should_retry_three_times
+        Assert.fail();
+//        final MockWebServer server = new MockWebServer();
+//        server.start();
+//        server.url("http://test.com/layout");
+//        server.enqueue(new MockResponse()
+//                .setResponseCode(404));
+//
+//        Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
+//        Response<BaseResolveResponse> response = call.execute();
+//
+//        Assertions.assertThat(server.takeRequest().getPath()).isEqualTo("http://test.com/layout");
+//        Assertions.assertThat(server.getRequestCount()).isEqualTo(1);
+//        Assertions.assertThat(server.getRequestCount()).isEqualTo(3);
+    }
+
+    //    @Test
+//    public void apiservice_should_have_apitoken_header() throws Exception {
+//        final String API_TOKEN = "test_api_token";
+//
+//        RetrofitApiServiceImpl retrofitApiService = new SuccessfulRetrofitApiService(mContext, gson, realPlatformIdentifier);
+//        retrofitApiService.setApiToken(API_TOKEN);
+//
+//        Call<BaseResolveResponse> call = retrofitApiService.updateBeaconLayout("layout");
+//        Response<BaseResolveResponse> response = call.execute();
+//
+//        Assertions.assertThat(response.isSuccessful()).isTrue();
+//        Assertions.assertThat(response.headers()).isNotNull();
+//        Assertions.assertThat(response.headers().get(Transport.HEADER_XAPIKEY))
+//                .isEqualTo(API_TOKEN);
+//        Assertions.assertThat(response.headers().get(Transport.HEADER_AUTHORIZATION))
+//                .isEqualTo(API_TOKEN);
+//
+////        Assertions.assertThat(server.takeRequest().getPath()).isEqualTo("http://test.com/");
+//    }
 
 }
