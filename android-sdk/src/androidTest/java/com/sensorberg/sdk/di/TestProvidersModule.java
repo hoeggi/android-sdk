@@ -14,6 +14,7 @@ import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.SettingsManager;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.NoClock;
+import com.sensorberg.sdk.testUtils.SuccessfulRetrofitApiService;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestFileManager;
@@ -110,7 +111,7 @@ public class TestProvidersModule extends ProvidersModule {
     @Named("successfulRetrofitApiService")
     @Singleton
     public RetrofitApiServiceImpl provideSuccessfulRetrofitApiService(Context context, Gson gson, @Named("testPlatformIdentifier") PlatformIdentifier platformIdentifier) {
-        return new RetrofitApiServiceImpl(context, gson, platformIdentifier);
+        return new SuccessfulRetrofitApiService(context, gson, platformIdentifier);
     }
 
 }
