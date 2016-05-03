@@ -7,7 +7,6 @@ import com.sensorberg.sdk.TheSensorbergServiceShould;
 import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
 import com.sensorberg.sdk.internal.http.ApiServiceShould;
-import com.sensorberg.sdk.internal.http.OkHttpClientTransportWithRetries;
 import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettings;
 import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettingsWithEtags;
 import com.sensorberg.sdk.internal.http.TransportShould;
@@ -88,8 +87,6 @@ public interface TestComponent extends Component {
     void inject(TheBeconHistorySynchronousIntegrationTest theBeconHistorySynchronousIntegrationTest);
 
     void inject(TransportShould transportShould);
-
-    void inject(OkHttpClientTransportWithRetries okHttpClientTransportWithRetries);
 
     void inject(OkVolleyShouldCacheTheSettings okVolleyShouldCacheTheSettings);
 
