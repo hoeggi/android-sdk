@@ -45,8 +45,6 @@ dependencies {
     compile 'net.danlew:android.joda:2.7.2'
     compile files('libs/sensorberg_orm-0.7.1.201405082137.jar')
 
-    compile project(':networkstate')
-
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'

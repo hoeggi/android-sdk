@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal.transport;
 
-import com.sensorberg.android.networkstate.NetworkInfoBroadcastReceiver;
+import com.sensorberg.sdk.receivers.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Clock;

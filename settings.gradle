@@ -1,3 +1,2 @@
 include ':android-sdk'
-include ':networkstate'
 include ':dev-app'

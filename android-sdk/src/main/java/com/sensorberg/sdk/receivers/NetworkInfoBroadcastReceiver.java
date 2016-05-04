@@ -1,4 +1,4 @@
-package com.sensorberg.android.networkstate;
+package com.sensorberg.sdk.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
-
-    //TODO refactor this into the sdk
 
     public static NetworkInfo latestNetworkInfo = null;
     public static final List<NetworkInfoListener> listener = new ArrayList<NetworkInfoListener>();
@@ -101,11 +99,11 @@ public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    public static interface NetworkInfoListener {
+    public interface NetworkInfoListener {
         void onNetworkInfoChanged(NetworkInfo networkInfoMaybeNull);
     }
 
-    public static interface NotificationBuilder {
+    public interface NotificationBuilder {
         NotificationBuilder NONE = new NotificationBuilder() {
             @Override
             public void buildNotification(Context context, NetworkInfo latestNetworkInfo) {
