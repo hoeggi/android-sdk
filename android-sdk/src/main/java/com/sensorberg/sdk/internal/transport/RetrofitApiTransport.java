@@ -138,7 +138,7 @@ public class RetrofitApiTransport implements Transport {
     public void loadSettings(final TransportSettingsCallback transportSettingsCallback) {
         Call<SettingsResponse> call = getApiService().getSettings();
 
-        call.enqueue(new Callback<SettingsResponse>() {
+        enqueueWithRetry(call, new Callback<SettingsResponse>() {
             @Override
             public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
                 if (response.isSuccessful()) {
@@ -212,6 +212,21 @@ public class RetrofitApiTransport implements Transport {
     @Override
     public void setLoggingEnabled(boolean enabled) {
         getApiService().setLoggingEnabled(enabled);
+    }
+
+    private <T> void enqueueWithRetry(Call<T> call, final Callback<T> callback) {
+        call.enqueue(new CallbackWithRetry<T>() {
+            @Override
+            public void onResponse(Call<T> call, Response<T> response) {
+                callback.onResponse(call, response);
+            }
+
+            @Override
+            public void onFailure(Call<T> call, Throwable t) {
+                super.onFailure(call, t);
+                callback.onFailure(call, t);
+            }
+        });
     }
 
 }
