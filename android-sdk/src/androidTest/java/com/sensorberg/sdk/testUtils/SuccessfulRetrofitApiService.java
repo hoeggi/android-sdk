@@ -12,25 +12,29 @@ import com.sensorberg.sdk.model.server.ResolveResponse;
 
 import android.content.Context;
 
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.Url;
 import retrofit2.mock.BehaviorDelegate;
+import retrofit2.mock.Calls;
 import retrofit2.mock.MockRetrofit;
 import retrofit2.mock.NetworkBehavior;
 
 public class SuccessfulRetrofitApiService extends RetrofitApiServiceImpl {
 
-    MockRetrofitApiService mMockRetrofitApiService;
+    private final BehaviorDelegate<RetrofitApiService> delegate;
 
-    public SuccessfulRetrofitApiService(Context ctx, Gson gson, PlatformIdentifier platformId) {
-        super(ctx, gson, platformId, "http://test.com");
+    public SuccessfulRetrofitApiService(Context ctx, Gson gson, PlatformIdentifier platformId, String baseUrl) {
+        super(ctx, gson, platformId, baseUrl);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://test.com")
+                .baseUrl(baseUrl)
                 .client(getOkHttpClient(ctx))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
@@ -41,8 +45,7 @@ public class SuccessfulRetrofitApiService extends RetrofitApiServiceImpl {
                 .networkBehavior(behavior)
                 .build();
 
-        BehaviorDelegate<RetrofitApiService> delegate = mockRetrofit.create(RetrofitApiService.class);
-        mMockRetrofitApiService = new MockRetrofitApiService(delegate);
+        delegate = mockRetrofit.create(RetrofitApiService.class);
     }
 
     @Override
@@ -57,58 +60,35 @@ public class SuccessfulRetrofitApiService extends RetrofitApiServiceImpl {
 
     @Override
     public Call<BaseResolveResponse> updateBeaconLayout(@Url String beaconLayoutUrl) {
-        return mMockRetrofitApiService.updateBeaconLayout(beaconLayoutUrl);
+        //TODO
+        ResolveResponse response = new ResolveResponse.Builder().build();
+        return delegate.returningResponse(response).updateBeaconLayout(beaconLayoutUrl);
+    }
+
+    public Call<BaseResolveResponse> updateBeaconLayoutFail(@Url String beaconLayoutUrl) {
+        Response<ResolveResponse> ret = Response.error(404, ResponseBody.create(MediaType.parse("plain/text"), ""));
+        return delegate.returning(Calls.response(ret)).updateBeaconLayout(beaconLayoutUrl);
     }
 
     @Override
     public Call<ResolveResponse> getBeacon(@Url String beaconURLString, @Header("X-pid") String beaconId, @Header("X-qos") String networkInfo) {
-        return mMockRetrofitApiService.getBeacon(beaconURLString, beaconId, networkInfo);
+        //TODO
+        ResolveResponse response = new ResolveResponse.Builder().build();
+        return delegate.returningResponse(response).getBeacon(beaconURLString, beaconId, networkInfo);
     }
 
     @Override
     public Call<ResolveResponse> publishHistory(@Url String beaconLayoutUrl, @Body HistoryBody body) {
-        return mMockRetrofitApiService.publishHistory(beaconLayoutUrl, body);
+        //TODO
+        ResolveResponse response = new ResolveResponse.Builder().build();
+        return delegate.returningResponse(response).publishHistory(beaconLayoutUrl, body);
     }
 
     @Override
     public Call<SettingsResponse> getSettings() {
-        return mMockRetrofitApiService.getSettings("");
+        //TODO
+        SettingsResponse response = new SettingsResponse();
+        return delegate.returningResponse(response).getSettings("");
     }
 
-
-    static final class MockRetrofitApiService implements RetrofitApiService {
-        private final BehaviorDelegate<RetrofitApiService> delegate;
-
-        public MockRetrofitApiService(BehaviorDelegate<RetrofitApiService> delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public Call<BaseResolveResponse> updateBeaconLayout(@Url String beaconLayoutUrl) {
-            //TODO
-            ResolveResponse response = new ResolveResponse.Builder().build();
-            return delegate.returningResponse(response).updateBeaconLayout(beaconLayoutUrl);
-        }
-
-        @Override
-        public Call<ResolveResponse> getBeacon(@Url String beaconURLString, @Header("X-pid") String beaconId, @Header("X-qos") String networkInfo) {
-            //TODO
-            ResolveResponse response = new ResolveResponse.Builder().build();
-            return delegate.returningResponse(response).getBeacon(beaconURLString, beaconId, networkInfo);
-        }
-
-        @Override
-        public Call<ResolveResponse> publishHistory(@Url String beaconLayoutUrl, @Body HistoryBody body) {
-            //TODO
-            ResolveResponse response = new ResolveResponse.Builder().build();
-            return delegate.returningResponse(response).publishHistory(beaconLayoutUrl, body);
-        }
-
-        @Override
-        public Call<SettingsResponse> getSettings(@Url String settingsUrl) {
-            //TODO
-            SettingsResponse response = new SettingsResponse();
-            return delegate.returningResponse(response).getSettings(settingsUrl);
-        }
-    }
 }
