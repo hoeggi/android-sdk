@@ -13,6 +13,7 @@ import com.sensorberg.sdk.model.server.ResolveResponse;
 import android.content.Context;
 
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -46,6 +47,10 @@ public class SuccessfulRetrofitApiService extends RetrofitApiServiceImpl {
                 .build();
 
         delegate = mockRetrofit.create(RetrofitApiService.class);
+    }
+
+    public OkHttpClient getOriginalOkHttpClient() {
+        return getOkHttpClient(mContext);
     }
 
     @Override

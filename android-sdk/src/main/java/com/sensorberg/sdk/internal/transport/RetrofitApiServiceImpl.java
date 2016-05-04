@@ -41,7 +41,7 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
 
     private static final long HTTP_RESPONSE_DISK_CACHE_MAX_SIZE = 5 * 1024 * 1024; //5MB
 
-    private final Context mContext;
+    protected final Context mContext;
 
     private final Gson mGson;
 
@@ -113,6 +113,8 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(mApiServiceLogLevel);
         okClientBuilder.addInterceptor(httpLoggingInterceptor);
+
+        okClientBuilder.retryOnConnectionFailure(true);
 
         final File baseDir = context.getCacheDir();
         if (baseDir != null) {
