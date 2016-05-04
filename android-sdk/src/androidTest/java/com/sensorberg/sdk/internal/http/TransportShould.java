@@ -26,8 +26,11 @@ import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
+import junit.framework.Assert;
+
 import org.fest.assertions.api.Assertions;
 import org.joda.time.DateTime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -195,6 +198,11 @@ public class TransportShould extends SensorbergApplicationTest {
 
             }
         });
+    }
 
+    @Test
+    public void transport_should_retry_three_times() throws Exception {
+        //TODO
+        Assert.fail();
     }
 }
