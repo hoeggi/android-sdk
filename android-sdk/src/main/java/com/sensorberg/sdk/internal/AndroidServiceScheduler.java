@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.sdk.GenericBroadcastReceiver;
+import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.interfaces.Clock;

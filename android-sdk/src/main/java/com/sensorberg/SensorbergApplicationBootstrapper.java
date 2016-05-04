@@ -3,7 +3,7 @@ package com.sensorberg;
 import com.sensorberg.di.Component;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
-import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
+import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.resolver.BeaconEvent;

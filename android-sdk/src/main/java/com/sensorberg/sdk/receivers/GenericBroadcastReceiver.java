@@ -1,10 +1,10 @@
-package com.sensorberg.sdk;
+package com.sensorberg.sdk.receivers;
+
+import com.sensorberg.sdk.SensorbergService;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.sensorberg.sdk.background.SensorbergBroadcastReceiver;
 
 public class GenericBroadcastReceiver extends SensorbergBroadcastReceiver{
 

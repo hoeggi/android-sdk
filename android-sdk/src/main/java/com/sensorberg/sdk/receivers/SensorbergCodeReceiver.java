@@ -1,4 +1,6 @@
-package com.sensorberg.sdk;
+package com.sensorberg.sdk.receivers;
+
+import com.sensorberg.sdk.SensorbergService;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

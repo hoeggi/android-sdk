@@ -1,4 +1,4 @@
-package com.sensorberg.sdk.background;
+package com.sensorberg.sdk.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;

@@ -1,9 +1,10 @@
 package com.sensorberg.sdk;
 
+import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
 import com.sensorberg.sdk.receivers.NetworkInfoBroadcastReceiver;
 import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.action.Action;
-import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
+import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;

@@ -22,7 +22,7 @@
             android:exported="false"/>
 
         <receiver
-            android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"
+            android:name=".receivers.ScannerBroadcastReceiver"
             android:process=":sensorberg"
             android:exported="false"
             android:enabled="false" >
@@ -32,12 +32,12 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".GenericBroadcastReceiver"
+        <receiver android:name=".receivers.GenericBroadcastReceiver"
             android:process=":sensorberg"
             android:exported="false"
             android:enabled="false"/>
 
-        <receiver android:name=".SensorbergCodeReceiver"
+        <receiver android:name=".receivers.SensorbergCodeReceiver"
             android:process=":sensorberg"
             android:label="sensorberg-logger">
             <intent-filter>

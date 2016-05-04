@@ -1,11 +1,11 @@
-package com.sensorberg.sdk.background;
+package com.sensorberg.sdk.receivers;
+
+import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.SensorbergService;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-
-import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.SensorbergService;
 
 public class ScannerBroadcastReceiver extends SensorbergBroadcastReceiver {
 

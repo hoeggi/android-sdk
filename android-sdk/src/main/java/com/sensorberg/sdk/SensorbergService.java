@@ -1,7 +1,7 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.SensorbergApplicationBootstrapper;
-import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
+import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
@@ -12,6 +12,7 @@ import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
+import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
