@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class BackgroundDetector implements Application.ActivityLifecycleCallbacks {
     private final Runnable FOREGROUND = new Runnable() {
@@ -77,7 +76,6 @@ public class BackgroundDetector implements Application.ActivityLifecycleCallback
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-
 
     }
 }

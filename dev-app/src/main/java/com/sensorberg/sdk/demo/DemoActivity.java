@@ -162,5 +162,4 @@ public class DemoActivity extends Activity {
         intent.putExtra(EXTRA_ACTION, action);
         return intent;
     }
-
 }

@@ -1,5 +1,13 @@
 package com.sensorberg.sdk.internal;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+
+import com.sensorberg.sdk.BuildConfig;
+import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -8,13 +16,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.sensorberg.sdk.BuildConfig;
-import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -198,5 +199,4 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
         ApplicationInfo ai = application.getApplicationInfo();
         return String.valueOf(pm.getApplicationLabel(ai));
     }
-
 }

@@ -76,7 +76,6 @@ public class TheInternalApplicationBootstrapperShould {
                 .build();
     }
 
-
     @Test
     public void test_suppression_time() throws Exception {
         tested.onResolutionsFinished(Arrays.asList(beaconEventSupressionTime));

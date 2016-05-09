@@ -19,5 +19,4 @@ public class AndroidHandlerManager implements HandlerManager {
     public RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback) {
         return new AndroidHandler(callback);
     }
-
 }

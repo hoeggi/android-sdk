@@ -95,7 +95,7 @@ public class TransportShould extends SensorbergApplicationTest {
 
     public void test_failures() throws VolleyError {
 
-        //TODO
+        //TODO should rewrite this when we change the Http transport
 
 //        Network network = spy(new BasicNetwork(new OkHttpStack()));
 //        doThrow(new VolleyError()).when(network).performRequest(any(HeadersJsonObjectRequest.class));

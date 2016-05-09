@@ -76,5 +76,4 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
     public boolean isLeScanRunning() {
         return leScanRunning;
     }
-
 }

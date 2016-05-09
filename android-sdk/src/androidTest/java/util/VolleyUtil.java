@@ -20,5 +20,4 @@ public class VolleyUtil {
 
         return queue;
     }
-
 }

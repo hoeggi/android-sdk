@@ -63,7 +63,6 @@ public class SensorbergService extends Service {
 
     public static final int MSG_BEACON_LAYOUT_UPDATE = 11;
 
-
     public static final int GENERIC_TYPE_BEACON_ACTION = 1001;
 
     public static final int GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT = 1002;
@@ -79,7 +78,6 @@ public class SensorbergService extends Service {
     public static final int MSG_TYPE_ENABLE_LOGGING = 104;
 
     public static final int MSG_TYPE_SET_RESOLVER_ENDPOINT = 105;
-
 
     public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
 
@@ -166,7 +164,6 @@ public class SensorbergService extends Service {
 
     public static final String EXTRA_BLUETOOTH_STATE = "com.sensorberg.android.sdk.intent.bluetoothState";
 
-
     public static final String EXTRA_GENERIC_WHAT = "com.sensorberg.android.sdk.intent.generic.what";
 
     public static final String EXTRA_GENERIC_TYPE = "com.sensorberg.android.sdk.intent.generic.type";
@@ -176,7 +173,6 @@ public class SensorbergService extends Service {
     public static final String EXTRA_START_SERVICE = "com.sensorberg.android.sdk.intent.startService";
 
     public static final String EXTRA_MESSENGER = "com.sensorberg.android.sdk.intent.messenger";
-
 
     private final MessengerList presentationDelegates = new MessengerList();
 

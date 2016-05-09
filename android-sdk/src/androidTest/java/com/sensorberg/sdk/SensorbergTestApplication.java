@@ -25,5 +25,4 @@ public class SensorbergTestApplication extends Application {
     public Component buildComponentAndInject() {
         return TestComponent.Initializer.init(this);
     }
-
 }

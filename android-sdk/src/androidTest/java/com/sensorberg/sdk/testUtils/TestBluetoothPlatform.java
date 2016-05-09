@@ -72,12 +72,9 @@ public class TestBluetoothPlatform implements BluetoothPlatform {
     public static final BeaconId EXPECTED_ALIEN_1 = new BeaconId(Utils.hexStringToByteArray(ALIEN_ID_1));
     public static final BeaconId EXPECTED_ESTIMOTE_ID = new BeaconId(Utils.hexStringToByteArray(ESTIMOTE_ID));
 
-
     public static final byte[] BYTES_FOR_BEACON_1 = hexStringToByteArray( ADVERTISEMENT_DATA_FLAGS + IBEACON_HEADER + BEACON_ID_1 + CALIBRATED_TX_VALUE );
     public static final byte[] BYTES_FOR_SENSORBERG_BEACON_1 = hexStringToByteArray( ADVERTISEMENT_DATA_FLAGS + IBEACON_HEADER + BEACON_ID_1 + CALIBRATED_TX_VALUE );
     public static final byte[] BYTES_FOR_ALIEN_BEACON_1 = hexStringToByteArray( ADVERTISEMENT_DATA_FLAGS + IBEACON_HEADER + ALIEN_ID_1 + CALIBRATED_TX_VALUE );
-
-
 
     private BluetoothAdapter.LeScanCallback scanCallback;
 
@@ -127,5 +124,4 @@ public class TestBluetoothPlatform implements BluetoothPlatform {
             this.scanCallback.onLeScan(null, -100, wrapWithZeroBytes(bytesForFakeScan, 62));
         }
     }
-
 }

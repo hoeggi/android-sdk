@@ -59,7 +59,6 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         tested.scanTime = DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME;
     }
 
-
     public void test_be_in_foreground_mode(){
         assertThat(tested.waitTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
         assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
@@ -146,7 +145,6 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         testHandlerManager.getCustomClock().setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
         testHandlerManager.getCustomClock()
                 .setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
-
 
         //set time just before the end of the Background scan time
         testHandlerManager.getCustomClock().setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME

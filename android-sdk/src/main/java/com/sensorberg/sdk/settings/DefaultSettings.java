@@ -31,5 +31,4 @@ public class DefaultSettings {
     public static final long DEFAULT_CACHE_TTL = 30 * Constants.Time.ONE_DAY;
 
     static final int DEFAULT_MAX_RETRIES = 3;
-
 }

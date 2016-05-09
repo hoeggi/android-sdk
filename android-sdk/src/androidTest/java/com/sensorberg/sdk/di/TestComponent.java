@@ -102,5 +102,4 @@ public interface TestComponent extends Component {
                     .build();
         }
     }
-
 }

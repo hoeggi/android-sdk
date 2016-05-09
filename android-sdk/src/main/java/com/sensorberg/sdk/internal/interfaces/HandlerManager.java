@@ -7,5 +7,4 @@ public interface HandlerManager {
     RunLoop getResolverRunLoop(RunLoop.MessageHandlerCallback callback);
 
     RunLoop getBeaconPublisherRunLoop(RunLoop.MessageHandlerCallback callback);
-
 }

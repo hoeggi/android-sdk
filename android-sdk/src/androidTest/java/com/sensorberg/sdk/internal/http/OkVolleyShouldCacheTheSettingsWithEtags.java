@@ -78,7 +78,6 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
         startWebserver();
     }
 
-
     public void test_should_answer_correctly() throws Exception {
         enqueue(R.raw.response_etag_001);
         tested.loadSettings(MUST_NOT_FAIL);
@@ -104,10 +103,8 @@ public class OkVolleyShouldCacheTheSettingsWithEtags extends SensorbergApplicati
         waitForRequests(2);
     }
 
-
     public void test_cache_revalidation_with_header() throws Exception {
         enqueue(R.raw.response_etag_001, R.raw.response_etag_002);
-
         tested.loadSettings(MUST_NOT_FAIL);
         Thread.sleep(1200);
         tested.loadSettings(MUST_NOT_FAIL);

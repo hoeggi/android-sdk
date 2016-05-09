@@ -115,7 +115,6 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         unRegisterFromPresentationDelegation();
     }
 
-
     public void hostApplicationInForeground() {
         sendEmptyMessage(SensorbergService.MSG_APPLICATION_IN_FOREGROUND);
         if (presentationDelegationEnabled) {

@@ -32,5 +32,4 @@ public class TestPlatformIdentifier implements PlatformIdentifier {
     @Override
     public void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener) {
     }
-
 }

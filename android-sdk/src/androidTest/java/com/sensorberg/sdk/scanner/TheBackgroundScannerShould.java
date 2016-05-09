@@ -62,7 +62,6 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
         assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME);
     }
 
-
    public void test_detect_no_beacon_because_it_is_sleeping(){
        testHandlerManager.getCustomClock().setNowInMillis(DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME + 1);
 

@@ -129,13 +129,11 @@ public class AndroidServiceScheduler implements ServiceScheduler, MessageDelayWi
         repeatingPendingIntents.add(MSG_type);
     }
 
-
     @Override
     public void postToServiceDelayed(long delay, int type, Parcelable what, boolean surviveReboot) {
         int index = postToServiceCounter.next();
         postToServiceDelayed(delay, type, what, surviveReboot, index);
     }
-
 
     @Override
     public void postToServiceDelayed(long delayMillis, int type, Parcelable what, boolean surviveReboot, int index) {
