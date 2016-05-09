@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface Transport {
 
+    String ADVERTISING_IDENTIFIER = "X-aid";
+
     interface ProximityUUIDUpdateHandler{
         ProximityUUIDUpdateHandler NONE = new ProximityUUIDUpdateHandler() {
             @Override
@@ -38,6 +40,8 @@ public interface Transport {
     void getBeacon(ResolutionConfiguration resolutionConfiguration, BeaconResponseHandler beaconResponseHandler);
 
     void setApiToken(String apiToken);
+
+    void setAdvertisingIdentifier(String advertisingIdentifier);
 
     void getSettings(SettingsCallback settingsCallback);
 

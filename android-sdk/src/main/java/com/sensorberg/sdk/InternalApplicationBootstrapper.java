@@ -52,6 +52,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         settings.restoreValuesFromPreferences();
         settings.setCallback(this);
 
+
         plattform.setSettings(settings);
 
         beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform, this, settings);
@@ -60,6 +61,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
         plattform.getTransport().setBeaconReportHandler(this);
         plattform.getTransport().setProximityUUIDUpdateHandler(this);
+        plattform.getTransport().setAdvertisingIdentifier(settings.getAdvertisingIdentifier());
 
         scanner = new Scanner(settings, plattform, settings.shouldRestoreBeaconStates());
         resolver = new Resolver(resolverConfiguration, plattform);
@@ -154,7 +156,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
 
     @Override
     public void onResolutionFailed(Resolution resolution, Throwable cause) {
-        Logger.log.logError("resolution failed:"+ resolution.configuration.getScanEvent().getBeaconId().toTraditionalString() , cause);
+        Logger.log.logError("resolution failed:" + resolution.configuration.getScanEvent().getBeaconId().toTraditionalString(), cause);
     }
 
     @Override
@@ -277,5 +279,10 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
                 this.proximityUUIDs.add(proximityUUID.toLowerCase());
             }
         }
+    }
+
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+        settings.setAdvertisingIdentifier(advertisingIdentifier);
+        platform.getTransport().setAdvertisingIdentifier(advertisingIdentifier);
     }
 }

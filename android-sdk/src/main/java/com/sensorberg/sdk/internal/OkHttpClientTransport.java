@@ -205,6 +205,15 @@ public class OkHttpClientTransport implements Transport {
     }
 
     @Override
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+        if (advertisingIdentifier == null){
+            headers.remove(ADVERTISING_IDENTIFIER);
+        } else {
+            headers.put(ADVERTISING_IDENTIFIER, advertisingIdentifier);
+        }
+    }
+
+    @Override
     public void getSettings(final SettingsCallback settingsCallback) {
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
