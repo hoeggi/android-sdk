@@ -3,7 +3,6 @@ package com.sensorberg.sdk.internal.http;
 import com.google.gson.Gson;
 
 import com.sensorberg.sdk.Constants;
-import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.URLFactory;
@@ -15,7 +14,9 @@ import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.interfaces.TransportHistoryCallback;
 import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
+import com.sensorberg.sdk.internal.transport.model.SettingsResponse;
 import com.sensorberg.sdk.model.BeaconId;
+import com.sensorberg.sdk.model.server.ResolveResponse;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -24,14 +25,19 @@ import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.settings.Settings;
 import com.sensorberg.sdk.testUtils.TestClock;
-import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import junit.framework.Assert;
 
 import org.fest.assertions.api.Assertions;
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
+import android.support.test.runner.AndroidJUnit4;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,14 +45,15 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import retrofit2.http.HEAD;
+import retrofit2.Call;
+import retrofit2.mock.Calls;
 import util.TestConstants;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
-public class TransportShould extends SensorbergApplicationTest {
+@RunWith(AndroidJUnit4.class)
+public class TransportShould {
 
     private static final UUID BEACON_ID = UUID.fromString("192E463C-9B8E-4590-A23F-D32007299EF5");
 
@@ -67,20 +74,16 @@ public class TransportShould extends SensorbergApplicationTest {
 
     protected Transport tested;
 
-    protected TestPlatform testPlattform;
-
     private ScanEvent scanEvent;
 
-    private BeaconHistoryUploadIntervalListener listener;
+    private BeaconHistoryUploadIntervalListener mockListener;
 
     RetrofitApiServiceImpl mockRetrofitApiService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        testPlattform = spy(new TestPlatform());
         clock.setNowInMillis(new DateTime(2015, 7, 10, 1, 1, 1).getMillis());
 
         scanEvent = new ScanEvent.Builder()
@@ -89,50 +92,50 @@ public class TransportShould extends SensorbergApplicationTest {
                 .withEventTime(clock.now())
                 .build();
 
-        listener = mock(BeaconHistoryUploadIntervalListener.class);
-
+        mockListener = mock(BeaconHistoryUploadIntervalListener.class);
         mockRetrofitApiService = mock(RetrofitApiServiceImpl.class);
 
         tested = new RetrofitApiTransport(mockRetrofitApiService, clock);
-        tested.setBeaconHistoryUploadIntervalListener(listener);
+        tested.setBeaconHistoryUploadIntervalListener(mockListener);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 
+    @Test
     public void test_should_forward_the_layout_upload_interval_to_the_settings() throws Exception {
-        startWebserver(com.sensorberg.sdk.test.R.raw.resolve_resolve_with_report_trigger);
-        tested.getBeacon(new ResolutionConfiguration(scanEvent), BeaconResponseHandler.NONE);
+        ResolveResponse resolveResponse = new ResolveResponse.Builder().withReportTrigger(1337).build();
+        Mockito.when(mockRetrofitApiService.getBeacon(anyString(), anyString(), anyString()))
+                .thenReturn(Calls.response(resolveResponse));
 
-        waitForRequests(1);
-        verify(listener).historyUploadIntervalChanged(1337L * 1000);
+        tested.getBeacon(new ResolutionConfiguration(scanEvent), BeaconResponseHandler.NONE);
+        Mockito.verify(mockListener).historyUploadIntervalChanged(1337L * 1000);
     }
 
+    @Test
     public void test_failures() throws Exception {
-        fail();
-        //TODO
+        Call<SettingsResponse> exceptionResponse = Calls.failure(new UnsupportedEncodingException());
+        Mockito.when(mockRetrofitApiService.getSettings()).thenReturn(exceptionResponse);
 
-//        Network network = spy(new BasicNetwork(new OkHttpStack()));
-//        doThrow(new Exception()).when(network).performRequest(any(HeadersJsonObjectRequest.class));
-//
-//        tested.loadSettings(new TransportSettingsCallback() {
-//            @Override
-//            public void nothingChanged() {
-//                fail();
-//            }
-//
-//            @Override
-//            public void onFailure(Exception e) {
-//                Log.d("FOO", "onFailure" + e.getLocalizedMessage());
-//            }
-//
-//            @Override
-//            public void onSettingsFound(JSONObject settings) {
-//                fail();
-//            }
-//        });
+        tested.loadSettings(new TransportSettingsCallback() {
+            @Override
+            public void nothingChanged() {
+                Assert.fail();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Assert.assertNotNull(e);
+            }
+
+            @Override
+            public void onSettingsFound(Settings settings) {
+                Assert.fail();
+            }
+        });
     }
 
     // https://staging-manage.sensorberg.com/#/campaign/edit/29fa875c-66db-4957-be65-abc83f35538d
     // https://manage.sensorberg.com/#/campaign/edit/0ec64004-18a5-41df-a5dc-810d395dec83
+    @Test
     public void test_a_beacon_request() {
         tested.getBeacon(new ResolutionConfiguration(scanEvent), new BeaconResponseHandler() {
             @Override
@@ -144,21 +147,24 @@ public class TransportShould extends SensorbergApplicationTest {
 
             @Override
             public void onFailure(Throwable cause) {
-                fail("there was a failure with this request");
+                Assert.fail("there was a failure with this request");
             }
         });
     }
 
+    @Test
     public void test_a_settings_request() {
+        Mockito.when(mockRetrofitApiService.getSettings()).thenReturn(Calls.response(new SettingsResponse(0, new Settings())));
+
         tested.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
-                fail("there should be changes to no settings");
+                Assert.fail("there should be changes to no settings");
             }
 
             @Override
             public void onFailure(Exception e) {
-                fail();
+                Assert.fail();
             }
 
             @Override
@@ -168,6 +174,7 @@ public class TransportShould extends SensorbergApplicationTest {
         });
     }
 
+    @Test
     public void test_publish_data_to_the_server() throws Exception {
         List<SugarScan> scans = new ArrayList<>();
         List<SugarAction> actions = new ArrayList<>();
@@ -185,7 +192,7 @@ public class TransportShould extends SensorbergApplicationTest {
         tested.publishHistory(scans, actions, new TransportHistoryCallback() {
             @Override
             public void onFailure(Exception volleyError) {
-                fail();
+                Assert.fail();
             }
 
             @Override
