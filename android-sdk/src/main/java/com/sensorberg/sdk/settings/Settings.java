@@ -300,5 +300,4 @@ public class Settings implements SettingsCallback {
             }
         }
     }
-
 }

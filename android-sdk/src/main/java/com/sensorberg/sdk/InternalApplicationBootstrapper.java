@@ -52,7 +52,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper impleme
         settings.restoreValuesFromPreferences();
         settings.setCallback(this);
 
-
         plattform.setSettings(settings);
 
         beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(plattform, this, settings);
