@@ -15,6 +15,8 @@ import android.support.multidex.MultiDex;
 
 import java.util.TimeZone;
 
+import util.TestDatabaseHelper;
+
 public class SensorbergTestRunner extends android.support.test.runner.AndroidJUnitRunner {
 
     @Override
@@ -39,7 +41,11 @@ public class SensorbergTestRunner extends android.support.test.runner.AndroidJUn
             URLFactory.setLayoutURL(com.sensorberg.sdk.BuildConfig.RESOLVER_URL);
         }
         JodaTimeAndroid.init(getContext());
+
+        TestDatabaseHelper testDatabaseHelper = new TestDatabaseHelper(getContext(), "sensorbergORM.db", null, 1);
+        testDatabaseHelper.getWritableDatabase();
         SugarContext.init(getContext());
+
 //        TimeZoneChangedReceiver receiver = new TimeZoneChangedReceiver();
 //        Intent timeZoneIntent = new Intent();
 //        timeZoneIntent.putExtra("time-zone", "GMT+00:00");
