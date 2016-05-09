@@ -33,7 +33,6 @@ import static android.text.TextUtils.isEmpty;
 @SuppressWarnings("WeakerAccess") //external API
 public class SensorbergService extends Service {
 
-
     public static final int MSG_APPLICATION_IN_FOREGROUND       = 1;
     public static final int MSG_APPLICATION_IN_BACKGROUND       = 2;
     public static final int MSG_SET_API_TOKEN                   = 3;
@@ -44,8 +43,7 @@ public class SensorbergService extends Service {
     public static final int MSG_SDK_SCANNER_MESSAGE             = 9;
     public static final int MSG_UPLOAD_HISTORY                  = 10;
     public static final int MSG_BEACON_LAYOUT_UPDATE            = 11;
-    public static final int MSG_SET_API_ADVERTISING_IDENTIFIER = 12;
-
+    public static final int MSG_SET_API_ADVERTISING_IDENTIFIER  = 12;
 
     public static final int GENERIC_TYPE_BEACON_ACTION              = 1001;
     public static final int GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT    = 1002;
@@ -57,14 +55,11 @@ public class SensorbergService extends Service {
     public static final int MSG_TYPE_ENABLE_LOGGING                 = 104;
     public static final int MSG_TYPE_SET_RESOLVER_ENDPOINT          = 105;
 
-
     public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
     public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL = "com.sensorberg.android.sdk.intent.recolverEndpoint";
     public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
     public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
-
-
 
     Platform platform;
 

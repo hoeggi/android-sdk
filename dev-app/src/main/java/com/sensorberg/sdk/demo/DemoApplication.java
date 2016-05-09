@@ -84,7 +84,6 @@ public class DemoApplication extends Application
                     Logger.log.logError("could not fetch the advertising identifier beacuse of an unknown error" , e);
                 }
                 Logger.log.verbose("fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
-
             }
         }).start();
 	}
@@ -132,7 +131,6 @@ public class DemoApplication extends Application
         bodyText.append('\n').append("delay:").append(action.getDelayTime() );
         bodyText.append('\n').append("uuid:").append(action.getUuid());
         bodyText.append('\n').append("url:").append(uri);
-
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(activityContext)
                 .setTitle(subject)
