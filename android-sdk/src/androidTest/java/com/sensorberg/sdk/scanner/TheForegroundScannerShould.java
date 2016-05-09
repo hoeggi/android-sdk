@@ -176,7 +176,6 @@ public class TheForegroundScannerShould extends AndroidTestCase {
         testHandlerManager.getCustomClock()
                 .setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME + 1);
 
-
         //set time just before the end of the Background scan time
         testHandlerManager.getCustomClock().setNowInMillis(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME + DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME
                 + DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME + 1);

@@ -85,7 +85,6 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
         ScannerListener mockListener = Mockito.mock(ScannerListener.class);
         tested.addScannerListener(mockListener);
 
-
         bluetoothPlatform.fakeIBeaconSighting();
 
         verify(mockListener).onScanEventDetected(isEntryEvent());
@@ -125,6 +124,5 @@ public class TheBackgroundScannerShould extends AndroidTestCase{
 
         verify(mockListener).onScanEventDetected(isEntryEvent());
     }
-
 
 }

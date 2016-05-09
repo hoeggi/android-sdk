@@ -101,5 +101,4 @@ public class TheInternalApplicationBootstrapperShould {
     public void test_should_return_the_sync_setting(){
         Assertions.assertThat(tested.isSyncEnabled()).isTrue();
     }
-
 }
