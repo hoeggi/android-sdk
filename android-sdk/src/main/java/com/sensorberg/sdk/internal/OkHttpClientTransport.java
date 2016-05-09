@@ -39,7 +39,7 @@ import static com.sensorberg.sdk.internal.URLFactory.getResolveURLString;
 import static com.sensorberg.sdk.internal.URLFactory.getSettingsURLString;
 import static com.sensorberg.utils.ListUtils.map;
 
-public class OkHttpClientTransport implements Transport, Platform.DeviceInstallationIdentifierChangeListener, Platform.AdvertiserIdentifierChangeListener {
+public class OkHttpClientTransport implements Transport {
 
     private static final JSONObject NO_CONTENT = new JSONObject();
 
@@ -53,7 +53,6 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
     private String apiToken;
 
     private static final String INSTALLATION_IDENTIFIER = "X-iid";
-    private static final String ADVERTISER_IDENTIFIER = "X-aid";
 
     public OkHttpClientTransport(Platform platform, Settings settings) {
         this.platform = platform;
@@ -61,19 +60,6 @@ public class OkHttpClientTransport implements Transport, Platform.DeviceInstalla
         this.queue = platform.getVolleyQueue();
         this.headers.put("User-Agent", platform.getUserAgentString());
         this.headers.put(INSTALLATION_IDENTIFIER, platform.getDeviceInstallationIdentifier());
-        this.headers.put(ADVERTISER_IDENTIFIER, platform.getAdvertiserIdentifier());
-        platform.addAdvertiserIdentifierChangeListener(this);
-        platform.addDeviceInstallationIdentifierChangeListener(this);
-    }
-
-    @Override
-    public void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier) {
-        this.headers.put(INSTALLATION_IDENTIFIER, deviceInstallationIdentifier);
-    }
-
-    @Override
-    public void advertiserIdentifierChanged(String advertiserIdentifier) {
-        this.headers.put(ADVERTISER_IDENTIFIER, advertiserIdentifier);
     }
 
     @Override
