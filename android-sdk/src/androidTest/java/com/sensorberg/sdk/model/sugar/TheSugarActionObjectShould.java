@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.model.sugar;
 
-import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
@@ -8,28 +7,37 @@ import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.NoClock;
+import com.sensorbergorm.SugarContext;
 import com.sensorbergorm.SugarRecord;
 import com.sensorbergorm.query.Select;
 
 import org.fest.assertions.api.Assertions;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
 import java.util.List;
 import java.util.UUID;
 
 import util.TestConstants;
+import util.TestDatabaseHelper;
 
-/**
- * Created by skraynick on 16-03-15.
- */
-public class TheSugarActionObjectShould extends SensorbergApplicationTest {
+@RunWith(AndroidJUnit4.class)
+public class TheSugarActionObjectShould {
 
     private SugarAction tested;
     private UUID uuid = UUID.fromString("6133172D-935F-437F-B932-A901265C24B0");
     private Clock clock;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
+        TestDatabaseHelper testDatabaseHelper = new TestDatabaseHelper(InstrumentationRegistry.getTargetContext(), "sensorbergORM.db", null, 2);
+        testDatabaseHelper.getWritableDatabase();
+        SugarContext.init(InstrumentationRegistry.getTargetContext());
+
         SugarAction.deleteAll(SugarAction.class);
         BeaconEvent beaconEvent = new BeaconEvent.Builder()
                 .withAction(new InAppAction(uuid, null, null, null, null, 0))
@@ -41,10 +49,12 @@ public class TheSugarActionObjectShould extends SensorbergApplicationTest {
         tested = SugarAction.from(beaconEvent, clock);
     }
 
+    @Test
     public void test_tested_object_should_not_be_null() {
         Assertions.assertThat(tested).isNotNull();
     }
 
+    @Test
     public void test_should_be_json_serializeable() throws Exception {
         String objectAsJSON = HeadersJsonObjectRequest.gson.toJson(tested);
 
@@ -53,6 +63,7 @@ public class TheSugarActionObjectShould extends SensorbergApplicationTest {
                 .isEqualToIgnoringCase("{\"eid\":\"6133172d-935f-437f-b932-a901265c24b0\",\"trigger\":1,\"pid\":\"192e463c9b8e4590a23fd32007299ef50133701337\",\"dt\":\"1970-01-01T01:00:01.337+01:00\"}");
     }
 
+    @Test
     public void test_should_serialize_a_list_of_objects() throws Exception {
         tested.save();
 
