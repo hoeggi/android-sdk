@@ -1,23 +1,28 @@
 package com.sensorberg.sdk.settings;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.test.AndroidTestCase;
-
 import com.sensorberg.sdk.Constants;
-import util.TestConstants;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.test.AndroidTestCase;
+
+import util.TestConstants;
+
 public class TheSettingsShould extends AndroidTestCase {
 
     Settings tested;
+
     Settings untouched;
+
     private TestPlatform platform;
+
     private SharedPreferences testedSharedPreferences;
+
     private SharedPreferences untouchedSharedPreferences;
 
     @Override
@@ -65,5 +70,25 @@ public class TheSettingsShould extends AndroidTestCase {
         tested.onSettingsFound(new JSONObject());
 
         Assertions.assertThat(tested.getBackgroundWaitTime()).isEqualTo(Settings.DEFAULT_BACKGROUND_WAIT_TIME);
+    }
+
+    public void test_advertising_id_gets_persisted() throws Exception {
+        //prepare the shared preferences
+
+        Assertions.assertThat(untouched.getAdvertisingIdentifier()).isNull();
+        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo(untouched.getAdvertisingIdentifier());
+        Assertions.assertThat(testedSharedPreferences.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, "")).isEmpty();
+
+        tested.setAdvertisingIdentifier("TEST_ID");
+        Assertions.assertThat(testedSharedPreferences.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, "")).isEqualTo(
+                "TEST_ID");
+
+        //load the last values from the shared preferences, as it happens after a restart
+        tested.restoreValuesFromPreferences();
+        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo("TEST_ID");
+
+        //simulating a settings request without content
+        tested.onSettingsFound(new JSONObject());
+        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo("TEST_ID");
     }
 }

@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.sensorbergorm.SugarContext;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;

@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 public class Settings implements SettingsCallback {
 
+    private String advertisingIdentifier;
+
     public void setCallback(SettingsCallback callback) {
         this.callback = callback;
     }
@@ -120,6 +122,7 @@ public class Settings implements SettingsCallback {
             layoutUpdateInterval = preferences.getLong(Constants.SharedPreferencesKeys.Network.BEACON_LAYOUT_UPDATE_INTERVAL, DEFAULT_HISTORY_UPLOAD_INTERVAL);
             shouldRestoreBeaconStates = preferences.getBoolean(Constants.SharedPreferencesKeys.Scanner.SHOULD_RESTORE_BEACON_STATES, DEFAULT_SHOULD_RESTORE_BEACON_STATE);
             cacheTtl = preferences.getLong(Constants.SharedPreferencesKeys.Platform.CACHE_OBJECT_TIME_TO_LIVE, DEFAULT_CACHE_TTL);
+            advertisingIdentifier = preferences.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, null);
         }
     }
 
@@ -281,4 +284,20 @@ public class Settings implements SettingsCallback {
         return cacheTtl;
     }
 
+    public String getAdvertisingIdentifier() {
+        return advertisingIdentifier;
+    }
+
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+        this.advertisingIdentifier = advertisingIdentifier;
+        if (preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            if (advertisingIdentifier == null) {
+                editor.remove(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER);
+            } else {
+                editor.putString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, advertisingIdentifier);
+                editor.apply();
+            }
+        }
+    }
 }

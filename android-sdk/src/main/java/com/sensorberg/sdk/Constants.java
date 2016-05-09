@@ -30,6 +30,7 @@ public class Constants {
             public static final String TIME_BETWEEN_RESOLVE_RETRIES = "com.sensorberg.preferences.settings.timeBetweenResolveRetries";
             public static final String HISTORY_UPLOAD_INTERVAL = "com.sensorberg.preferences.settings.timeBetweenHistoryUploads";
             public static final String BEACON_LAYOUT_UPDATE_INTERVAL = "com.sensorberg.preferences.settings.timeBetweenBeaconLayoutUpdates";
+            public static final String ADVERTISING_IDENTIFIER = "com.sensorberg.preferences.network.advertisingIdentifier";
         }
     }
 

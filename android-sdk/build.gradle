@@ -31,8 +31,6 @@ dependencies {
     compile project(':okvolley')
     compile project(':volley')
 
-    compile 'com.google.android.gms:play-services-ads:8.4.0'
-
     compile 'io.realm:realm-android:0.79.1'
 }
 

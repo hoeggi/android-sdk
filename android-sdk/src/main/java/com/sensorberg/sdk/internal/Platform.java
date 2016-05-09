@@ -26,8 +26,6 @@ public interface Platform {
 
     String getDeviceInstallationIdentifier();
 
-    String getAdvertiserIdentifier();
-
     Transport getTransport();
 
     File getFile(String fileName);
@@ -88,8 +86,6 @@ public interface Platform {
 
     void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 
-    void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener);
-
     interface ForegroundStateListener{
 
         ForegroundStateListener NONE = new ForegroundStateListener() {
@@ -147,12 +143,4 @@ public interface Platform {
     interface DeviceInstallationIdentifierChangeListener {
         void deviceInstallationIdentifierChanged(String deviceInstallationIdentifier);
     }
-
-    /**
-     * Interface for advertising identifier.
-     */
-    interface AdvertiserIdentifierChangeListener {
-        void advertiserIdentifierChanged(String advertiserIdentifier);
-    }
-
 }

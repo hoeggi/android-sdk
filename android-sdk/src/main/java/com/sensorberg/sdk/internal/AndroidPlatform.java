@@ -22,9 +22,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import com.android.sensorbergVolley.RequestQueue;
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.sensorberg.android.okvolley.OkVolley;
 import com.sensorberg.bluetooth.CrashCallBackWrapper;
 import com.sensorberg.sdk.BuildConfig;
@@ -38,7 +35,6 @@ import com.sensorberg.sdk.settings.Settings;
 import com.sensorbergorm.SugarContext;
 import net.danlew.android.joda.JodaTimeAndroid;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -54,7 +50,6 @@ public class AndroidPlatform implements Platform {
 
     private static final String SENSORBERG_PREFERENCE_IDENTIFIER = "com.sensorberg.preferences";
     private static final String SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER = "com.sensorberg.preferences.installationUuidIdentifier";
-    private static final String SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER = "com.sensorberg.preferences.advertiserIdentifier";
 
     private final Context context;
     private final Clock clock;
@@ -79,7 +74,6 @@ public class AndroidPlatform implements Platform {
     private static boolean actionBroadcastReceiversRegistered;
     private final PermissionChecker permissionChecker;
     private  final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
-    private  final ArrayList<AdvertiserIdentifierChangeListener> advertiserIdentifierChangeListener = new ArrayList<>();
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
@@ -130,19 +124,6 @@ public class AndroidPlatform implements Platform {
         SharedPreferences preferences = getSettingsSharedPrefs();
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER, value);
-        editor.commit();
-    }
-
-    /**
-     * Persists the advertiser identifier value to preferences.
-     *
-     * @param value - Value to save.
-     */
-    @SuppressLint("CommitPrefEdits")
-    private void persistAdvertiserIdentifier(String value){
-        SharedPreferences preferences = getSettingsSharedPrefs();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER, value);
         editor.commit();
     }
 
@@ -207,47 +188,6 @@ public class AndroidPlatform implements Platform {
         }).start();
 
         return deviceInstallationIdentifier;
-    }
-
-    @Override
-    public String getAdvertiserIdentifier() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                long timeBefore = System.currentTimeMillis();
-
-                try {
-                    AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
-                    if (info == null || info.getId() == null){
-                        Logger.log.logError("AdvertisingIdClient.getAdvertisingIdInfo returned null");
-                        return;
-                    }
-                    if (info.isLimitAdTrackingEnabled()) {
-                        return;
-                    }
-
-                    advertiserIdentifier = "google:" + info.getId();
-                    persistAdvertiserIdentifier(advertiserIdentifier);
-
-                    for (AdvertiserIdentifierChangeListener listener : advertiserIdentifierChangeListener) {
-                        listener.advertiserIdentifierChanged((!info.isLimitAdTrackingEnabled()) ? advertiserIdentifier : "");
-                    }
-
-                } catch (IOException e) {
-                    Logger.log.logError("Could not fetch the advertising identifier because of an IO Exception" , e);
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    Logger.log.logError("Play services are not available", e);
-                } catch (GooglePlayServicesRepairableException e) {
-                    Logger.log.logError("Play services are in need of repairs", e);
-                } catch (Exception e){
-                    Logger.log.logError("Could not fetch the advertising identifier because of an unknown error" , e);
-                }
-                Logger.log.verbose("Fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
-            }
-        }).start();
-
-        return advertiserIdentifier;
     }
 
     @Override
@@ -396,11 +336,6 @@ public class AndroidPlatform implements Platform {
     @Override
     public void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener) {
         this.deviceInstallationIdentifierChangeListener.add(listener);
-    }
-
-    @Override
-    public void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener) {
-        this.advertiserIdentifierChangeListener.add(listener);
     }
 
     @Override
