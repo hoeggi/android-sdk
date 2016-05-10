@@ -214,8 +214,15 @@ public class TransportShould {
     }
 
     @Test
-    public void transport_should_retry_three_times() throws Exception {
+    public void transport_should_call_enqueue_with_retry() throws Exception {
         //TODO
         Assert.fail();
-    }
+//        Call<SettingsResponse> successResponse = Calls.response(new SettingsResponse(0, new Settings()));
+//                Call < SettingsResponse > exceptionResponse = Calls.failure(new UnsupportedEncodingException());
+//        Mockito.when(mockRetrofitApiService.getSettings()).thenReturn(exceptionResponse, successResponse, successResponse);
+//
+//        TransportSettingsCallback transportSettingsCallback = mock(TransportSettingsCallback.class);
+//        mockedTransport.loadSettings(transportSettingsCallback);
+//        verify(mockedTransport, times(1)).enqueueWithRetry(any(Call.class), any(retrofit2.Callback.class));
+   }
 }
