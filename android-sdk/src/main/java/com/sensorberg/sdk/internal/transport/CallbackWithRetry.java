@@ -14,12 +14,17 @@ public abstract class CallbackWithRetry<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        if (retryCount++ < TOTAL_RETRIES) {
+        if (willRetry()) {
             retry(call);
         }
     }
 
     private void retry(Call<T> call) {
+        retryCount++;
         call.clone().enqueue(this);
+    }
+
+    public boolean willRetry() {
+        return retryCount < TOTAL_RETRIES;
     }
 }

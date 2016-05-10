@@ -223,8 +223,11 @@ public class RetrofitApiTransport implements Transport {
 
             @Override
             public void onFailure(Call<T> call, Throwable t) {
-                super.onFailure(call, t);
-                callback.onFailure(call, t);
+                if (willRetry()) {
+                    super.onFailure(call, t);
+                } else {
+                    callback.onFailure(call, t);
+                }
             }
         });
     }
