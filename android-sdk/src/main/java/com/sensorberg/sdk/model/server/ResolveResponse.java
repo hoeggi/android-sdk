@@ -1,6 +1,8 @@
 package com.sensorberg.sdk.model.server;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.utils.ListUtils;
@@ -10,13 +12,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.ToString;
+
+@ToString
 public class ResolveResponse extends BaseResolveResponse implements Serializable {
 
     static final long serialVersionUID = 1L;
 
+    @Expose
     private List<ResolveAction> actions = Collections.emptyList();
+
+    @Expose
     private List<ResolveAction> instantActions = Collections.emptyList();
 
+    @Expose
     @SerializedName("reportTrigger")
     public Long reportTriggerSeconds;
 
