@@ -1,5 +1,7 @@
 package com.sensorberg.sdk.model.server;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.Date;
 
 @SuppressWarnings("WeakerAccess") //gson serialization
@@ -7,10 +9,12 @@ public class Timeframe {
     /**
      * can be null, if so, only the end is important.
      */
+    @Expose
     public Date start;
     /**
      * can be null, if so, only the start is important.
      */
+    @Expose
     public Date end;
 
     public Timeframe(Long startMillis, Long endMillis) {
