@@ -2,6 +2,7 @@ package com.sensorberg.sdk.testUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import com.sensorberg.sdk.InternalApplicationBootstrapper;
 import com.sensorberg.sdk.action.ActionFactory;
@@ -12,8 +13,6 @@ import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 
 import org.fest.assertions.api.Assertions;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
@@ -43,11 +42,11 @@ public class ResolveResponsePerformanceTest  extends AndroidTestCase {
     InternalApplicationBootstrapper tested;
     private NotificationManager notificationManager;
 
-    private static final JSONObject ANY_IN_APP_JSON = new JSONObject();
+    private static final JsonObject ANY_IN_APP_JSON = new JsonObject();
     static {
         try {
-            ANY_IN_APP_JSON.put("url", "sensorberg://");
-        } catch (JSONException e) {
+            ANY_IN_APP_JSON.addProperty("url", "sensorberg://");
+        } catch (Exception e) {
         }
     }
 

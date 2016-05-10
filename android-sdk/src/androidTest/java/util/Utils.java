@@ -1,10 +1,12 @@
 package util;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import com.sensorberg.sdk.model.BeaconId;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 
@@ -44,9 +46,10 @@ public class Utils {
         return data;
     }
 
-    public static JSONObject getRawResourceAsJSON(int resourceID, Context context) throws IOException, JSONException {
+    public static JsonObject getRawResourceAsJSON(int resourceID, Context context) throws IOException, JSONException {
         String theString = getRawResourceAsString(resourceID, context);
-        return new JSONObject(theString);
+        JsonParser parser = new JsonParser();
+        return parser.parse(theString).getAsJsonObject();
     }
 
     public static String getRawResourceAsString(int resourceID, Context context) throws IOException {
@@ -59,7 +62,7 @@ public class Utils {
 
     public static byte[] wrapWithZeroBytes(byte[] bytesForFakeScan, int length) {
         byte[] value = new byte[length];
-        arraycopy(bytesForFakeScan, 0 , value, 0, bytesForFakeScan.length);
+        arraycopy(bytesForFakeScan, 0, value, 0, bytesForFakeScan.length);
         return value;
     }
 

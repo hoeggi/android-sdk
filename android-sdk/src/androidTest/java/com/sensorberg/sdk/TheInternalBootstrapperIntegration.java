@@ -1,6 +1,7 @@
 package com.sensorberg.sdk;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.di.TestComponent;
@@ -20,7 +21,6 @@ import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -62,12 +62,12 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
 
     InternalApplicationBootstrapper tested;
 
-    private static final JSONObject ANY_IN_APP_JSON = new JSONObject();
+    private static final JsonObject ANY_IN_APP_JSON = new JsonObject();
 
     static {
         try {
-            ANY_IN_APP_JSON.put("url", "sensorberg://");
-        } catch (JSONException e) {
+            ANY_IN_APP_JSON.addProperty("url", "sensorberg://");
+        } catch (Exception e) {
         }
     }
 

@@ -1,5 +1,9 @@
 package com.sensorberg.sdk.model.server;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.annotations.Expose;
+
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionFactory;
@@ -9,7 +13,6 @@ import com.sensorberg.utils.ListUtils;
 import com.sensorberg.utils.UUIDUtils;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,16 +20,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.ToString;
+
 @SuppressWarnings("WeakerAccess")
-public class ResolveAction implements Serializable{
+@ToString
+public class ResolveAction implements Serializable {
 
     static final long serialVersionUID = 1L;
 
     public static final ListUtils.Mapper<ResolveAction, BeaconEvent> BEACON_EVENT_MAPPER = new ListUtils.Mapper<ResolveAction, BeaconEvent>() {
         public BeaconEvent map(ResolveAction resolveAction) {
             try {
-                Action action = ActionFactory.getAction(resolveAction.type, resolveAction.content, UUID.fromString(UUIDUtils.addUuidDashes(resolveAction.eid)), resolveAction.delay * Constants.Time.ONE_SECOND);
-                if (action == null){
+                Action action = ActionFactory
+                        .getAction(resolveAction.type, resolveAction.content, UUID.fromString(UUIDUtils.addUuidDashes(resolveAction.eid)),
+                                resolveAction.delay * Constants.Time.ONE_SECOND);
+                if (action == null) {
                     return null;
                 }
                 return new BeaconEvent.Builder()
@@ -42,22 +50,45 @@ public class ResolveAction implements Serializable{
         }
     };
 
-
+    @Expose
     public String eid;
+
+    @Expose
     public int trigger;
+
+    @Expose
     public int type;
+
+    @Expose
     public String name;
+
+    @Expose
     public List<String> beacons;
+
+    @Expose
     public long suppressionTime; //in seconds
+
+    @Expose
     public boolean sendOnlyOnce;
+
+    @Expose
     public long delay;
+
+    @Expose
     public boolean reportImmediately;
-    public JSONObject content;
+
+    @Expose
+    public JsonObject content;
+
+    @Expose
     public List<Timeframe> timeframes;
+
+    @Expose
     public Date deliverAt;
 
     @SuppressWarnings("WeakerAccess")
-    public ResolveAction(String uuid, int trigger, int type, String name, List<String> beacons, long suppressionTime, long delay, boolean reportImmediately, JSONObject content, Date deliverAt) {
+    public ResolveAction(String uuid, int trigger, int type, String name, List<String> beacons, long suppressionTime, long delay,
+            boolean reportImmediately, JsonObject content, Date deliverAt) {
         this.eid = uuid;
         this.trigger = trigger;
         this.type = type;
@@ -70,7 +101,7 @@ public class ResolveAction implements Serializable{
         this.deliverAt = deliverAt;
     }
 
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException{
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         out.writeObject(eid);
         out.writeInt(trigger);
         out.writeInt(type);
@@ -82,6 +113,7 @@ public class ResolveAction implements Serializable{
         out.writeObject(content.toString());
         out.writeObject(deliverAt);
     }
+
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException, JSONException {
         eid = (String) in.readObject();
         trigger = in.readInt();
@@ -94,13 +126,14 @@ public class ResolveAction implements Serializable{
         reportImmediately = in.readBoolean();
         String jsonString = (String) in.readObject();
         if (jsonString != null) {
-            content = new JSONObject(jsonString);
+            JsonParser parser = new JsonParser();
+            content = parser.parse(jsonString).getAsJsonObject();
         }
         deliverAt = (Date) in.readObject();
     }
 
     public boolean matchTrigger(int eventMask) {
-        return  (eventMask & trigger ) == eventMask;
+        return (eventMask & trigger) == eventMask;
     }
 
     public boolean containsBeacon(BeaconId beaconId) {
@@ -115,26 +148,38 @@ public class ResolveAction implements Serializable{
     }
 
     public boolean isValidNow(long now) {
-        if (timeframes == null || timeframes.isEmpty()){
+        if (timeframes == null || timeframes.isEmpty()) {
             return true;
         }
         for (Timeframe timeframe : timeframes) {
             boolean valid = timeframe.valid(now);
-            if (valid) return true;
+            if (valid) {
+                return true;
+            }
         }
         return false;
     }
 
     public static class Builder {
+
         public String uuid = UUID.randomUUID().toString();
+
         public int trigger;
+
         public int type;
+
         public String name;
+
         public List<String> beacons;
+
         public long suppressionTime;
+
         public long delay;
+
         public boolean reportImmediately;
-        public JSONObject content;
+
+        public JsonObject content;
+
         private Date deliverAt;
 
         public Builder() {
@@ -185,11 +230,10 @@ public class ResolveAction implements Serializable{
             return this;
         }
 
-        public Builder withContent(JSONObject content) {
+        public Builder withContent(JsonObject content) {
             this.content = content;
             return this;
         }
-
 
         public ResolveAction build() {
             return new ResolveAction(uuid, trigger, type, name, beacons, suppressionTime, delay, reportImmediately, content, deliverAt);

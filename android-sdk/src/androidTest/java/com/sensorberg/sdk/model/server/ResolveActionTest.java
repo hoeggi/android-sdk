@@ -1,62 +1,66 @@
 package com.sensorberg.sdk.model.server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 
 import org.fest.assertions.api.Assertions;
-import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
 
 import util.Utils;
 
-import static util.Conditions.size;
-
-public class ResolveActionTest extends SensorbergApplicationTest {
+@RunWith(AndroidJUnit4.class)
+public class ResolveActionTest {
 
     @Inject
     Gson gson;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
     }
 
+    @Test
     public void test_should_be_parseable() throws Exception {
-        ResolveAction tested = gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_001, getContext()), ResolveAction.class);
+        ResolveAction tested = gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_001, InstrumentationRegistry
+                .getContext()), ResolveAction.class);
 
-        Assertions.assertThat(tested.content.getString("url")).isNotNull();
+        Assertions.assertThat(tested.content.get("url")).isNotNull();
+        Assertions.assertThat(tested.content.get("payload")).isNotNull();
+        JsonObject payload = tested.content.get("payload").getAsJsonObject();
 
-        Assertions.assertThat(tested.content.getJSONObject("payload").getString("string")).isEqualTo("string");
-        Assertions.assertThat(tested.content.getJSONObject("payload").getInt("integer")).isEqualTo(123456);
-        Assertions.assertThat(tested.content.getJSONObject("payload").getDouble("double")).isEqualTo(1.2345);
-        Assertions.assertThat(tested.content.getJSONObject("payload").getLong("long")).isEqualTo(9223372036854775806L);
-        Assertions.assertThat(tested.content.getJSONObject("payload").getLong("longWithE")).isEqualTo(9223372036000000000L);
-        Assertions.assertThat(tested.content.getJSONObject("payload").getDouble("doubleWithE")).isEqualTo(0.00014);
+        Assertions.assertThat(payload.get("string").getAsString()).isEqualTo("string");
+        Assertions.assertThat(payload.get("integer").getAsInt()).isEqualTo(123456);
+        Assertions.assertThat(payload.get("double").getAsDouble()).isEqualTo(1.2345);
+        Assertions.assertThat(payload.get("long").getAsLong()).isEqualTo(9223372036854775806L);
+        Assertions.assertThat(payload.get("longWithE").getAsLong()).isEqualTo(9223372036000000000L);
+        Assertions.assertThat(payload.get("doubleWithE").getAsDouble()).isEqualTo(0.00014);
 
-        Assertions.assertThat(tested.content.getJSONObject("payload").getBoolean("true")).isTrue();
-        Assertions.assertThat(tested.content.getJSONObject("payload").getBoolean("false")).isFalse();
+        Assertions.assertThat(payload.get("true").getAsBoolean()).isTrue();
+        Assertions.assertThat(payload.get("false").getAsBoolean()).isFalse();
 
-        Assertions.assertThat(tested.content.getJSONObject("payload").get("null")).isEqualTo(JSONObject.NULL);
-        Assertions.assertThat(tested.content.getJSONObject("payload").getJSONObject("object").getString("foo")).isEqualTo("bar");
-        Assertions.assertThat(tested.content.getJSONObject("payload").getJSONArray("array")).has(size(5));
+        Assertions.assertThat(payload.get("null").isJsonNull());
+        Assertions.assertThat(payload.get("object").getAsJsonObject().get("foo").getAsString()).isEqualTo("bar");
+        Assertions.assertThat(payload.get("array").getAsJsonArray().size()).isEqualTo(5);
     }
 
-
+    @Test
     public void test_should_be_parcelable_as_a_list() throws Exception {
-
-        ResolveAction[] tested = gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_002, getContext()), ResolveAction[].class);
+        ResolveAction[] tested = gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_002,
+                InstrumentationRegistry.getContext()), ResolveAction[].class);
 
         Assertions.assertThat(tested).hasSize(2);
 
-        Assertions.assertThat(tested[0].content.getString("url")).isNotNull();
-        Assertions.assertThat(tested[1].content.getString("url")).isNotNull();
+        Assertions.assertThat(tested[0].content.get("url")).isNotNull();
+        Assertions.assertThat(tested[1].content.get("url")).isNotNull();
     }
-
-
-
 }

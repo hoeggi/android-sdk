@@ -38,11 +38,12 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
 
     /**
      * used internally to create all the @{ResolveAction} from the @{actions} array
-     * @return all matching BeaconEvents
+     *
      * @param scanEvent used to match
+     * @return all matching BeaconEvents
      */
     private List<ResolveAction> getActionsFromLayout(final ScanEvent scanEvent, final long now) {
-        if (actions == null){
+        if (actions == null) {
             return Collections.emptyList();
         }
         return ListUtils.filter(actions, new ListUtils.Filter<ResolveAction>() {
@@ -51,7 +52,7 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
                 boolean matchTrigger = resolveAction.matchTrigger(scanEvent.getEventMask());
                 if (matchTrigger) {
                     boolean matchBeacon = resolveAction.containsBeacon(scanEvent.getBeaconId());
-                    if (matchBeacon){
+                    if (matchBeacon) {
                         return resolveAction.isValidNow(now);
                     }
                 }
@@ -61,11 +62,10 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
     }
 
     /**
-     *
      * @return all instantActions based on the @{instantAction} ResolveActionsArray.
      */
     public List<ResolveAction> getInstantActions() {
-        if (instantActions == null){
+        if (instantActions == null) {
             return Collections.emptyList();
         }
         return ListUtils.filter(instantActions, new ListUtils.Filter<ResolveAction>() {
@@ -81,7 +81,8 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
     }
 
 
-    private ResolveResponse(List<String> accountProximityUUIDs, List<ResolveAction> actions, List<ResolveAction> instantActions, Long reportTriggerSeconds) {
+    private ResolveResponse(List<String> accountProximityUUIDs, List<ResolveAction> actions, List<ResolveAction> instantActions,
+            Long reportTriggerSeconds) {
         super(accountProximityUUIDs);
         this.actions = actions;
         this.instantActions = instantActions;
@@ -89,9 +90,13 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
     }
 
     public static class Builder {
+
         List<String> accountProximityUUIDs = Collections.emptyList();
+
         List<ResolveAction> actions = Collections.emptyList();
+
         List<ResolveAction> instantActions = Collections.emptyList();
+
         Long reportTrigger = 0L;
 
         public Builder() {

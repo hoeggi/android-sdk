@@ -1,81 +1,95 @@
 package com.sensorberg.sdk.action;
 
-import android.net.Uri;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+
+import android.net.Uri;
 
 import java.util.UUID;
 
 public class ActionFactory {
 
     public interface ServerType {
-        int URL_MESSAGE     = 1;
-        int VISIT_WEBSITE   = 2;
-        int IN_APP          = 3;
+
+        int URL_MESSAGE = 1;
+        int VISIT_WEBSITE = 2;
+        int IN_APP = 3;
     }
 
 
     private static final String SUBJECT = "subject";
+
     private static final String BODY = "body";
+
     private static final String URL = "url";
+
     private static final String DELAY_TIME = "delayTime";
+
     private static final String CONTENT = "content";
+
     private static final String TYPE = "type";
+
     private static final String PAYLOAD = "payload";
 
 
-    public static Action actionFromJSONObject(JSONObject contentJSON) throws JSONException {
-        int actionType = contentJSON.getInt(TYPE);
-        UUID actionUUID = UUID.fromString(contentJSON.getString("id"));
+    public static Action actionFromJSONObject(JsonObject contentJSON) throws JSONException {
+        int actionType = contentJSON.get(TYPE).getAsInt();
+        UUID actionUUID = UUID.fromString(contentJSON.get("id").getAsString());
 
-        long delayMilliseconds = contentJSON.optLong(DELAY_TIME, Action.NO_DELAY) * 1000;
-        String messageString = contentJSON.getString(CONTENT);
-        JSONObject message = new JSONObject(messageString);
+        long delayMilliseconds = (contentJSON.get(DELAY_TIME) != null ? contentJSON.get(DELAY_TIME).getAsLong() : Action.NO_DELAY) * 1000;
+
+        String messageString = contentJSON.get(CONTENT).getAsString();
+        JsonParser parser = new JsonParser();
+        JsonObject message = parser.parse(messageString).getAsJsonObject();
 
         return getAction(actionType, message, actionUUID, delayMilliseconds);
     }
 
-    public static Action getAction(int actionType, JSONObject message, UUID actionUUID, long delay) throws JSONException {
-        if (message == null){
+    public static Action getAction(int actionType, JsonObject message, UUID actionUUID, long delay) throws JSONException {
+        if (message == null) {
             return null;
         }
         Action value = null;
         String payload = null;
-        if (message.opt(PAYLOAD) != JSONObject.NULL){
-            payload = message.optString(PAYLOAD, null);
+        if (!message.get(PAYLOAD).isJsonNull()) {
+            payload = message.get(PAYLOAD).getAsString();
         }
 
-        switch (actionType){
-            case ServerType.URL_MESSAGE:{
+        String subject = message.get(SUBJECT) == null ? null : message.get(SUBJECT).getAsString();
+        String body = message.get(BODY) == null ? null : message.get(BODY).getAsString();
+
+        switch (actionType) {
+            case ServerType.URL_MESSAGE: {
                 value = new UriMessageAction(
                         actionUUID,
-                        message.getString(SUBJECT),
-                        message.getString(BODY),
-                        message.getString(URL),
+                        subject,
+                        body,
+                        message.get(URL).getAsString(),
                         payload,
                         delay
                 );
                 break;
             }
-            case ServerType.VISIT_WEBSITE:{
+            case ServerType.VISIT_WEBSITE: {
                 value = new VisitWebsiteAction(
                         actionUUID,
-                        message.optString(SUBJECT, null),
-                        message.optString(BODY, null),
-                        Uri.parse(message.getString(URL)),
+                        subject,
+                        body,
+                        Uri.parse(message.get(URL).getAsString()),
                         payload,
                         delay
                 );
                 break;
             }
-            case ServerType.IN_APP:{
+            case ServerType.IN_APP: {
                 value = new InAppAction(
                         actionUUID,
-                        message.optString(SUBJECT, null),
-                        message.optString(BODY, null),
+                        subject,
+                        body,
                         payload,
-                        Uri.parse(message.getString(URL)),
+                        Uri.parse(message.get(URL).getAsString()),
                         delay
                 );
             }
