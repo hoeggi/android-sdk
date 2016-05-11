@@ -8,7 +8,7 @@ public class SettingsResponse {
 
     @Expose
     @Getter
-    private int revision;
+    private long revision;
 
     @Expose
     @Getter
