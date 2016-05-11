@@ -54,6 +54,7 @@ import util.Utils;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(AndroidJUnit4.class)
 public class TransportShould {
@@ -193,7 +194,8 @@ public class TransportShould {
 
         scans.add(scan1);
 
-        Mockito.when(mockRetrofitApiService.publishHistory(anyString(), any(HistoryBody.class))).thenReturn(Calls.response(new ResolveResponse.Builder().build()));
+        Mockito.when(mockRetrofitApiService.publishHistory(anyString(), any(HistoryBody.class)))
+                .thenReturn(Calls.response(new ResolveResponse.Builder().build()));
 
         tested.publishHistory(scans, actions, new TransportHistoryCallback() {
             @Override
@@ -203,7 +205,8 @@ public class TransportShould {
 
             @Override
             public void onInstantActions(List<BeaconEvent> instantActions) {
-                Assertions.assertThat(instantActions.size()).isEqualTo(0);       }
+                Assertions.assertThat(instantActions.size()).isEqualTo(0);
+            }
 
             @Override
             public void onSuccess(List<SugarScan> scans, List<SugarAction> actions) {
@@ -214,15 +217,12 @@ public class TransportShould {
     }
 
     @Test
-    public void transport_should_call_enqueue_with_retry() throws Exception {
-        //TODO
-        Assert.fail();
-//        Call<SettingsResponse> successResponse = Calls.response(new SettingsResponse(0, new Settings()));
-//                Call < SettingsResponse > exceptionResponse = Calls.failure(new UnsupportedEncodingException());
-//        Mockito.when(mockRetrofitApiService.getSettings()).thenReturn(exceptionResponse, successResponse, successResponse);
-//
-//        TransportSettingsCallback transportSettingsCallback = mock(TransportSettingsCallback.class);
-//        mockedTransport.loadSettings(transportSettingsCallback);
-//        verify(mockedTransport, times(1)).enqueueWithRetry(any(Call.class), any(retrofit2.Callback.class));
-   }
+    public void transport_settings_call_should_call_enqueue_with_retry() throws Exception {
+        Mockito.when(mockRetrofitApiService.getSettings()).thenReturn(Calls.response(new SettingsResponse(0, new Settings())));
+        TransportSettingsCallback transportSettingsCallback = mock(TransportSettingsCallback.class);
+        RetrofitApiTransport spiedTransport = (RetrofitApiTransport) Mockito.spy(tested);
+
+        spiedTransport.loadSettings(transportSettingsCallback);
+        Mockito.verify(spiedTransport, times(1)).enqueueWithRetry(any(Call.class), any(retrofit2.Callback.class));
+    }
 }
