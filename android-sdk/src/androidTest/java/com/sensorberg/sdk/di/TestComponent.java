@@ -7,8 +7,7 @@ import com.sensorberg.sdk.TheSensorbergServiceShould;
 import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
 import com.sensorberg.sdk.internal.http.ApiServiceShould;
-import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettings;
-import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettingsWithEtags;
+import com.sensorberg.sdk.internal.http.HttpStackShouldCacheTheSettings;
 import com.sensorberg.sdk.internal.http.TransportShould;
 import com.sensorberg.sdk.model.server.ResolveActionTest;
 import com.sensorberg.sdk.model.server.TheResolveResponse;
@@ -88,9 +87,7 @@ public interface TestComponent extends Component {
 
     void inject(TransportShould transportShould);
 
-    void inject(OkVolleyShouldCacheTheSettings okVolleyShouldCacheTheSettings);
-
-    void inject(OkVolleyShouldCacheTheSettingsWithEtags okVolleyShouldCacheTheSettingsWithEtags);
+    void inject(HttpStackShouldCacheTheSettings httpStackShouldCacheTheSettings);
 
     void inject(TheSettingsShould theSettingsShould);
 
