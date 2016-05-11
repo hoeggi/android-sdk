@@ -42,7 +42,7 @@ public class SensorbergTestRunner extends android.support.test.runner.AndroidJUn
         }
         JodaTimeAndroid.init(getContext());
 
-        TestDatabaseHelper testDatabaseHelper = new TestDatabaseHelper(getContext(), "sensorbergORM.db", null, 1);
+        TestDatabaseHelper testDatabaseHelper = new TestDatabaseHelper(getContext(), "sensorbergORM.db");
         testDatabaseHelper.getWritableDatabase();
         SugarContext.init(getContext());
 

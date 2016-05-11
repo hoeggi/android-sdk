@@ -11,14 +11,16 @@ import android.util.Log;
  */
 public class TestDatabaseHelper extends SQLiteOpenHelper {
 
+    private static final int DB_VERSION = 2;
+
     static final String DATABASE_CREATE_SCANS  = "create table SUGAR_SCAN" + "( " + "ID integer primary key autoincrement, CREATED_AT long, EVENT_TIME text, " +
             "IS_ENTRY boolean, PROXIMITY_MAJOR integer, PROXIMITY_MINOR integer, PROXIMITY_UUID integer, SENT_TO_SERVER_TIMESTAMP long, SENT_TO_SERVER_TIMESTAMP2 long); ";
 
     static final String DATABASE_CREATE_ACTIONS  = "create table SUGAR_ACTION" + "( " + "ID integer primary key autoincrement, ACTION_ID integer, CREATED_AT long, " +
             "KEEP_FOREVER boolean, PID text, SENT_TO_SERVER_TIMESTAMP long, SENT_TO_SERVER_TIMESTAMP2 long, TIME_OF_PRESENTATION long, TRIGGER integer); ";
 
-    public TestDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    public TestDatabaseHelper(Context context, String name) {
+        super(context, name, null, DB_VERSION);
     }
 
     @Override

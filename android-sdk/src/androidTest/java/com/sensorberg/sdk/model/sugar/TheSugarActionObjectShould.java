@@ -42,7 +42,7 @@ public class TheSugarActionObjectShould {
 
     @Before
     public void setUp() throws Exception {
-        TestDatabaseHelper testDatabaseHelper = new TestDatabaseHelper(InstrumentationRegistry.getTargetContext(), "sensorbergORM.db", null, 2);
+        TestDatabaseHelper testDatabaseHelper = new TestDatabaseHelper(InstrumentationRegistry.getTargetContext(), "sensorbergORM.db");
         testDatabaseHelper.getWritableDatabase();
         SugarContext.init(InstrumentationRegistry.getTargetContext());
 
