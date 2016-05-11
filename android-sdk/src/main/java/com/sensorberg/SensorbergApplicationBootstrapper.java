@@ -95,7 +95,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
 
     public void setResolverBaseURL(URL resolverBaseURL) {
         Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergService.EXTRA_GENERIC_WHAT, SensorbergService.MSG_TYPE_SET_RESOLVER_ENDPOINT);
+        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_TYPE_SET_RESOLVER_ENDPOINT);
         if (resolverBaseURL != null) {
             service.putExtra(SensorbergService.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverBaseURL);
         }
