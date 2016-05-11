@@ -214,22 +214,8 @@ public class RetrofitApiTransport implements Transport {
         getApiService().setLoggingEnabled(enabled);
     }
 
-    private <T> void enqueueWithRetry(Call<T> call, final Callback<T> callback) {
-        call.enqueue(new CallbackWithRetry<T>() {
-            @Override
-            public void onResponse(Call<T> call, Response<T> response) {
-                callback.onResponse(call, response);
-            }
-
-            @Override
-            public void onFailure(Call<T> call, Throwable t) {
-                if (willRetry()) {
-                    super.onFailure(call, t);
-                } else {
-                    callback.onFailure(call, t);
-                }
-            }
-        });
+    public <T> void enqueueWithRetry(Call<T> call, final Callback<T> callback) {
+        call.enqueue(new CallbackWithRetry<>(callback));
     }
 
 }
