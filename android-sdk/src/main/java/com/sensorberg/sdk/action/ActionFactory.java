@@ -2,6 +2,7 @@ package com.sensorberg.sdk.action;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -61,8 +62,13 @@ public class ActionFactory {
         }
         Action value = null;
         String payload = null;
-        if (message.get(PAYLOAD) != null && !message.get(PAYLOAD).isJsonNull()) {
-            payload = getGson().toJson(message.get(PAYLOAD));
+        JsonElement payloadElement = message.get(PAYLOAD);
+        if (payloadElement != null && !payloadElement.isJsonNull()) {
+            if (payloadElement.isJsonArray() || payloadElement.isJsonObject()) {
+                payload = getGson().toJson(message.get(PAYLOAD));
+            } else {
+                payload = payloadElement.getAsString();
+            }
         }
 
         String subject = message.get(SUBJECT) == null ? null : message.get(SUBJECT).getAsString();
