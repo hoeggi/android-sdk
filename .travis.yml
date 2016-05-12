@@ -3,7 +3,6 @@ language: android
 env:
   global:
   - MALLOC_ARENA_MAX=2
-  - ADB_INSTALL_TIMEOUT=10
 
 android:
   components:
@@ -16,7 +15,7 @@ android:
     # Additional components
     - extra-google-m2repository
     - addon-google_apis-google-20
-    - sys-img-armeabi-v7a-android-21
+    - sys-img-armeabi-v7a-android-19
 
 notifications:
   slack: sensorberg:bYfkpm6TExFzF5gdpQz2IHDh
