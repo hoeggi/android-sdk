@@ -1,10 +1,7 @@
 package com.sensorberg.sdk.internal;
 
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-
 import com.sensorberg.sdk.BuildConfig;
+import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 
@@ -17,7 +14,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -27,8 +23,6 @@ import static com.sensorberg.utils.UUIDUtils.uuidWithoutDashesString;
 public class AndroidPlatformIdentifier implements PlatformIdentifier {
 
     private static final String SENSORBERG_PREFERENCE_INSTALLATION_IDENTIFIER = "com.sensorberg.preferences.installationUuidIdentifier";
-
-    private static final String SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER = "com.sensorberg.preferences.advertiserIdentifier";
 
     private final ArrayList<DeviceInstallationIdentifierChangeListener> deviceInstallationIdentifierChangeListener = new ArrayList<>();
 
@@ -47,6 +41,10 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
     public AndroidPlatformIdentifier(Context ctx, SharedPreferences sharedPrefs) {
         context = ctx;
         sharedPreferences = sharedPrefs;
+
+        if (sharedPrefs.contains(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER)) {
+            advertiserIdentifier = sharedPrefs.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, null);
+        }
     }
 
     @SuppressWarnings({"StringConcatenationInsideStringBufferAppend", "StringBufferReplaceableByString"})
@@ -96,43 +94,14 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
 
     @Override
     public String getAdvertiserIdentifier() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                long timeBefore = System.currentTimeMillis();
-
-                try {
-                    AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
-                    if (info == null || info.getId() == null) {
-                        Logger.log.logError("AdvertisingIdClient.getAdvertisingIdInfo returned null");
-                        return;
-                    }
-                    if (info.isLimitAdTrackingEnabled()) {
-                        return;
-                    }
-
-                    advertiserIdentifier = "google:" + info.getId();
-                    persistAdvertiserIdentifier(advertiserIdentifier);
-
-                    for (AdvertiserIdentifierChangeListener listener : advertiserIdentifierChangeListener) {
-                        listener.advertiserIdentifierChanged((!info.isLimitAdTrackingEnabled()) ? advertiserIdentifier : "");
-                    }
-
-                } catch (IOException e) {
-                    Logger.log.logError("Could not fetch the advertising identifier because of an IO Exception", e);
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    Logger.log.logError("Play services are not available", e);
-                } catch (GooglePlayServicesRepairableException e) {
-                    Logger.log.logError("Play services are in need of repairs", e);
-                } catch (Exception e) {
-                    Logger.log.logError("Could not fetch the advertising identifier because of an unknown error", e);
-                }
-                Logger.log.verbose("Fetching the advertising identifier took " + (System.currentTimeMillis() - timeBefore) + " millis");
-            }
-        }).start();
-
         return advertiserIdentifier;
+    }
+
+    @Override
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+        advertiserIdentifier = advertisingIdentifier;
+        persistAdvertiserIdentifier(advertiserIdentifier);
+        notifyAdvertiserIdentifierListeners();
     }
 
     @Override
@@ -143,6 +112,12 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
     @Override
     public void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener) {
         this.advertiserIdentifierChangeListener.add(listener);
+    }
+
+    private void notifyAdvertiserIdentifierListeners(){
+        for (AdvertiserIdentifierChangeListener listener : advertiserIdentifierChangeListener) {
+            listener.advertiserIdentifierChanged(advertiserIdentifier);
+        }
     }
 
     private String getOrCreateInstallationIdentifier() {
@@ -173,13 +148,18 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
     /**
      * Persists the advertiser identifier value to preferences.
      *
-     * @param value - Value to save.
+     * @param advertisingIdentifier - Value to save.
      */
     @SuppressLint("CommitPrefEdits")
-    private void persistAdvertiserIdentifier(String value) {
+    private void persistAdvertiserIdentifier(String advertisingIdentifier) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SENSORBERG_PREFERENCE_ADVERTISER_IDENTIFIER, value);
-        editor.commit();
+
+        if (advertisingIdentifier == null) {
+            editor.remove(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER);
+        } else {
+            editor.putString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, advertisingIdentifier);
+            editor.apply();
+        }
     }
 
     private static String getAppVersionString(Context context) {

@@ -9,6 +9,7 @@ import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.resolver.BeaconEvent;
@@ -63,6 +64,8 @@ public class SensorbergService extends Service {
 
     public static final int MSG_BEACON_LAYOUT_UPDATE = 11;
 
+    public static final int MSG_SET_API_ADVERTISING_IDENTIFIER  = 12;
+
     public static final int GENERIC_TYPE_BEACON_ACTION = 1001;
 
     public static final int GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT = 1002;
@@ -84,6 +87,8 @@ public class SensorbergService extends Service {
     public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL = "com.sensorberg.android.sdk.intent.recolverEndpoint";
 
     public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
+
+    public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
 
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
@@ -111,6 +116,10 @@ public class SensorbergService extends Service {
     @Inject
     @Named("realTransport")
     Transport transport;
+
+    @Inject
+    @Named("androidPlatformIdentifier")
+    PlatformIdentifier platformIdentifier;
 
     Platform platform;
 
@@ -154,6 +163,8 @@ public class SensorbergService extends Service {
                     return "MSG_BEACON_LAYOUT_UPDATE";
                 case MSG_TYPE_SET_RESOLVER_ENDPOINT:
                     return "MSG_TYPE_SET_RESOLVER_ENDPOINT";
+                case MSG_SET_API_ADVERTISING_IDENTIFIER:
+                    return "MSG_SET_API_ADVERTISING_IDENTIFIER";
                 default:
                     return "unknown message" + what;
             }
@@ -337,6 +348,13 @@ public class SensorbergService extends Service {
                         }
                         break;
                     }
+                    case MSG_SET_API_ADVERTISING_IDENTIFIER: {
+                        if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
+                            String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
+                            platformIdentifier.setAdvertisingIdentifier(advertisingIdentifier);
+                        }
+                        break;
+                    }
                 }
             }
         } else {
@@ -391,6 +409,16 @@ public class SensorbergService extends Service {
                             diskConf.resolverConfiguration = new ResolverConfiguration();
                         }
                         diskConf.resolverConfiguration.setApiToken(apiToken);
+                    }
+                    break;
+                }
+                case MSG_SET_API_ADVERTISING_IDENTIFIER: {
+                    if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
+                        String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
+                        if (diskConf.resolverConfiguration == null){
+                            diskConf.resolverConfiguration = new ResolverConfiguration();
+                        }
+                        diskConf.resolverConfiguration.setAdvertisingIdentifier(advertisingIdentifier);
                     }
                     break;
                 }

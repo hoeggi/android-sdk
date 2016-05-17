@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface Transport {
 
+    String ADVERTISING_IDENTIFIER = "X-aid";
+
     interface ProximityUUIDUpdateHandler{
         ProximityUUIDUpdateHandler NONE = new ProximityUUIDUpdateHandler() {
             @Override

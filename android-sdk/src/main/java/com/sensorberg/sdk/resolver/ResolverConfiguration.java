@@ -9,11 +9,12 @@ import java.net.URL;
  */
 public final class ResolverConfiguration implements Serializable {
 
-    static final long serialVersionUID = 2L;
+    static final long serialVersionUID = 3L;
 
     public String apiToken;
 
     private URL resolverLayoutURL;
+    private String advertisingIdentifier;
 
     /**
      * Sets the API token of the {@link ResolverConfiguration}.
@@ -32,5 +33,13 @@ public final class ResolverConfiguration implements Serializable {
 
     public void setResolverLayoutURL(URL resolverLayoutURL) {
         this.resolverLayoutURL = resolverLayoutURL;
+    }
+
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+        this.advertisingIdentifier = advertisingIdentifier;
+    }
+
+    public String getAdvertisingIdentifier() {
+        return advertisingIdentifier;
     }
 }

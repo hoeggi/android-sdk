@@ -67,8 +67,6 @@ public class OkHttpClientTransport implements Transport,
 
     private static final String INSTALLATION_IDENTIFIER = "X-iid";
 
-    private static final String ADVERTISER_IDENTIFIER = "X-aid";
-
     @Setter
     private BeaconHistoryUploadIntervalListener beaconHistoryUploadIntervalListener = BeaconHistoryUploadIntervalListener.NONE;
 
@@ -79,7 +77,7 @@ public class OkHttpClientTransport implements Transport,
 
         this.headers.put("User-Agent", platformId.getUserAgentString());
         this.headers.put(INSTALLATION_IDENTIFIER, platformId.getDeviceInstallationIdentifier());
-        this.headers.put(ADVERTISER_IDENTIFIER, platformId.getAdvertiserIdentifier());
+        advertiserIdentifierChanged(platformId.getAdvertiserIdentifier());
         platformId.addAdvertiserIdentifierChangeListener(this);
         platformId.addDeviceInstallationIdentifierChangeListener(this);
     }
@@ -91,7 +89,11 @@ public class OkHttpClientTransport implements Transport,
 
     @Override
     public void advertiserIdentifierChanged(String advertiserIdentifier) {
-        this.headers.put(ADVERTISER_IDENTIFIER, advertiserIdentifier);
+        if (advertiserIdentifier == null){
+            headers.remove(ADVERTISING_IDENTIFIER);
+        } else {
+            headers.put(ADVERTISING_IDENTIFIER, advertiserIdentifier);
+        }
     }
 
     @Override

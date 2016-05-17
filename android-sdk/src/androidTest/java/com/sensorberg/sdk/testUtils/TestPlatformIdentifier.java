@@ -8,7 +8,7 @@ public class TestPlatformIdentifier implements PlatformIdentifier {
 
     public static final UUID deviceInstallationIdentifier = UUID.randomUUID();
 
-    public static final String googleAdertiserIdentifier = "google" + UUID.randomUUID();
+    public static String googleAdertiserIdentifier = "google" + UUID.randomUUID();
 
     @Override
     public String getUserAgentString() {
@@ -23,6 +23,11 @@ public class TestPlatformIdentifier implements PlatformIdentifier {
     @Override
     public String getAdvertiserIdentifier() {
         return googleAdertiserIdentifier;
+    }
+
+    @Override
+    public void setAdvertisingIdentifier(String advertisingIdentifier) {
+        googleAdertiserIdentifier = advertisingIdentifier;
     }
 
     @Override

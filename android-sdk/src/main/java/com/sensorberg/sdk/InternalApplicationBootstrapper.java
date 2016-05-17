@@ -34,7 +34,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
-import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import java.util.HashSet;
@@ -96,9 +95,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         beaconActionHistoryPublisher = new BeaconActionHistoryPublisher(transport, this, settingsManager.getCacheTtl(), clock, handlerManager);
 
         ResolverConfiguration resolverConfiguration = new ResolverConfiguration();
-
-        transport.setBeaconReportHandler(this);
-        transport.setProximityUUIDUpdateHandler(this);
 
         scanner = new Scanner(settingsManager, settingsManager.isShouldRestoreBeaconStates(), clock, fileManager, scheduler, handlerManager,
                 btPlatform);
@@ -278,7 +274,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
-    @VisibleForTesting
     boolean isSyncEnabled() {
         if (permissionChecker.hasReadSyncSettingsPermissions()) {
             return ContentResolver.getMasterSyncAutomatically();

@@ -26,6 +26,7 @@ public class TheServiceConfiguration extends AndroidTestCase {
     private ResolverConfiguration resolverConf;
 
     private String API_TOKEN = "SOMETHING";
+    private String ADVERTISING_ID = "SOMETHING_ADVERTISING_ID";
 
     @Override
     protected void setUp() throws Exception {
@@ -34,6 +35,7 @@ public class TheServiceConfiguration extends AndroidTestCase {
 
         resolverConf = new ResolverConfiguration();
         resolverConf.setApiToken(API_TOKEN);
+        resolverConf.setAdvertisingIdentifier(ADVERTISING_ID);
 
         tested = new ServiceConfiguration(resolverConf);
     }
@@ -42,10 +44,11 @@ public class TheServiceConfiguration extends AndroidTestCase {
         File file = File.createTempFile("test" + System.currentTimeMillis(), "tmp");
         testFileManager.write(tested, file);
 
-        ServiceConfiguration desrialized = (ServiceConfiguration) testFileManager.getContentsOfFileOrNull(file);
+        ServiceConfiguration deserialized = (ServiceConfiguration) testFileManager.getContentsOfFileOrNull(file);
 
-        Assertions.assertThat(desrialized).isNotNull();
-        Assertions.assertThat(desrialized.resolverConfiguration.apiToken).isEqualTo(API_TOKEN);
-        Assertions.assertThat(desrialized.isComplete()).isTrue();
+        Assertions.assertThat(deserialized).isNotNull();
+        Assertions.assertThat(deserialized.resolverConfiguration.apiToken).isEqualTo(API_TOKEN);
+        Assertions.assertThat(deserialized.resolverConfiguration.getAdvertisingIdentifier()).isEqualTo(ADVERTISING_ID);
+        Assertions.assertThat(deserialized.isComplete()).isTrue();
     }
 }

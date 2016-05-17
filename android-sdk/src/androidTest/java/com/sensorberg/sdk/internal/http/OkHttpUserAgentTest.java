@@ -7,6 +7,7 @@ import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.testUtils.TestPlatform;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -32,6 +33,7 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
     PlatformIdentifier testPlatformIdentifier;
 
     private OkHttpClientTransport transport;
+
     TestPlatform plattform;
 
     @Override
@@ -100,5 +102,26 @@ public class OkHttpUserAgentTest  extends SensorbergApplicationTest {
 
         RecordedRequest request = waitForRequests(1).get(0);
         Assertions.assertThat(request.getHeader("X-aid")).isEqualTo(testPlatformIdentifier.getAdvertiserIdentifier());
+    }
+
+    public void testAdvertisingIdIsSetInVolleyOkHttpHeader() throws Exception {
+
+        testPlatformIdentifier.setAdvertisingIdentifier("ADVERTISING_ID_TEST");
+
+        server.enqueue(new MockResponse().setBody("{}"));
+        transport.perform(getUrl("/layout").toString(), new com.android.sensorbergVolley.Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new com.android.sensorbergVolley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+
+        RecordedRequest request = waitForRequests(1).get(0);
+        Assertions.assertThat(request.getHeader(Transport.ADVERTISING_IDENTIFIER)).isEqualTo("ADVERTISING_ID_TEST");
     }
 }

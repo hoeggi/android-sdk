@@ -8,6 +8,8 @@ public interface PlatformIdentifier {
 
     String getAdvertiserIdentifier();
 
+    void setAdvertisingIdentifier(String advertisingIdentifier);
+
     void addDeviceInstallationIdentifierChangeListener(DeviceInstallationIdentifierChangeListener listener);
 
     void addAdvertiserIdentifierChangeListener(AdvertiserIdentifierChangeListener listener);

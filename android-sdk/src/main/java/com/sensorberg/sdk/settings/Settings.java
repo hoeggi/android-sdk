@@ -90,9 +90,7 @@ public class Settings {
                     DefaultSettings.DEFAULT_SHOULD_RESTORE_BEACON_STATE);
             cacheTtl = preferences.getLong(Constants.SharedPreferencesKeys.Platform.CACHE_OBJECT_TIME_TO_LIVE, DefaultSettings.DEFAULT_CACHE_TTL);
         }
-
     }
-
 
     public Settings(JSONObject settings, SettingsUpdateCallback settingsUpdateCallback) {
         exitTimeoutMillis = settings.optLong("scanner.exitTimeoutMillis", DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
@@ -158,5 +156,4 @@ public class Settings {
             editor.apply();
         }
     }
-
 }
