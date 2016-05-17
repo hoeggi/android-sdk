@@ -6,6 +6,7 @@ import android.os.Message;
 
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.internal.interfaces.RunLoop;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;

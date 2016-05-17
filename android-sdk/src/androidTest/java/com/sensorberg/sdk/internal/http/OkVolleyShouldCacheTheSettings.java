@@ -1,23 +1,28 @@
 package com.sensorberg.sdk.internal.http;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
 import com.android.sensorbergVolley.Request;
 import com.android.sensorbergVolley.RequestQueue;
-import com.android.sensorbergVolley.VolleyError;
 import com.android.sensorbergVolley.toolbox.BasicNetwork;
 import com.android.sensorbergVolley.toolbox.DiskBasedCache;
 import com.sensorberg.android.okvolley.OkHttpStack;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
-import com.sensorberg.sdk.internal.Transport;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
 
+import android.app.Application;
+import android.test.ApplicationTestCase;
+
 import java.io.File;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.TestConstants;
 
@@ -26,15 +31,21 @@ import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by falkorichter on 14/01/15.
  */
 public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Application> {
 
+    @Inject
+    @Named("noClock")
+    Clock clock;
+
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
+
     protected Transport tested;
-    protected TestPlatform testPlattform;
     private OkHttpStack stack;
 
     public OkVolleyShouldCacheTheSettings() {
@@ -45,8 +56,7 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
     @Override
     protected void setUp() throws Exception {
         createApplication();
-
-        testPlattform = spy(new TestPlatform().setContext(getApplication()));
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         stack = spy(new OkHttpStack());
 
@@ -56,22 +66,20 @@ public class OkVolleyShouldCacheTheSettings extends ApplicationTestCase<Applicat
         RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
         queue.start();
 
-        when(testPlattform.getVolleyQueue()).thenReturn(queue);
-
-        tested = new OkHttpClientTransport(testPlattform, null);
+        tested = new OkHttpClientTransport(queue, clock, testPlatformIdentifier, true);
         tested.setApiToken(TestConstants.API_TOKEN);
     }
 
     public void test_should_only_call_the_network_once() throws Exception {
-        tested.getSettings(SettingsCallback.NONE);
-        tested.getSettings(new SettingsCallback() {
+        tested.loadSettings(TransportSettingsCallback.NONE);
+        tested.loadSettings(new TransportSettingsCallback() {
             @Override
             public void nothingChanged() {
                 fail("there should be content returned by the network");
             }
 
             @Override
-            public void onFailure(VolleyError e) {
+            public void onFailure(Exception e) {
                 //fail("this should not fail");
             }
 

@@ -1,11 +1,14 @@
 package com.sensorberg.sdk;
 
 import android.content.IntentFilter;
-import android.util.Log;
 
 import com.sensorberg.sdk.action.ActionFactory;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
 import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.model.server.ResolveAction;
 import com.sensorberg.sdk.model.server.ResolveResponse;
@@ -13,7 +16,9 @@ import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 import com.squareup.okhttp.CacheControl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -22,18 +27,42 @@ import org.fest.assertions.api.Assertions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.SharedPreferences;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import util.TestConstants;
+import util.VolleyUtil;
 
 public class TheInternalBootstrapperIntegration extends SensorbergApplicationTest {
+
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
+    @Inject
+    TestHandlerManager testHandlerManager;
+
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
+
+    @Inject
+    @Named("testBluetoothPlatform")
+    BluetoothPlatform bluetoothPlatform;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
     InternalApplicationBootstrapper tested;
 
     private static final JSONObject ANY_IN_APP_JSON = new JSONObject();
+
     static {
         try {
             ANY_IN_APP_JSON.put("url", "sensorberg://");
@@ -42,6 +71,7 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
     }
 
     private static final String ANY_UUID = UUID.randomUUID().toString();
+
     private static final String ANOTHER_UUID = UUID.randomUUID().toString();
 
     private static final ResolveResponse PUBLISH_HISTORY_RESPONSE = new ResolveResponse.Builder()
@@ -77,14 +107,20 @@ public class TheInternalBootstrapperIntegration extends SensorbergApplicationTes
                             .build()
             ))
             .build();
+
     private TestGenericBroadcastReceiver broadcastReceiver;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        TestPlatform platform = new TestPlatform().setContext(getContext());
-        platform.setTransport(new OkHttpClientTransport(platform, null));
-        tested = new InternalApplicationBootstrapper(platform);
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
+        TestPlatform platform = new TestPlatform();
+        Transport transport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), testHandlerManager.getCustomClock(),
+                testPlatformIdentifier, true);
+        tested = new InternalApplicationBootstrapper(transport, testServiceScheduler, testHandlerManager,
+                testHandlerManager.getCustomClock(),
+                bluetoothPlatform, sharedPreferences);
 
         broadcastReceiver = new TestGenericBroadcastReceiver();
 

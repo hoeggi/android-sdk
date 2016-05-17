@@ -1,8 +1,14 @@
 package com.sensorberg.sdk.settings;
 
 import com.sensorberg.sdk.Constants;
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.OkHttpClientTransport;
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.internal.interfaces.Clock;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Transport;
+
+import junit.framework.Assert;
 
 import org.fest.assertions.api.Assertions;
 import org.json.JSONObject;
@@ -11,15 +17,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import util.TestConstants;
+import util.VolleyUtil;
 
 public class TheSettingsShould extends AndroidTestCase {
 
-    Settings tested;
+    @Inject
+    @Named("realClock")
+    Clock clock;
 
-    Settings untouched;
+    @Inject
+    @Named("testPlatformIdentifier")
+    PlatformIdentifier testPlatformIdentifier;
 
-    private TestPlatform platform;
+    SettingsManager tested;
+
+    SettingsManager untouched;
 
     private SharedPreferences testedSharedPreferences;
 
@@ -28,30 +44,31 @@ public class TheSettingsShould extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        platform = new TestPlatform().setContext(getContext());
-        platform.setTransport(new OkHttpClientTransport(platform, null));
-        platform.getTransport().setApiToken(TestConstants.API_TOKEN);
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
+        Transport transport = new OkHttpClientTransport(VolleyUtil.getCachedVolleyQueue(getContext()), clock, testPlatformIdentifier, true);
+        transport.setApiToken(TestConstants.API_TOKEN);
         testedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        tested = new Settings(platform, testedSharedPreferences);
+        tested = new SettingsManager(transport, testedSharedPreferences);
 
         untouchedSharedPreferences = getContext().getSharedPreferences(Long.toString(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        untouched = new Settings(platform, untouchedSharedPreferences);
+        untouched = new SettingsManager(transport, untouchedSharedPreferences);
     }
 
     public void test_initial_values_should_be_identical() throws Exception {
         Assertions.assertThat(untouched.getBackgroundScanTime()).isEqualTo(tested.getBackgroundScanTime());
         Assertions.assertThat(untouched.getBackgroundWaitTime()).isEqualTo(tested.getBackgroundWaitTime());
-        Assertions.assertThat(untouched.getExitTimeout()).isEqualTo(tested.getExitTimeout());
+        Assertions.assertThat(untouched.getExitTimeoutMillis()).isEqualTo(tested.getExitTimeoutMillis());
         Assertions.assertThat(untouched.getForeGroundScanTime()).isEqualTo(tested.getForeGroundScanTime());
         Assertions.assertThat(untouched.getForeGroundWaitTime()).isEqualTo(tested.getForeGroundWaitTime());
     }
 
     public void test_fetch_values_from_the_network() throws Exception {
-        tested.updateValues();
+        tested.updateSettingsFromNetwork();
 
         Assertions.assertThat(untouched.getBackgroundScanTime()).isNotEqualTo(tested.getBackgroundScanTime());
         Assertions.assertThat(untouched.getBackgroundWaitTime()).isNotEqualTo(tested.getBackgroundWaitTime());
-        Assertions.assertThat(untouched.getExitTimeout()).isNotEqualTo(tested.getExitTimeout());
+        Assertions.assertThat(untouched.getExitTimeoutMillis()).isNotEqualTo(tested.getExitTimeoutMillis());
         Assertions.assertThat(untouched.getForeGroundScanTime()).isNotEqualTo(tested.getForeGroundScanTime());
         Assertions.assertThat(untouched.getForeGroundWaitTime()).isNotEqualTo(tested.getForeGroundWaitTime());
     }
@@ -63,32 +80,32 @@ public class TheSettingsShould extends AndroidTestCase {
         editor.commit();
 
         //load the last values from the shared preferences, as it happens after a restart
-        tested.restoreValuesFromPreferences();
-        Assertions.assertThat(tested.getBackgroundWaitTime()).isEqualTo(Constants.Time.ONE_MINUTE * 6);
+
+        Settings settingsFromPrefs = new Settings(testedSharedPreferences);
+        Assertions.assertThat(settingsFromPrefs.getBackgroundWaitTime()).isEqualTo(Constants.Time.ONE_MINUTE * 6);
 
         //simulating a settings request without content
-        tested.onSettingsFound(new JSONObject());
-
-        Assertions.assertThat(tested.getBackgroundWaitTime()).isEqualTo(Settings.DEFAULT_BACKGROUND_WAIT_TIME);
+        Settings settingsFromEmptyJson = new Settings(new JSONObject(), SettingsUpdateCallback.NONE);
+        Assertions.assertThat(settingsFromEmptyJson.getBackgroundWaitTime()).isEqualTo(DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME);
     }
 
     public void test_advertising_id_gets_persisted() throws Exception {
         //prepare the shared preferences
-
-        Assertions.assertThat(untouched.getAdvertisingIdentifier()).isNull();
-        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo(untouched.getAdvertisingIdentifier());
-        Assertions.assertThat(testedSharedPreferences.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, "")).isEmpty();
-
-        tested.setAdvertisingIdentifier("TEST_ID");
-        Assertions.assertThat(testedSharedPreferences.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, "")).isEqualTo(
-                "TEST_ID");
-
-        //load the last values from the shared preferences, as it happens after a restart
-        tested.restoreValuesFromPreferences();
-        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo("TEST_ID");
-
-        //simulating a settings request without content
-        tested.onSettingsFound(new JSONObject());
-        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo("TEST_ID");
+        Assert.fail();
+//        Assertions.assertThat(untouched.getAdvertisingIdentifier()).isNull();
+//        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo(untouched.getAdvertisingIdentifier());
+//        Assertions.assertThat(testedSharedPreferences.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, "")).isEmpty();
+//
+//        tested.setAdvertisingIdentifier("TEST_ID");
+//        Assertions.assertThat(testedSharedPreferences.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, "")).isEqualTo(
+//                "TEST_ID");
+//
+//        //load the last values from the shared preferences, as it happens after a restart
+//        tested.restoreValuesFromPreferences();
+//        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo("TEST_ID");
+//
+//        //simulating a settings request without content
+//        tested.onSettingsFound(new JSONObject());
+//        Assertions.assertThat(tested.getAdvertisingIdentifier()).isEqualTo("TEST_ID");
     }
 }

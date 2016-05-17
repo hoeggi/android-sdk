@@ -15,6 +15,11 @@ version = "1.2.5"
 android {
     compileSdkVersion project.ext.compileSdkVersion
     buildToolsVersion = project.ext.buildToolsVersion
+
+    lintOptions {
+        disable 'InvalidPackage'
+        abortOnError false
+    }
 }
 
 apply from: '../uploadConf.gradle'

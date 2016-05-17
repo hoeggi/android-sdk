@@ -1,28 +1,55 @@
 package com.sensorberg.sdk.scanner;
 
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
+import com.sensorberg.sdk.settings.DefaultSettings;
+import com.sensorberg.sdk.settings.SettingsManager;
+import com.sensorberg.sdk.testUtils.DumbSucessTransport;
+import com.sensorberg.sdk.testUtils.TestFileManager;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
+import com.sensorberg.sdk.testUtils.TestServiceScheduler;
+
+import android.content.SharedPreferences;
 import android.test.AndroidTestCase;
 
-import com.sensorberg.sdk.settings.Settings;
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import util.Utils;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
 
 
 public class TheDefaultScannerSetupShould extends AndroidTestCase{
+
+    @Inject
+    TestFileManager testFileManager;
+
+    @Inject
+    TestServiceScheduler testServiceScheduler;
+
+    @Inject
+    TestHandlerManager testHandlerManager;
+
+    @Inject
+    @Named("testBluetoothPlatform")
+    BluetoothPlatform bluetoothPlatform;
+
+    @Inject
+    SharedPreferences sharedPreferences;
+
     protected UIScanner tested;
-    protected Settings settings;
-    protected TestPlatform plattform;
+    protected SettingsManager settings;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        plattform = new TestPlatform();
-        settings = new Settings(plattform, null);
-        tested = new UIScanner(settings, plattform);
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        sharedPreferences.edit().clear().commit();
+
+        settings = new SettingsManager(new DumbSucessTransport(), sharedPreferences);
+        tested = new UIScanner(settings, testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler, testHandlerManager, bluetoothPlatform);
 
         tested.scanTime = Long.MAX_VALUE;
         tested.waitTime = 0;
@@ -38,13 +65,15 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     public void test_foreground_scanning_time_should_be_10seconds(){
         tested.hostApplicationInForeground();
 
-        assertThat(tested.scanTime).isEqualTo(Utils.TEN_SECONDS);
+        assertThat(settings.getForeGroundScanTime()).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
+        assertThat(tested.scanTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
     }
 
     public void test_foreground_pause_time_should_be_10seconds(){
         tested.hostApplicationInForeground();
 
-        assertThat(tested.waitTime).isEqualTo(Utils.TEN_SECONDS);
+        assertThat(settings.getForeGroundWaitTime()).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
+        assertThat(tested.waitTime).isEqualTo(DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
     }
 
     public void test_background_scanning_time_should_be_20seconds(){
@@ -60,16 +89,16 @@ public class TheDefaultScannerSetupShould extends AndroidTestCase{
     }
 
     public void test_exit_time_should_be_correct(){
-        assertThat(settings.getExitTimeout()).isEqualTo(Utils.EXIT_TIME);
+        assertThat(settings.getExitTimeoutMillis()).isEqualTo(Utils.EXIT_TIME);
     }
 
     public void test_background_scan_time_should_be_bigger_than_exitTimeout(){
         tested.hostApplicationInBackground();
 
-        assertThat(tested.waitTime).isGreaterThan(settings.getExitTimeout());
+        assertThat(tested.waitTime).isGreaterThan(settings.getExitTimeoutMillis());
     }
 
     public void test_foreground_scan_time_should_be_bigger_than_exitTimeout(){
-        assertThat(tested.scanTime).isGreaterThan(settings.getExitTimeout());
+        assertThat(tested.scanTime).isGreaterThan(settings.getExitTimeoutMillis());
     }
 }

@@ -1,17 +1,20 @@
 package com.sensorberg.sdk.model.sugar;
 
-import android.test.AndroidTestCase;
-
-import com.sensorbergorm.SugarRecord;
-import com.sensorbergorm.query.Select;
-import com.sensorberg.sdk.internal.Clock;
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testUtils.NoClock;
+import com.sensorbergorm.SugarRecord;
+import com.sensorbergorm.query.Select;
+
 import org.fest.assertions.api.Assertions;
+
+import android.test.AndroidTestCase;
+
 import java.util.List;
+
 import util.TestConstants;
 
 public class TheSugarScanobjectShould extends AndroidTestCase {

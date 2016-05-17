@@ -5,6 +5,7 @@ android {
     buildToolsVersion project.ext.buildToolsVersion
 
     defaultConfig {
+        multiDexEnabled true
         minSdkVersion 18
         targetSdkVersion 21
         manifestPlaceholders = [
@@ -20,9 +21,11 @@ android {
 
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
         exclude 'LICENSE.txt'
+        exclude 'LICENSE'
     }
-
 
     signingConfigs {
         if (isReleaseAble) {
@@ -54,7 +57,7 @@ android {
 }
 
 dependencies {
-    compile "com.sensorberg.sdk:android-sdk-bootstrapper:2.1.0RC1"
     compile project(':android-sdk')
+    compile ('com.android.support:multidex:1.0.1')
     compile 'com.google.android.gms:play-services-ads:8.1.0'
 }

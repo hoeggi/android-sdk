@@ -1,9 +1,10 @@
 package com.sensorberg.sdk.testUtils;
 
-import com.sensorberg.sdk.internal.BeaconResponseHandler;
-import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
+import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
@@ -14,6 +15,11 @@ public class DumbSucessTransport implements Transport {
 
     @Override
     public void updateBeaconLayout() {
+
+    }
+
+    @Override
+    public void setBeaconHistoryUploadIntervalListener(BeaconHistoryUploadIntervalListener listener) {
 
     }
 
@@ -38,12 +44,7 @@ public class DumbSucessTransport implements Transport {
     }
 
     @Override
-    public void setAdvertisingIdentifier(String advertisingIdentifier) {
-
-    }
-
-    @Override
-    public void getSettings(SettingsCallback settingsCallback) {
+    public void loadSettings(TransportSettingsCallback transportSettingsCallback) {
 
     }
 

@@ -4,16 +4,18 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.sensorbergorm.SugarRecord;
-import com.sensorbergorm.query.Select;
-import com.sensorberg.sdk.internal.Clock;
+
+import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.model.ISO8601TypeAdapter;
 import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorbergorm.SugarRecord;
+import com.sensorbergorm.query.Condition;
+import com.sensorbergorm.query.Select;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import com.sensorbergorm.query.Condition;
 
 /**
  * Created by skraynick on 16-03-14.

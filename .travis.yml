@@ -15,7 +15,7 @@ android:
     # Additional components
     - extra-google-m2repository
     - addon-google_apis-google-20
-    - sys-img-armeabi-v7a-android-19    
+    - sys-img-armeabi-v7a-android-21
 
 notifications:
   slack: sensorberg:bYfkpm6TExFzF5gdpQz2IHDh
@@ -26,4 +26,4 @@ before_script:
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 
-script: ./gradlew assemble connectedAndroidTest createDebugCoverageReport
+script: ./gradlew assemble

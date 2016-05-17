@@ -1,7 +1,7 @@
-package com.sensorberg.sdk.internal;
+package com.sensorberg.sdk.internal.interfaces;
 
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
-import com.sensorberg.sdk.internal.transport.SettingsCallback;
+import com.sensorberg.sdk.internal.transport.TransportSettingsCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
@@ -41,11 +41,11 @@ public interface Transport {
 
     void setApiToken(String apiToken);
 
-    void setAdvertisingIdentifier(String advertisingIdentifier);
-
-    void getSettings(SettingsCallback settingsCallback);
+    void loadSettings(TransportSettingsCallback transportSettingsCallback);
 
     void publishHistory(List<SugarScan> scans, List<SugarAction> actions, HistoryCallback callback);
 
     void updateBeaconLayout();
+
+    void setBeaconHistoryUploadIntervalListener(BeaconHistoryUploadIntervalListener listener);
 }

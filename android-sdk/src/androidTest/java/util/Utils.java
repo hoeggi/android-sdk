@@ -1,14 +1,13 @@
 package util;
 
-import android.content.Context;
-
 import com.android.sensorbergVolley.ServerError;
-import com.android.sensorbergVolley.VolleyError;
 import com.sensorberg.sdk.model.BeaconId;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
 
 import java.io.IOException;
 import java.util.Random;
@@ -66,7 +65,7 @@ public class Utils {
         return value;
     }
 
-    public static void failWithVolleyError(VolleyError volleyError, String s){
+    public static void failWithVolleyError(Exception volleyError, String s){
         Throwable error = volleyError;
         while (error.getCause() != null){
             error = error.getCause();

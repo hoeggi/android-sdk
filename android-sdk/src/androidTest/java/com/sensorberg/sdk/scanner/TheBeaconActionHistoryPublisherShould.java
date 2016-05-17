@@ -3,41 +3,50 @@ package com.sensorberg.sdk.scanner;
 import android.util.Log;
 
 import com.sensorberg.sdk.SensorbergApplicationTest;
-import util.TestConstants;
+import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
-import com.sensorberg.sdk.internal.Transport;
+import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.HistoryCallback;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolverListener;
-import com.sensorberg.sdk.testUtils.TestPlatform;
-import java.util.List;
+import com.sensorberg.sdk.settings.DefaultSettings;
+import com.sensorberg.sdk.testUtils.TestHandlerManager;
+
 import java.util.UUID;
+
+import javax.inject.Inject;
+
+import util.TestConstants;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import java.util.List;
 import static util.Verfier.hasSize;
-import static org.fest.assertions.api.Assertions.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public class TheBeaconActionHistoryPublisherShould extends SensorbergApplicationTest {
+
+    @Inject
+    TestHandlerManager testHandlerManager;
+
     private BeaconActionHistoryPublisher tested;
 
     private Transport transport;
-    private TestPlatform testPlattform;
-
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+
+        testHandlerManager.getCustomClock().setNowInMillis(System.currentTimeMillis());
         SugarAction.deleteAll(SugarAction.class);
         SugarScan.deleteAll(SugarScan.class);
-        testPlattform = new TestPlatform().setContext(getContext());
-        testPlattform.clock.setNowInMillis(System.currentTimeMillis());
-
         transport = mock(Transport.class);
-        testPlattform.setTransport(transport);
-        tested = new BeaconActionHistoryPublisher(testPlattform, ResolverListener.NONE, null);
+        tested = new BeaconActionHistoryPublisher(transport, ResolverListener.NONE, DefaultSettings.DEFAULT_CACHE_TTL, testHandlerManager.getCustomClock(), testHandlerManager);
 
         tested.onScanEventDetected(new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())
