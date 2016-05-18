@@ -145,7 +145,7 @@ public class RetrofitApiTransport implements Transport {
                     if (response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
                         transportSettingsCallback.onSettingsFound(null);
                     } else {
-                        transportSettingsCallback.onSettingsFound(response.body().getSettings());
+                        transportSettingsCallback.onSettingsFound(response.body());
                     }
                 } else {
                     if (response.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {

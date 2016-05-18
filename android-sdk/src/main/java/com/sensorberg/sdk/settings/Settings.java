@@ -124,18 +124,8 @@ public class Settings {
         }
     }
 
-<<<<<<< HEAD
-    public Settings(JSONObject settings, SettingsUpdateCallback settingsUpdateCallback) {
-        exitTimeoutMillis = settings.optLong("scanner.exitTimeoutMillis", DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
-        foreGroundScanTime = settings.optLong("scanner.foreGroundScanTime", DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
-        foreGroundWaitTime = settings.optLong("scanner.foreGroundWaitTime", DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
-        backgroundScanTime = settings.optLong("scanner.backgroundScanTime", DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME);
-        backgroundWaitTime = settings.optLong("scanner.backgroundWaitTime", DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME);
 
-        cleanBeaconMapRestartTimeout = settings
-                .optLong("scanner.cleanBeaconMapRestartTimeout", DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT);
-=======
-    public Settings(Settings newSettings, SettingsUpdateCallback settingsUpdateCallback) {
+    public Settings(long rev, Settings newSettings, SettingsUpdateCallback settingsUpdateCallback) {
         exitTimeoutMillis = newSettings.getExitTimeoutMillis();
         foreGroundScanTime = newSettings.getForeGroundScanTime();
         foreGroundWaitTime = newSettings.getForeGroundWaitTime();
@@ -143,13 +133,18 @@ public class Settings {
         backgroundWaitTime = newSettings.getBackgroundWaitTime();
 
         cleanBeaconMapRestartTimeout = newSettings.getCleanBeaconMapRestartTimeout();
->>>>>>> replaced OkHttpClientTransport with RetrofitApiTransport
 
         messageDelayWindowLength = newSettings.getMessageDelayWindowLength();
         cacheTtl = newSettings.getCacheTtl();
         maxRetries = newSettings.getMaxRetries();
         millisBetweenRetries = newSettings.getMillisBetweenRetries();
         shouldRestoreBeaconStates = newSettings.isShouldRestoreBeaconStates();
+
+        if (rev >= 0) {
+            revision = rev;
+        } else {
+            revision = null;
+        }
 
         if (newSettings.getHistoryUploadInterval() != historyUploadInterval) {
             historyUploadInterval = newSettings.getHistoryUploadInterval();

@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal.transport.interfaces;
 
-import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.internal.transport.model.SettingsResponse;
 
 public interface TransportSettingsCallback {
     TransportSettingsCallback NONE = new TransportSettingsCallback() {
@@ -15,7 +15,7 @@ public interface TransportSettingsCallback {
         }
 
         @Override
-        public void onSettingsFound(Settings settings) {
+        public void onSettingsFound(SettingsResponse settings) {
 
         }
     };
@@ -24,5 +24,5 @@ public interface TransportSettingsCallback {
 
     void onFailure(Exception e);
 
-    void onSettingsFound(Settings settings);
+    void onSettingsFound(SettingsResponse settings);
 }

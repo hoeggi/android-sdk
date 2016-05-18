@@ -125,7 +125,7 @@ public class TransportShould {
             }
 
             @Override
-            public void onSettingsFound(Settings settings) {
+            public void onSettingsFound(SettingsResponse settings) {
                 Assert.fail();
             }
         });
@@ -173,7 +173,7 @@ public class TransportShould {
             }
 
             @Override
-            public void onSettingsFound(Settings settings) {
+            public void onSettingsFound(SettingsResponse settings) {
                 Assertions.assertThat(settings).isNotNull();
             }
         });

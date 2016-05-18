@@ -5,6 +5,7 @@ import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListene
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.internal.transport.interfaces.TransportSettingsCallback;
+import com.sensorberg.sdk.internal.transport.model.SettingsResponse;
 
 import android.content.SharedPreferences;
 
@@ -56,14 +57,14 @@ public class SettingsManager {
         }
 
         @Override
-        public void onSettingsFound(Settings networkSettings) {
+        public void onSettingsFound(SettingsResponse networkSettingsResponse) {
             Settings newSettings;
 
-            if (networkSettings == null) {
+            if (networkSettingsResponse == null) {
                 newSettings = new Settings();
                 preferences.edit().clear().apply();
             } else {
-                newSettings = new Settings(networkSettings, settingsUpdateCallback);
+                newSettings = new Settings(networkSettingsResponse.getRevision(), networkSettingsResponse.getSettings(), settingsUpdateCallback);
             }
 
             updateSettings(newSettings);
@@ -109,7 +110,7 @@ public class SettingsManager {
         return getSettings().getBackgroundScanTime();
     }
 
-    public long getCacheTtl(){
+    public long getCacheTtl() {
         return getSettings().getCacheTtl();
     }
 
@@ -139,5 +140,9 @@ public class SettingsManager {
 
     public long getMessageDelayWindowLength() {
         return getSettings().getMessageDelayWindowLength();
+    }
+
+    public Long getSettingsRevision() {
+        return getSettings().getRevision();
     }
 }
