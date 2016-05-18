@@ -66,8 +66,7 @@ public class TheInternalApplicationBootstrapperShould extends SensorbergApplicat
         }
 
         tested = spy(new InternalApplicationBootstrapper(new DumbSucessTransport(), testServiceScheduler, testHandlerManager,
-                testHandlerManager.getCustomClock(),
-                bluetoothPlatform, sharedPreferences));
+                testHandlerManager.getCustomClock(), bluetoothPlatform));
 
         beaconEventSupressionTime = new BeaconEvent.Builder()
                 .withAction(new InAppAction(UUID, "irrelevant", "irrelevant", null, null, 0))

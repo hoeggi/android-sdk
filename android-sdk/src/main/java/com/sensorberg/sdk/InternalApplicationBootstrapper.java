@@ -1,10 +1,7 @@
 package com.sensorberg.sdk;
 
-import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
-import com.sensorberg.sdk.receivers.NetworkInfoBroadcastReceiver;
 import com.sensorberg.SensorbergApplicationBootstrapper;
 import com.sensorberg.sdk.action.Action;
-import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -16,6 +13,9 @@ import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
+import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
+import com.sensorberg.sdk.receivers.NetworkInfoBroadcastReceiver;
+import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.Resolution;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
@@ -33,7 +33,6 @@ import com.sensorberg.utils.ListUtils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
 import android.util.Log;
 
@@ -81,21 +80,18 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     FileManager fileManager;
 
     @Inject
-    ServiceScheduler mServiceScheduler;
-
-    @Inject
     PermissionChecker permissionChecker;
 
     BluetoothPlatform bluetoothPlatform;
 
     public InternalApplicationBootstrapper(Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager,
-            Clock clk, BluetoothPlatform btPlatform, SharedPreferences preferences) {
+            Clock clk, BluetoothPlatform btPlatform) {
         super(scheduler);
         SensorbergApplicationBootstrapper.getComponent().inject(this);
 
         this.transport = transport;
         settingsManager.setSettingsUpdateCallback(settingsUpdateCallbackListener);
-        settingsManager.setMessageDelayWindowLengthListener((MessageDelayWindowLengthListener) mServiceScheduler);
+        settingsManager.setMessageDelayWindowLengthListener((MessageDelayWindowLengthListener) scheduler);
         clock = clk;
         bluetoothPlatform = btPlatform;
 
