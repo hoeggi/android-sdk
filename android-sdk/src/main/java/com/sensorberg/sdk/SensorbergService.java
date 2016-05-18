@@ -1,18 +1,17 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.SensorbergApplicationBootstrapper;
-import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
-import com.sensorberg.sdk.internal.AndroidPlatform;
-import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
+import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
@@ -122,6 +121,7 @@ public class SensorbergService extends Service {
     @Named("androidPlatformIdentifier")
     PlatformIdentifier platformIdentifier;
 
+    @Named("androidPlatform")
     Platform platform;
 
     private static class MSG {
@@ -194,7 +194,6 @@ public class SensorbergService extends Service {
     public void onCreate() {
         super.onCreate();
         SensorbergApplicationBootstrapper.getComponent().inject(this);
-        platform = new AndroidPlatform(getApplicationContext());
         Logger.log.logServiceState("onCreate");
         JodaTimeAndroid.init(this);
     }
@@ -237,7 +236,7 @@ public class SensorbergService extends Service {
                         bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
                                 bluetoothPlatform, sharedPreferences);
                         bootstrapper.setApiToken(apiKey);
-                        persistConfiguration(bootstrapper);
+                        persistConfiguration(bootstrapper.resolver.configuration);
                         bootstrapper.startScanning();
                         return START_STICKY;
                     }
@@ -305,7 +304,7 @@ public class SensorbergService extends Service {
                         if (intent.hasExtra(MSG_SET_API_TOKEN_TOKEN)) {
                             String apiToken = intent.getStringExtra(MSG_SET_API_TOKEN_TOKEN);
                             bootstrapper.setApiToken(apiToken);
-                            persistConfiguration(bootstrapper);
+                            persistConfiguration(bootstrapper.resolver.configuration);
                         }
                         break;
                     }
@@ -430,7 +429,6 @@ public class SensorbergService extends Service {
         }
     }
 
-
     private boolean handleIntentEvenIfNoBootstrapperPresent(Intent intent) {
         if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
             int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
@@ -479,11 +477,6 @@ public class SensorbergService extends Service {
     private void persistConfiguration(ResolverConfiguration resolverConfiguration) {
         ServiceConfiguration conf = new ServiceConfiguration(resolverConfiguration);
         persistConfiguration(conf);
-    }
-
-    private void persistConfiguration(InternalApplicationBootstrapper bootstrapper) {
-        persistConfiguration(
-                bootstrapper.resolver.configuration);
     }
 
     @Override

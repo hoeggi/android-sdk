@@ -8,6 +8,7 @@ import com.sensorberg.sdk.internal.AndroidBluetoothPlatform;
 import com.sensorberg.sdk.internal.AndroidClock;
 import com.sensorberg.sdk.internal.AndroidFileManager;
 import com.sensorberg.sdk.internal.AndroidHandlerManager;
+import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.AndroidPlatformIdentifier;
 import com.sensorberg.sdk.internal.AndroidServiceScheduler;
 import com.sensorberg.sdk.internal.PermissionChecker;
@@ -17,6 +18,7 @@ import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
@@ -194,5 +196,12 @@ public class ProvidersModule {
     @Singleton
     public RetrofitApiServiceImpl provideRealRetrofitApiService(Context context, Gson gson, @Named("androidPlatformIdentifier") PlatformIdentifier platformIdentifier) {
         return new RetrofitApiServiceImpl(context, gson, platformIdentifier, URLFactory.getResolveURLString());
+    }
+
+    @Provides
+    @Named("androidPlatform")
+    @Singleton
+    public Platform provideAndroidPlatform(Context context) {
+        return new AndroidPlatform(context);
     }
 }
