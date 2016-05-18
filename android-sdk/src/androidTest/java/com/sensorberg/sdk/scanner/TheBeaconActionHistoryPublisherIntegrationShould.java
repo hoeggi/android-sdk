@@ -1,29 +1,39 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.sdk.SensorbergApplicationTest;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
+import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
+import com.sensorberg.sdk.internal.transport.RetrofitApiTransport;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.model.HistoryBody;
+import com.sensorberg.sdk.model.server.ResolveResponse;
 import com.sensorberg.sdk.settings.SettingsManager;
-import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 
-import android.content.SharedPreferences;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.RecordedRequest;
+import retrofit2.mock.Calls;
 import util.TestConstants;
 
-import static com.sensorberg.sdk.scanner.RecordedRequestAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-public class TheBeaconActionHistoryPublisherIntegrationShould extends SensorbergApplicationTest {
+@RunWith(AndroidJUnit4.class)
+public class TheBeaconActionHistoryPublisherIntegrationShould {
 
     @Inject
-    @Named("realHandlerManager")
+    @Named("testHandlerWithCustomClock")
     HandlerManager testHandlerManager;
 
     @Inject
@@ -31,43 +41,36 @@ public class TheBeaconActionHistoryPublisherIntegrationShould extends Sensorberg
     Clock clock;
 
     @Inject
-    SharedPreferences sharedPreferences;
-
-    @Inject
-    @Named("realTransport")
-    Transport transport;
-
-    @Inject
     @Named("dummyTransportSettingsManager")
     SettingsManager testSettingsManager;
 
-    private ScanEvent SCAN_EVENT;
+    RetrofitApiServiceImpl mockRetrofitApiService = mock(RetrofitApiServiceImpl.class);
+
+    private ScanEvent SCAN_EVENT = new ScanEvent.Builder()
+            .withEventMask(ScanEventType.ENTRY.getMask())
+            .withBeaconId(TestConstants.ANY_BEACON_ID)
+            .withEventTime(100)
+            .build();
 
     private BeaconActionHistoryPublisher tested;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        tested = new BeaconActionHistoryPublisher(getContext(), new DumbSucessTransport(), testSettingsManager, clock,
+        Transport testTransportWithMockService = new RetrofitApiTransport(mockRetrofitApiService, clock);
+        tested = new BeaconActionHistoryPublisher(InstrumentationRegistry.getContext(), testTransportWithMockService, testSettingsManager, clock,
                 testHandlerManager);
-
-        startWebserver();
-        server.enqueue(new MockResponse().setBody("{}"));
-        SCAN_EVENT = new ScanEvent.Builder()
-                .withEventMask(ScanEventType.ENTRY.getMask())
-                .withBeaconId(TestConstants.ANY_BEACON_ID)
-                .withEventTime(100)
-                .build();
     }
 
+    @Test
     public void test_should_send_history_to_the_server() throws Exception {
+        Mockito.when(mockRetrofitApiService.publishHistory(Mockito.anyString(), Mockito.any(HistoryBody.class)))
+                .thenReturn(Calls.response(new ResolveResponse.Builder().build()));
+
         tested.onScanEventDetected(SCAN_EVENT);
         tested.publishHistory();
 
-        RecordedRequest request = server.takeRequest();
-
-        assertThat(request).matchesRawResourceRequest(com.sensorberg.sdk.test.R.raw.request_reporting_001, getContext());
+        verify(mockRetrofitApiService, times(1)).publishHistory(Mockito.anyString(), Mockito.any(HistoryBody.class));
     }
 }
