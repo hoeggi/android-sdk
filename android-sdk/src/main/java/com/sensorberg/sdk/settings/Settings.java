@@ -1,57 +1,91 @@
 package com.sensorberg.sdk.settings;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import com.sensorberg.sdk.Constants;
 
 import android.content.SharedPreferences;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class Settings {
 
     @Getter
+    @Expose
+    @SerializedName("cache.objectTTL")
     private long cacheTtl = DefaultSettings.DEFAULT_CACHE_TTL;
 
     @Getter
+    @Expose
+    @SerializedName("network.beaconLayoutUpdateInterval")
     private long layoutUpdateInterval = DefaultSettings.DEFAULT_LAYOUT_UPDATE_INTERVAL;
 
     @Getter
+    @Expose
+    @SerializedName("presenter.messageDelayWindowLength")
     private long messageDelayWindowLength = DefaultSettings.DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.exitTimeoutMillis")
     private long exitTimeoutMillis = DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.foreGroundScanTime")
     private long foreGroundScanTime = DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.foreGroundWaitTime")
     private long foreGroundWaitTime = DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.backgroundScanTime")
     private long backgroundScanTime = DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.backgroundWaitTime")
     private long backgroundWaitTime = DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("network.millisBetweenRetries")
     private long millisBetweenRetries = DefaultSettings.DEFAULT_MILLIS_BEETWEEN_RETRIES;
 
     @Getter
-    private int maxRetries = DefaultSettings.DEFAULT_MAX_RETRIES;
+    @Expose
+    @SerializedName("network.maximumResolveRetries")
+    private int maxRetries = DefaultSettings.DEFAULT_MAX_RETRIES; //TODO is this used anywhere?
 
     @Getter
+    @Expose
+    @SerializedName("network.historyUploadInterval")
     @Setter
     private long historyUploadInterval = DefaultSettings.DEFAULT_HISTORY_UPLOAD_INTERVAL;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.cleanBeaconMapRestartTimeout")
     private long cleanBeaconMapRestartTimeout = DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT;
 
     @Getter
+    @Expose
+    @SerializedName("settings.updateTime")
     private long settingsUpdateInterval = DefaultSettings.DEFAULT_SETTINGS_UPDATE_INTERVAL;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.restoreBeaconStates")
     private boolean shouldRestoreBeaconStates = DefaultSettings.DEFAULT_SHOULD_RESTORE_BEACON_STATE;
 
+    @Getter
     private Long revision = null;
 
     public Settings() {
@@ -131,7 +165,6 @@ public class Settings {
             settingsUpdateInterval = newSettings.getSettingsUpdateInterval();
             settingsUpdateCallback.onSettingsUpdateIntervalChange(settingsUpdateInterval);
         }
-
     }
 
     public void persistToPreferences(SharedPreferences preferences) {
