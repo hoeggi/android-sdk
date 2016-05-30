@@ -280,6 +280,26 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         }
     }
 
+    public ListUtils.Filter<BeaconEvent> beaconEventFilter = new ListUtils.Filter<BeaconEvent>() {
+        @Override
+        public boolean matches(BeaconEvent beaconEvent) {
+            if (beaconEvent.getSuppressionTimeMillis() > 0) {
+                long lastAllowedPresentationTime = clock.now() - beaconEvent.getSuppressionTimeMillis();
+                if (SugarAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid())) {
+                    return false;
+                }
+            }
+            if (beaconEvent.sendOnlyOnce) {
+                Log.i("this", "sendOnlyOnce");
+                System.out.print("sendOnlyOnce");
+                if (SugarAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
+
     @Getter
     ResolverListener resolverListener = new ResolverListener() {
         @Override
@@ -289,25 +309,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
         @Override
         public void onResolutionsFinished(List<BeaconEvent> beaconEvents) {
-            List<BeaconEvent> events = ListUtils.filter(beaconEvents, new ListUtils.Filter<BeaconEvent>() {
-                @Override
-                public boolean matches(BeaconEvent beaconEvent) {
-                    if (beaconEvent.getSuppressionTimeMillis() > 0) {
-                        long lastAllowedPresentationTime = clock.now() - beaconEvent.getSuppressionTimeMillis();
-                        if (SugarAction.getCountForSuppressionTime(lastAllowedPresentationTime, beaconEvent.getAction().getUuid())) {
-                            return false;
-                        }
-                    }
-                    if (beaconEvent.sendOnlyOnce) {
-                        Log.i("this", "sendOnlyOnce");
-                        System.out.print("sendOnlyOnce");
-                        if (SugarAction.getCountForShowOnlyOnceSuppression(beaconEvent.getAction().getUuid())) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-            });
+            List<BeaconEvent> events = ListUtils.filter(beaconEvents, beaconEventFilter);
             for (BeaconEvent event : events) {
                 presentBeaconEvent(event);
             }
