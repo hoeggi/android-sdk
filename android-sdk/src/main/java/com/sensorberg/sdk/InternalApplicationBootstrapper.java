@@ -154,7 +154,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         }
     }
 
-    //TODO what is with this method having no access modifier.
     public void presentBeaconEvent(BeaconEvent beaconEvent) {
         if (beaconEvent != null && beaconEvent.getAction() != null) {
             Action beaconEventAction = beaconEvent.getAction();
