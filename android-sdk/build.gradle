@@ -24,12 +24,8 @@ dependencies {
     androidTestCompile('com.android.support:multidex-instrumentation:1.0.1') {
         exclude group: 'com.android.support', module: 'multidex'
     }
-    androidTestCompile('com.github.fabioCollini:DaggerMock:0.5') {
-        exclude group: 'javax.inject'
-    }
-
-    androidTestApt 'com.google.dagger:dagger-compiler:2.0'
-    androidTestCompile('com.google.dagger:dagger:2.0') {
+    androidTestApt 'com.google.dagger:dagger-compiler:2.4'
+    androidTestCompile('com.google.dagger:dagger:2.4') {
         exclude group: 'javax.annotation'
     }
 
@@ -43,8 +39,8 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
 
-    apt 'com.google.dagger:dagger-compiler:2.0'
-    compile('com.google.dagger:dagger:2.0') {
+    apt 'com.google.dagger:dagger-compiler:2.4'
+    compile('com.google.dagger:dagger:2.4') {
         exclude group: 'javax.annotation'
     }
     provided 'javax.annotation:jsr250-api:1.0'
@@ -61,10 +57,6 @@ def resolverURL = System.getenv("RESOLVER_URL") ?: project.ext.has("resolver_url
 
 if (resolverURL != null) {
     println("using custom resolver: ${resolverURL}")
-}
-
-jacoco {
-    toolVersion = "0.7.5.201505241946"
 }
 
 android {
