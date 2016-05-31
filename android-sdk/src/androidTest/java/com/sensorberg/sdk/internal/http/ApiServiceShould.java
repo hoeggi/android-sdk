@@ -8,6 +8,8 @@ import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.model.server.BaseResolveResponse;
+import com.sensorberg.sdk.test.RepeatFlaky;
+import com.sensorberg.sdk.test.RepeatFlakyRule;
 import com.sensorberg.sdk.testUtils.SuccessfulRetrofitApiService;
 
 import org.fest.assertions.api.Assertions;
@@ -33,6 +35,11 @@ import retrofit2.Response;
 @RunWith(AndroidJUnit4.class)
 public class ApiServiceShould {
 
+    @Rule
+    public RepeatFlakyRule mRepeatFlakyRule = new RepeatFlakyRule();
+
+    private static final String TEST_API_KEY = "0000000000000000000000000000000000000000000000000000000000000000";
+
     @Inject
     Gson gson;
 
@@ -53,6 +60,7 @@ public class ApiServiceShould {
     @Before
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
+        realRetrofitApiService.setApiToken(TEST_API_KEY);
     }
 
     @Test
@@ -70,10 +78,7 @@ public class ApiServiceShould {
         Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
         Response<BaseResolveResponse> response = call.execute();
 
-        Thread.sleep(2000); //we wait for google to give us the advertiser id //TODO this will change!
-
-        Assertions.assertThat(realPlatformIdentifier.getAdvertiserIdentifier())
-                .isNotNull();
+        Assertions.assertThat(realPlatformIdentifier.getAdvertiserIdentifier()).isNotNull();
         Response<BaseResolveResponse> responseWithAdvertiserId = call.clone().execute();
 
         Assertions.assertThat(responseWithAdvertiserId.raw().request().headers().get(Transport.HEADER_ADVERTISER_IDENTIFIER))
@@ -93,16 +98,14 @@ public class ApiServiceShould {
 
     @Test
     public void apiservice_should_have_apitoken_header() throws Exception {
-        final String API_TOKEN = "test_api_token";
-        realRetrofitApiService.setApiToken(API_TOKEN);
         Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
         Response<BaseResolveResponse> response = call.execute();
 
         Assertions.assertThat(response.raw().request().headers()).isNotNull();
         Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_XAPIKEY))
-                .isEqualTo(API_TOKEN);
+                .isEqualTo(TEST_API_KEY);
         Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_AUTHORIZATION))
-                .isEqualTo(API_TOKEN);
+                .isEqualTo(TEST_API_KEY);
     }
 
     @Test
@@ -120,9 +123,9 @@ public class ApiServiceShould {
     }
 
     @Test
+    @RepeatFlaky(times = 5)
     public void apiservice_should_cache_responses() throws Exception {
         Call<BaseResolveResponse> call1 = realRetrofitApiService.updateBeaconLayout("");
-
         Response<BaseResolveResponse> response1 = call1.execute();
         Assertions.assertThat(response1.isSuccessful()).isTrue();
 
@@ -133,5 +136,4 @@ public class ApiServiceShould {
         Assertions.assertThat(response2.raw().cacheResponse()).isNotNull();
         Assertions.assertThat(response2.raw().networkResponse()).isNull();
     }
-
 }
