@@ -84,7 +84,6 @@ public class TheInternalApplicationBootstrapperShould {
     public void beaconEventFilterShouldHaveOneSuppressionTimeEvent() throws Exception {
         List<BeaconEvent> events = ListUtils.filter(Arrays.asList(beaconEventSupressionTime), tested.beaconEventFilter);
         Assertions.assertThat(events.size()).isEqualTo(1);
-
     }
 
     @Test

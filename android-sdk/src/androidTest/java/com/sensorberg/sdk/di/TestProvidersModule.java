@@ -113,5 +113,4 @@ public class TestProvidersModule extends ProvidersModule {
     public RetrofitApiServiceImpl provideSuccessfulRetrofitApiService(Context context, Gson gson, @Named("testPlatformIdentifier") PlatformIdentifier platformIdentifier) {
         return new SuccessfulRetrofitApiService(context, gson, platformIdentifier, "http://test.com");
     }
-
 }

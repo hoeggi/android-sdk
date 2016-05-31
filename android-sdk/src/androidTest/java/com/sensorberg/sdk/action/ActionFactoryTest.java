@@ -28,7 +28,6 @@ public class ActionFactoryTest {
             com.sensorberg.sdk.test.R.raw.action_factory_payload_009_empty_string,
     };
 
-
     @Test
     public void should_parse_server_output() {
         try {
@@ -149,5 +148,4 @@ public class ActionFactoryTest {
             Assertions.fail(e.getMessage());
         }
     }
-
 }

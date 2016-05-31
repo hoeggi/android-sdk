@@ -4,13 +4,11 @@ import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-
 public class BeaconIdTest {
 
     BeaconId beacon1_from_byte_array = new BeaconId(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19});
     BeaconId beacon1_from_byte_array_zero_offset = new BeaconId(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, 0);
-    BeaconId beacon1_from_byte_array_with_offset = new BeaconId(new byte[]{0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
-            1);
+    BeaconId beacon1_from_byte_array_with_offset = new BeaconId(new byte[]{0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, 1);
     BeaconId beacon1_from_string = new BeaconId("000102030405060708090A0B0C0D0E0F10111213");
     BeaconId beacon2_from_string = new BeaconId("000102030405060700090A0B0C0D0E0F10111213");
 
