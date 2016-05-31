@@ -9,10 +9,13 @@ import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import android.content.SharedPreferences;
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
 
@@ -22,7 +25,8 @@ import static com.sensorberg.sdk.testUtils.SensorbergMatcher.isExitEvent;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class TheScannerWithTimeoutsShould extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class TheScannerWithTimeoutsShould {
 
     @Inject
     TestFileManager testFileManager;
@@ -41,20 +45,20 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
 
     private UIScanner tested;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         sharedPreferences.edit().clear().commit();
 
         testHandlerManager.getCustomClock().setNowInMillis(0);
-        tested = new UIScanner(new SettingsManager(new DumbSucessTransport(), sharedPreferences), testHandlerManager.getCustomClock(), testFileManager, testServiceScheduler,
+        tested = new UIScanner(new SettingsManager(new DumbSucessTransport(), sharedPreferences), testHandlerManager.getCustomClock(),
+                testFileManager, testServiceScheduler,
                 testHandlerManager, bluetoothPlatform);
 
         tested.start();
     }
 
-
+    @Test
     public void test_scanner_waits_to_the_edge_of_second_pause() {
         this.testHandlerManager.getCustomClock().setNowInMillis(0);
 
@@ -82,6 +86,7 @@ public class TheScannerWithTimeoutsShould extends AndroidTestCase {
         }
     }
 
+    @Test
     public void test_scanner_waits_one_pause() {
         this.testHandlerManager.getCustomClock().setNowInMillis(0);
 
