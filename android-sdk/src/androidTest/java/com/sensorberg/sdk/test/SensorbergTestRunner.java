@@ -46,11 +46,6 @@ public class SensorbergTestRunner extends android.support.test.runner.AndroidJUn
         testDatabaseHelper.getWritableDatabase();
         SugarContext.init(getContext());
 
-//        TimeZoneChangedReceiver receiver = new TimeZoneChangedReceiver();
-//        Intent timeZoneIntent = new Intent();
-//        timeZoneIntent.putExtra("time-zone", "GMT+00:00");
-//        receiver.onReceive(getContext(), timeZoneIntent);
-
         DateTimeZone e = DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+01:00"));
         DateTimeZone.setDefault(e);
     }
