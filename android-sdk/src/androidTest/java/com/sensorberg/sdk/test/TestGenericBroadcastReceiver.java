@@ -1,4 +1,4 @@
-package com.sensorberg.sdk.internal;
+package com.sensorberg.sdk.test;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class TestGenericBroadcastReceiver2 extends BroadcastReceiver{
+public class TestGenericBroadcastReceiver extends BroadcastReceiver{
 
     private static CountDownLatch latch;
 
@@ -26,7 +26,7 @@ public class TestGenericBroadcastReceiver2 extends BroadcastReceiver{
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        TestGenericBroadcastReceiver2.intent = intent;
+        TestGenericBroadcastReceiver.intent = intent;
         intentList.add(intent);
         latch.countDown();
     }
@@ -36,8 +36,8 @@ public class TestGenericBroadcastReceiver2 extends BroadcastReceiver{
     }
 
     public static void reset(int count) {
-        TestGenericBroadcastReceiver2.latch = new CountDownLatch(count);
-        TestGenericBroadcastReceiver2.intent = null;
+        TestGenericBroadcastReceiver.latch = new CountDownLatch(count);
+        TestGenericBroadcastReceiver.intent = null;
         intentList.clear();
     }
 }

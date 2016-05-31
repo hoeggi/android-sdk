@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;

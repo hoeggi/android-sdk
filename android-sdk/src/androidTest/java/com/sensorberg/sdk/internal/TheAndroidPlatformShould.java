@@ -10,6 +10,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.presenter.LocalBroadcastManager;
 import com.sensorberg.sdk.presenter.ManifestParser;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver2;
 
 import org.fest.assertions.api.Assertions;
 import org.junit.After;
