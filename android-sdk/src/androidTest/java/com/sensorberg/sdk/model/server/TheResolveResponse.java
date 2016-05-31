@@ -36,6 +36,7 @@ public class TheResolveResponse {
         try {
             ANY_IN_APP_JSON.addProperty("url", "sensorberg://");
         } catch (Exception e) {
+            System.err.print("exception adding property to JsonObject = " + e.getMessage());
         }
     }
 
