@@ -217,5 +217,4 @@ public class RetrofitApiTransport implements Transport {
     public <T> void enqueueWithRetry(Call<T> call, final Callback<T> callback) {
         call.enqueue(new CallbackWithRetry<>(callback));
     }
-
 }

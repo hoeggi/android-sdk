@@ -93,7 +93,6 @@ public class ApiServiceShould {
         Assertions.assertThat(response.raw().request().headers()).isNotNull();
         Assertions.assertThat(response.raw().request().headers().get(Transport.HEADER_INSTALLATION_IDENTIFIER))
                 .isEqualTo(realPlatformIdentifier.getDeviceInstallationIdentifier());
-
     }
 
     @Test

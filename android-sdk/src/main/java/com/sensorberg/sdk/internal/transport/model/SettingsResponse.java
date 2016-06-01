@@ -20,5 +20,4 @@ public class SettingsResponse {
         revision = rev;
         settings = set;
     }
-
 }

@@ -25,5 +25,4 @@ public interface RetrofitApiService {
 
     @GET
     Call<SettingsResponse> getSettings(@Url String settingsUrl);
-
 }
