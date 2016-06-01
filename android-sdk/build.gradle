@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'jacoco'
 
 dependencies {
     androidTestCompile 'junit:junit:4.12'
@@ -98,7 +97,7 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true;
+            testCoverageEnabled true
             buildConfigField "String", "RESOLVER_URL", resolverURL ? wrapInQuotes(resolverURL) : "null"
         }
         release {
