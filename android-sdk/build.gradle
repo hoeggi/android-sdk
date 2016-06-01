@@ -7,7 +7,8 @@ apply plugin: 'jacoco'
 dependencies {
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
-    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
 
     androidTestCompile 'com.squareup:fest-android:1.0.8@aar'
     androidTestCompile 'org.easytesting:fest-assert-core:2.0M10'
