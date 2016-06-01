@@ -1,31 +1,20 @@
 package com.sensorberg.sdk.action;
 
 import org.fest.assertions.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
-import java.util.UUID;
+import util.TestConstants;
 
 @RunWith(AndroidJUnit4.class)
 public class TestTheVisitWebsiteAction {
 
-    private static final String MESSAGE = "message";
-    private static final String TITLE = "title";
-    private static final String URL = "http://www.sensorberg.com";
-    VisitWebsiteAction tested;
-
-    @Before
-    public void setUp() throws Exception {
-        tested = new VisitWebsiteAction(UUID.randomUUID(), MESSAGE, TITLE, Uri.parse(URL), null, 0);
-    }
-
     @Test
     public void test_parcelable(){
+        VisitWebsiteAction tested = TestConstants.getVisitWebsiteAction();
         Parcel output = Parcel.obtain();
 
         tested.writeToParcel(output, 0);
