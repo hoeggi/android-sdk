@@ -74,11 +74,23 @@ public class ApiServiceShould {
     }
 
     @Test
+    public void apiservice_should_have_null_default_advertiserid_in_header() throws Exception {
+        Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
+
+        Assertions.assertThat(realPlatformIdentifier.getAdvertiserIdentifier()).isNull();
+        Response<BaseResolveResponse> responseWithAdvertiserId = call.clone().execute();
+
+        Assertions.assertThat(responseWithAdvertiserId.raw().request().headers().get(Transport.HEADER_ADVERTISER_IDENTIFIER))
+                .isEqualTo(realPlatformIdentifier.getAdvertiserIdentifier());
+    }
+
+    @Test
     public void apiservice_should_have_advertiserid_in_header() throws Exception {
         Call<BaseResolveResponse> call = realRetrofitApiService.updateBeaconLayout("");
-        Response<BaseResolveResponse> response = call.execute();
+        realPlatformIdentifier.setAdvertisingIdentifier("TEST_ADID");
 
         Assertions.assertThat(realPlatformIdentifier.getAdvertiserIdentifier()).isNotNull();
+        Assertions.assertThat(realPlatformIdentifier.getAdvertiserIdentifier()).isEqualToIgnoringCase("TEST_ADID");
         Response<BaseResolveResponse> responseWithAdvertiserId = call.clone().execute();
 
         Assertions.assertThat(responseWithAdvertiserId.raw().request().headers().get(Transport.HEADER_ADVERTISER_IDENTIFIER))
