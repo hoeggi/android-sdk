@@ -96,7 +96,7 @@ public class RetrofitApiTransport implements Transport {
     }
 
     private void checkShouldCallBeaconResponseHandlers(boolean shouldReportImmediately, ResolveResponse successfulResponse) {
-        if (shouldReportImmediately) {
+        if (shouldReportImmediately && mBeaconReportHandler != null) {
             mBeaconReportHandler.reportImmediately();
         }
 
