@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.internal.transport;
 
-import com.sensorberg.sdk.receivers.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BeaconHistoryUploadIntervalListener;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -14,11 +13,11 @@ import com.sensorberg.sdk.model.server.ResolveAction;
 import com.sensorberg.sdk.model.server.ResolveResponse;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
+import com.sensorberg.sdk.receivers.NetworkInfoBroadcastReceiver;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pair;
+import android.util.Pair;
 
 import java.net.HttpURLConnection;
 import java.util.Collections;
@@ -96,7 +95,6 @@ public class RetrofitApiTransport implements Transport {
         });
     }
 
-    @VisibleForTesting
     private void checkShouldCallBeaconResponseHandlers(boolean shouldReportImmediately, ResolveResponse successfulResponse) {
         if (shouldReportImmediately) {
             mBeaconReportHandler.reportImmediately();
@@ -110,7 +108,6 @@ public class RetrofitApiTransport implements Transport {
         }
     }
 
-    @VisibleForTesting
     private Pair<Boolean, List<BeaconEvent>> checkSuccessfulBeaconResponse(ResolutionConfiguration resolutionConfiguration,
             ResolveResponse successfulResponse) {
 

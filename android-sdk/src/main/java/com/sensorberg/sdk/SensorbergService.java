@@ -117,6 +117,7 @@ public class SensorbergService extends Service {
     @Named("androidPlatformIdentifier")
     PlatformIdentifier platformIdentifier;
 
+    @Inject
     @Named("androidPlatform")
     Platform platform;
 
