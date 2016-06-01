@@ -76,6 +76,7 @@ public class TheInternalBootstrapperIntegration {
         try {
             ANY_IN_APP_JSON.addProperty("url", "sensorberg://");
         } catch (Exception e) {
+            System.err.print("exception adding property to JsonObject = " + e.getMessage());
         }
     }
 
@@ -208,8 +209,6 @@ public class TheInternalBootstrapperIntegration {
         Mockito.when(mockRetrofitApiService.updateBeaconLayout(Mockito.anyString())).thenReturn(Calls.response(resolveResponse));
 
         Assertions.assertThat(spiedInternalApplicationBootstrapper.proximityUUIDs).hasSize(0);
-
-        System.out.println("TheInternalBootstrapperIntegration start test_precaching_of_account_proximityUUIDS");
 
         spiedTransportWithMockService.setProximityUUIDUpdateHandler(new Transport.ProximityUUIDUpdateHandler() {
             @Override
