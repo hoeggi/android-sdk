@@ -3,15 +3,22 @@ package com.sensorberg.sdk.internal;
 import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.test.RepeatFlaky;
+import com.sensorberg.sdk.test.RepeatFlakyRule;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.testUtils.TestClock;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.fest.assertions.api.Assertions;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import android.app.AlarmManager;
 import android.os.Bundle;
-import android.test.AndroidTestCase;
-import android.test.FlakyTest;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
@@ -19,7 +26,11 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class TheIntentSchedulingBeUpdateable {
+
+    @Rule
+    public RepeatFlakyRule mRepeatFlakyRule = new RepeatFlakyRule();
 
     @Inject
     AlarmManager alarmManager;
@@ -37,12 +48,12 @@ public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
 
     private Bundle INTENT_BUNDLE_2;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        testServiceScheduler = new TestServiceScheduler(getContext(), alarmManager, androidClock, persistentIntegerCounter, Constants.Time.ONE_SECOND / 10);
+        testServiceScheduler = new TestServiceScheduler(InstrumentationRegistry.getContext(), alarmManager, androidClock, persistentIntegerCounter,
+                Constants.Time.ONE_SECOND / 10);
         INTENT_BUNDLE = new Bundle();
         INTENT_BUNDLE.putString("foo", "bar");
 
@@ -52,7 +63,8 @@ public class TheIntentSchedulingBeUpdateable extends AndroidTestCase {
 
     }
 
-    @FlakyTest(tolerance = 5)
+    @Test
+    @RepeatFlaky(times = 5)
     public void testShouldUpdateAnIntent() throws InterruptedException {
         long time = System.currentTimeMillis();
         long index = System.currentTimeMillis();

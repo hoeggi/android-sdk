@@ -10,6 +10,7 @@ import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -49,7 +50,7 @@ public class TheScannerWithRestoredStateShould {
         settings = new SettingsManager(new DumbSucessTransport(), sharedPreferences);
     }
 
-    @Test
+    @Ignore
     public void should_trigger_exits_if_the_scanner_was_idle_for_too_long() throws Exception {
 
         //TODO should_trigger_exits_if_the_scanner_was_idle_for_too_long
@@ -69,6 +70,7 @@ public class TheScannerWithRestoredStateShould {
 //        verify(listener, times(1)).onScanEventDetected(isExitEvent());
     }
 
+    @Test
     public void should_not_trigger_exits_if_the_scanner_was_idle_for_too_long() throws Exception {
 
         long startTime = settings.getCleanBeaconMapRestartTimeout() + 1;
@@ -86,7 +88,7 @@ public class TheScannerWithRestoredStateShould {
         verifyNoMoreInteractions(listener);
     }
 
-    @Test
+    @Ignore
     public void should_not_trigger_entry_if_beacon_was_seen_again_after_restart() throws Exception {
 
         //TODO should_not_trigger_entry_if_beacon_was_seen_again_after_restart

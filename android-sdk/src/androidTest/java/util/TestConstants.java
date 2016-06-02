@@ -1,8 +1,13 @@
 package util;
 
+import com.sensorberg.sdk.action.InAppAction;
+import com.sensorberg.sdk.action.UriMessageAction;
+import com.sensorberg.sdk.action.VisitWebsiteAction;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+
+import android.net.Uri;
 
 import java.util.UUID;
 
@@ -51,5 +56,23 @@ public class TestConstants {
                 .withEventMask(ScanEventType.ENTRY.getMask())
                 .withEventTime(now)
                 .build();
+    }
+
+    public static final String ACTION_MESSAGE = "message";
+
+    public static final String ACTION_TITLE = "title";
+
+    public static final String ACTION_URL = "http://www.sensorberg.com";
+
+    public static InAppAction getInAppAction() {
+        return new InAppAction(UUID.randomUUID(), TestConstants.ACTION_MESSAGE, ACTION_TITLE, ACTION_URL, null, 0);
+    }
+
+    public static UriMessageAction getUriMessageAction() {
+        return new UriMessageAction(UUID.randomUUID(), ACTION_MESSAGE, ACTION_TITLE, ACTION_URL, null, 0);
+    }
+
+    public static VisitWebsiteAction getVisitWebsiteAction() {
+        return new VisitWebsiteAction(UUID.randomUUID(), ACTION_MESSAGE, ACTION_TITLE, Uri.parse(ACTION_URL), null, 0);
     }
 }

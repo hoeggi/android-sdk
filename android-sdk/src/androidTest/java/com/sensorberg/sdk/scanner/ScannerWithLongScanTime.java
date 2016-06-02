@@ -11,8 +11,12 @@ import com.sensorberg.sdk.testUtils.TestFileManager;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import android.content.SharedPreferences;
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
 
@@ -20,7 +24,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ScannerWithLongScanTime extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class ScannerWithLongScanTime {
 
     @Inject
     TestFileManager testFileManager;
@@ -38,9 +43,8 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
     private SettingsManager modifiedSettings;
     private UIScanner tested;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
         sharedPreferences.edit().clear().commit();
 
@@ -53,6 +57,7 @@ public class ScannerWithLongScanTime extends AndroidTestCase {
         tested = new UIScanner(modifiedSettings, handlerManager.getCustomClock(), testFileManager, testServiceScheduler, handlerManager, spyBluetoothPlatform);
     }
 
+    @Test
     public void test_should_pause_when_going_to_the_background_and_scanning_was_running() throws Exception {
         tested.hostApplicationInForeground();
         tested.start();

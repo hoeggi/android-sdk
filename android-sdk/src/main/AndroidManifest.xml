@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -21,7 +22,7 @@
             android:exported="false"/>
 
         <receiver
-            android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"
+            android:name=".receivers.ScannerBroadcastReceiver"
             android:process=":sensorberg"
             android:exported="false"
             android:enabled="false" >
@@ -31,12 +32,12 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".GenericBroadcastReceiver"
+        <receiver android:name=".receivers.GenericBroadcastReceiver"
             android:process=":sensorberg"
             android:exported="false"
             android:enabled="false"/>
 
-        <receiver android:name=".SensorbergCodeReceiver"
+        <receiver android:name=".receivers.SensorbergCodeReceiver"
             android:process=":sensorberg"
             android:label="sensorberg-logger">
             <intent-filter>
@@ -46,6 +47,13 @@
             <intent-filter>
                 <action android:name="android.provider.Telephony.SECRET_CODE" />
                 <data android:scheme="android_secret_code" android:host="73676723740" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".NetworkInfoBroadcastReceiver"
+                  android:process=":sensorberg">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
     </application>

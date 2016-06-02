@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.testUtils;
 
 import com.sensorberg.sdk.internal.PersistentIntegerCounter;
-import com.sensorberg.sdk.internal.TestGenericBroadcastReceiver;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;

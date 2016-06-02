@@ -1,11 +1,9 @@
 package com.sensorberg.sdk.internal;
 
-import android.net.Uri;
-import android.os.Build;
-
 import com.sensorberg.sdk.BuildConfig;
 
-import java.net.URL;
+import android.net.Uri;
+import android.os.Build;
 
 public class URLFactory {
 
@@ -14,10 +12,10 @@ public class URLFactory {
     private static final String TEST_BASE_URL           = "test-connect.sensorberg.com";
     private static final String BIGBANG_BASE_URL        = "172.17.12.103:8091";
 
-    private static final String PRODUCTION_RESOLVER_URL = "https://resolver.sensorberg.com/layout";
-    private static final String STAGING_RESOLVER_URL    = "https://staging-resolver.sensorberg.com/layout";
-    private static final String TEST_RESOLVER_URL       = "https://test-resolver.sensorberg.com/layout";
-    private static final String BIGBANG_RESOLVER_URL    = "http://172.17.12.103:8093/layout";
+    private static final String PRODUCTION_RESOLVER_URL = "https://resolver.sensorberg.com/layout/";
+    private static final String STAGING_RESOLVER_URL    = "https://staging-resolver.sensorberg.com/layout/";
+    private static final String TEST_RESOLVER_URL       = "https://test-resolver.sensorberg.com/layout/";
+    private static final String BIGBANG_RESOLVER_URL    = "http://172.17.12.103:8093/layout/";
 
 
 
@@ -58,10 +56,10 @@ public class URLFactory {
         return previousConf;
     }
 
-    public static Conf switchToMockEnvironment(URL url) {
+    public static Conf switchToMockEnvironment(Uri url) {
         Conf previousConf = new Conf(BASE_URL, SCHEME, customResolverURL);
         BASE_URL = url.getHost() + (url.getPort() != -1 ? ":" + url.getPort() : "");
-        SCHEME = url.getProtocol();
+        SCHEME = url.getScheme();
         customResolverURL = null;
         return previousConf;
     }
@@ -100,7 +98,7 @@ public class URLFactory {
         if (customResolverURL != null){
             return customResolverURL;
         }
-        return BaseUri().appendPath("layout").toString();
+        return BaseUri().appendPath("layout/").toString();
     }
 
     public static void setLayoutURL(String newResolverURL) {

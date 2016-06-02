@@ -1,17 +1,17 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.SensorbergApplicationBootstrapper;
-import com.sensorberg.sdk.background.ScannerBroadcastReceiver;
-import com.sensorberg.sdk.internal.AndroidPlatform;
-import com.sensorberg.sdk.internal.Platform;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
+import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
+import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
@@ -22,7 +22,6 @@ import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.DeadObjectException;
@@ -111,9 +110,6 @@ public class SensorbergService extends Service {
     BluetoothPlatform bluetoothPlatform;
 
     @Inject
-    SharedPreferences sharedPreferences;
-
-    @Inject
     @Named("realTransport")
     Transport transport;
 
@@ -121,6 +117,8 @@ public class SensorbergService extends Service {
     @Named("androidPlatformIdentifier")
     PlatformIdentifier platformIdentifier;
 
+    @Inject
+    @Named("androidPlatform")
     Platform platform;
 
     private static class MSG {
@@ -193,7 +191,6 @@ public class SensorbergService extends Service {
     public void onCreate() {
         super.onCreate();
         SensorbergApplicationBootstrapper.getComponent().inject(this);
-        platform = new AndroidPlatform(getApplicationContext());
         Logger.log.logServiceState("onCreate");
         JodaTimeAndroid.init(this);
     }
@@ -233,10 +230,9 @@ public class SensorbergService extends Service {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
                     if (!isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
-                                bluetoothPlatform, sharedPreferences);
+                        bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock, bluetoothPlatform);
                         bootstrapper.setApiToken(apiKey);
-                        persistConfiguration(bootstrapper);
+                        persistConfiguration(bootstrapper.resolver.configuration);
                         bootstrapper.startScanning();
                         return START_STICKY;
                     }
@@ -304,7 +300,7 @@ public class SensorbergService extends Service {
                         if (intent.hasExtra(MSG_SET_API_TOKEN_TOKEN)) {
                             String apiToken = intent.getStringExtra(MSG_SET_API_TOKEN_TOKEN);
                             bootstrapper.setApiToken(apiToken);
-                            persistConfiguration(bootstrapper);
+                            persistConfiguration(bootstrapper.resolver.configuration);
                         }
                         break;
                     }
@@ -371,11 +367,13 @@ public class SensorbergService extends Service {
         switch (intent.getIntExtra(EXTRA_GENERIC_TYPE, -1)) {
             case MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
+                transport.setLoggingEnabled(false);
                 Toast.makeText(context, "Log disabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
                 break;
             }
             case MSG_TYPE_ENABLE_LOGGING: {
                 Logger.enableVerboseLogging();
+                transport.setLoggingEnabled(true);
                 Toast.makeText(context, "Log enabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
                 break;
             }
@@ -427,7 +425,6 @@ public class SensorbergService extends Service {
         }
     }
 
-
     private boolean handleIntentEvenIfNoBootstrapperPresent(Intent intent) {
         if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
             int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
@@ -458,8 +455,7 @@ public class SensorbergService extends Service {
             }
             if (diskConf != null && diskConf.isComplete()) {
                 transport.setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
-                        bluetoothPlatform, sharedPreferences);
+                bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock, bluetoothPlatform);
             } else {
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }
@@ -476,11 +472,6 @@ public class SensorbergService extends Service {
     private void persistConfiguration(ResolverConfiguration resolverConfiguration) {
         ServiceConfiguration conf = new ServiceConfiguration(resolverConfiguration);
         persistConfiguration(conf);
-    }
-
-    private void persistConfiguration(InternalApplicationBootstrapper bootstrapper) {
-        persistConfiguration(
-                bootstrapper.resolver.configuration);
     }
 
     @Override

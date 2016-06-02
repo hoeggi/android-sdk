@@ -41,14 +41,14 @@
             android:process=""/>
             android:process=""/>
 
-        <receiver android:name="com.sensorberg.sdk.GenericBroadcastReceiver"
+        <receiver android:name="com.sensorberg.sdk.receivers.GenericBroadcastReceiver"
             tools:replace="android:process"
             android:process=""/>
         <receiver
-            android:name="com.sensorberg.sdk.background.ScannerBroadcastReceiver"
+            android:name="com.sensorberg.sdk.receivers.ScannerBroadcastReceiver"
             tools:replace="android:process"
             android:process=""/>
-        <receiver android:name="com.sensorberg.sdk.SensorbergCodeReceiver"
+        <receiver android:name="com.sensorberg.sdk.receivers.SensorbergCodeReceiver"
             tools:replace="android:process"
             android:process=""/>
         <!-- //Do not use this in production. It´s only used so you can debug easier-->

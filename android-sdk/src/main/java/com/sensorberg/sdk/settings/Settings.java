@@ -1,59 +1,91 @@
 package com.sensorberg.sdk.settings;
 
-import com.sensorberg.sdk.Constants;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONObject;
+import com.sensorberg.sdk.Constants;
 
 import android.content.SharedPreferences;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class Settings {
 
     @Getter
+    @Expose
+    @SerializedName("cache.objectTTL")
     private long cacheTtl = DefaultSettings.DEFAULT_CACHE_TTL;
 
     @Getter
+    @Expose
+    @SerializedName("network.beaconLayoutUpdateInterval")
     private long layoutUpdateInterval = DefaultSettings.DEFAULT_LAYOUT_UPDATE_INTERVAL;
 
     @Getter
+    @Expose
+    @SerializedName("presenter.messageDelayWindowLength")
     private long messageDelayWindowLength = DefaultSettings.DEFAULT_MESSAGE_DELAY_WINDOW_LENGTH;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.exitTimeoutMillis")
     private long exitTimeoutMillis = DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.foreGroundScanTime")
     private long foreGroundScanTime = DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.foreGroundWaitTime")
     private long foreGroundWaitTime = DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.backgroundScanTime")
     private long backgroundScanTime = DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.backgroundWaitTime")
     private long backgroundWaitTime = DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME;
 
     @Getter
+    @Expose
+    @SerializedName("network.millisBetweenRetries")
     private long millisBetweenRetries = DefaultSettings.DEFAULT_MILLIS_BEETWEEN_RETRIES;
 
     @Getter
-    private int maxRetries = DefaultSettings.DEFAULT_MAX_RETRIES;
+    @Expose
+    @SerializedName("network.maximumResolveRetries")
+    private int maxRetries = DefaultSettings.DEFAULT_MAX_RETRIES; //TODO is this used anywhere?
 
     @Getter
+    @Expose
+    @SerializedName("network.historyUploadInterval")
     @Setter
     private long historyUploadInterval = DefaultSettings.DEFAULT_HISTORY_UPLOAD_INTERVAL;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.cleanBeaconMapRestartTimeout")
     private long cleanBeaconMapRestartTimeout = DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT;
 
     @Getter
+    @Expose
+    @SerializedName("settings.updateTime")
     private long settingsUpdateInterval = DefaultSettings.DEFAULT_SETTINGS_UPDATE_INTERVAL;
 
     @Getter
+    @Expose
+    @SerializedName("scanner.restoreBeaconStates")
     private boolean shouldRestoreBeaconStates = DefaultSettings.DEFAULT_SHOULD_RESTORE_BEACON_STATE;
 
+    @Getter
     private Long revision = null;
 
     public Settings() {
@@ -92,40 +124,42 @@ public class Settings {
         }
     }
 
-    public Settings(JSONObject settings, SettingsUpdateCallback settingsUpdateCallback) {
-        exitTimeoutMillis = settings.optLong("scanner.exitTimeoutMillis", DefaultSettings.DEFAULT_EXIT_TIMEOUT_MILLIS);
-        foreGroundScanTime = settings.optLong("scanner.foreGroundScanTime", DefaultSettings.DEFAULT_FOREGROUND_SCAN_TIME);
-        foreGroundWaitTime = settings.optLong("scanner.foreGroundWaitTime", DefaultSettings.DEFAULT_FOREGROUND_WAIT_TIME);
-        backgroundScanTime = settings.optLong("scanner.backgroundScanTime", DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME);
-        backgroundWaitTime = settings.optLong("scanner.backgroundWaitTime", DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME);
 
-        cleanBeaconMapRestartTimeout = settings
-                .optLong("scanner.cleanBeaconMapRestartTimeout", DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT);
+    public Settings(long rev, Settings newSettings, SettingsUpdateCallback settingsUpdateCallback) {
+        exitTimeoutMillis = newSettings.getExitTimeoutMillis();
+        foreGroundScanTime = newSettings.getForeGroundScanTime();
+        foreGroundWaitTime = newSettings.getForeGroundWaitTime();
+        backgroundScanTime = newSettings.getBackgroundScanTime();
+        backgroundWaitTime = newSettings.getBackgroundWaitTime();
 
-        messageDelayWindowLength = settings.optLong("presenter.messageDelayWindowLength", DefaultSettings.DEFAULT_CLEAN_BEACONMAP_ON_RESTART_TIMEOUT);
-        cacheTtl = settings.optLong("cache.objectTTL", DefaultSettings.DEFAULT_CACHE_TTL);
-        maxRetries = settings.optInt("network.maximumResolveRetries", DefaultSettings.DEFAULT_MAX_RETRIES);
-        millisBetweenRetries = settings.optLong("network.millisBetweenRetries", DefaultSettings.DEFAULT_MILLIS_BEETWEEN_RETRIES);
-        shouldRestoreBeaconStates = settings.optBoolean("scanner.restoreBeaconStates", DefaultSettings.DEFAULT_SHOULD_RESTORE_BEACON_STATE);
+        cleanBeaconMapRestartTimeout = newSettings.getCleanBeaconMapRestartTimeout();
 
-        long newHistoryUploadIntervalMillis = settings.optLong("network.historyUploadInterval", DefaultSettings.DEFAULT_HISTORY_UPLOAD_INTERVAL);
-        if (newHistoryUploadIntervalMillis != historyUploadInterval) {
-            historyUploadInterval = newHistoryUploadIntervalMillis;
-            settingsUpdateCallback.onHistoryUploadIntervalChange(newHistoryUploadIntervalMillis);
+        messageDelayWindowLength = newSettings.getMessageDelayWindowLength();
+        cacheTtl = newSettings.getCacheTtl();
+        maxRetries = newSettings.getMaxRetries();
+        millisBetweenRetries = newSettings.getMillisBetweenRetries();
+        shouldRestoreBeaconStates = newSettings.isShouldRestoreBeaconStates();
+
+        if (rev >= 0) {
+            revision = rev;
+        } else {
+            revision = null;
         }
 
-        long newLayoutUpdateInterval = settings.optLong("network.beaconLayoutUpdateInterval", DefaultSettings.DEFAULT_LAYOUT_UPDATE_INTERVAL);
-        if (newLayoutUpdateInterval != layoutUpdateInterval) {
-            layoutUpdateInterval = newLayoutUpdateInterval;
-            settingsUpdateCallback.onSettingsBeaconLayoutUpdateIntervalChange(newLayoutUpdateInterval);
+        if (newSettings.getHistoryUploadInterval() != historyUploadInterval) {
+            historyUploadInterval = newSettings.getHistoryUploadInterval();
+            settingsUpdateCallback.onHistoryUploadIntervalChange(historyUploadInterval);
         }
 
-        final long newSettingsUpdateInterval = settings.optLong("settings.updateTime", DefaultSettings.DEFAULT_SETTINGS_UPDATE_INTERVAL);
-        if (newSettingsUpdateInterval != settingsUpdateInterval) {
-            settingsUpdateInterval = newSettingsUpdateInterval;
-            settingsUpdateCallback.onSettingsUpdateIntervalChange(newSettingsUpdateInterval);
+        if (newSettings.getLayoutUpdateInterval() != layoutUpdateInterval) {
+            layoutUpdateInterval = newSettings.getLayoutUpdateInterval();
+            settingsUpdateCallback.onSettingsBeaconLayoutUpdateIntervalChange(layoutUpdateInterval);
         }
 
+        if (newSettings.getSettingsUpdateInterval() != settingsUpdateInterval) {
+            settingsUpdateInterval = newSettings.getSettingsUpdateInterval();
+            settingsUpdateCallback.onSettingsUpdateIntervalChange(settingsUpdateInterval);
+        }
     }
 
     public void persistToPreferences(SharedPreferences preferences) {

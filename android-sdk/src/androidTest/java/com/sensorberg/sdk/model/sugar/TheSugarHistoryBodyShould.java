@@ -1,7 +1,10 @@
 package com.sensorberg.sdk.model.sugar;
 
+import com.google.gson.Gson;
+
+import com.sensorberg.sdk.SensorbergTestApplication;
+import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
-import com.sensorberg.sdk.internal.transport.HeadersJsonObjectRequest;
 import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.model.sugarorm.SugarScan;
 import com.sensorberg.sdk.scanner.ScanEvent;
@@ -9,19 +12,28 @@ import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorbergorm.query.Select;
 
 import org.fest.assertions.api.Assertions;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+
+import javax.inject.Inject;
 
 import util.TestConstants;
 
-public class TheSugarHistoryBodyShould extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class TheSugarHistoryBodyShould {
+
+    @Inject
+    Gson gson;
 
     private HistoryBody tested;
     private SugarScan scans;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
+        ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         ScanEvent scanevent = new ScanEvent.Builder()
                 .withEventMask(ScanEventType.ENTRY.getMask())
@@ -44,9 +56,10 @@ public class TheSugarHistoryBodyShould extends AndroidTestCase {
         tested = new HistoryBody(Select.from(SugarScan.class).list(), null, clock);
     }
 
+    @Test
     public void test_should_be_serializeable() throws Exception {
-        String asJSONStrion = HeadersJsonObjectRequest.gson.toJson(tested);
+        String asJSONString = gson.toJson(tested);
 
-        Assertions.assertThat(asJSONStrion).isNotEmpty();
+        Assertions.assertThat(asJSONString).isNotEmpty();
     }
 }

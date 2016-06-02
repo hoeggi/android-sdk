@@ -2,7 +2,7 @@ package com.sensorberg.sdk.resolver;
 
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
-import com.sensorberg.sdk.internal.interfaces.Transport;
+import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.scanner.ScanEvent;
 
 import java.util.List;

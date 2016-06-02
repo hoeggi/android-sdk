@@ -6,11 +6,15 @@ import com.sensorberg.sdk.TheInternalBootstrapperIntegration;
 import com.sensorberg.sdk.TheSensorbergServiceShould;
 import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
-import com.sensorberg.sdk.internal.http.OkHttpClientTransportWithRetries;
-import com.sensorberg.sdk.internal.http.OkHttpUserAgentTest;
-import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettings;
-import com.sensorberg.sdk.internal.http.OkVolleyShouldCacheTheSettingsWithEtags;
+import com.sensorberg.sdk.internal.http.ApiServiceShould;
+import com.sensorberg.sdk.internal.http.HttpStackShouldCacheTheSettings;
 import com.sensorberg.sdk.internal.http.TransportShould;
+import com.sensorberg.sdk.model.server.ResolveActionTest;
+import com.sensorberg.sdk.model.server.TheResolveResponse;
+import com.sensorberg.sdk.model.sugar.TheSugarActionObjectShould;
+import com.sensorberg.sdk.model.sugar.TheSugarHistoryBodyShould;
+import com.sensorberg.sdk.model.sugar.TheSugarScanobjectShould;
+import com.sensorberg.sdk.resolver.TheResolveResponseShould;
 import com.sensorberg.sdk.resolver.TheResolverShould;
 import com.sensorberg.sdk.scanner.ScannerWithLongScanTime;
 import com.sensorberg.sdk.scanner.TheBackgroundScannerShould;
@@ -19,7 +23,6 @@ import com.sensorberg.sdk.scanner.TheBeaconActionHistoryPublisherShould;
 import com.sensorberg.sdk.scanner.TheBeaconMapShould;
 import com.sensorberg.sdk.scanner.TheBeconHistorySynchronousIntegrationTest;
 import com.sensorberg.sdk.scanner.TheBluetoothChangesShould;
-import com.sensorberg.sdk.scanner.TheDefaultScanner;
 import com.sensorberg.sdk.scanner.TheDefaultScannerSetupShould;
 import com.sensorberg.sdk.scanner.TheForegroundScannerShould;
 import com.sensorberg.sdk.scanner.TheScannerWithRestoredStateShould;
@@ -57,8 +60,6 @@ public interface TestComponent extends Component {
 
     void inject(TheSensorbergServiceShould theSensorbergServiceShould);
 
-    void inject(TheDefaultScanner theDefaultScanner);
-
     void inject(TheBackgroundScannerShould theBackgroundScannerShould);
 
     void inject(TheBeaconMapShould theBeaconMapShould);
@@ -83,15 +84,23 @@ public interface TestComponent extends Component {
 
     void inject(TransportShould transportShould);
 
-    void inject(OkHttpClientTransportWithRetries okHttpClientTransportWithRetries);
-
-    void inject(OkHttpUserAgentTest okHttpUserAgentTest);
-
-    void inject(OkVolleyShouldCacheTheSettings okVolleyShouldCacheTheSettings);
-
-    void inject(OkVolleyShouldCacheTheSettingsWithEtags okVolleyShouldCacheTheSettingsWithEtags);
+    void inject(HttpStackShouldCacheTheSettings httpStackShouldCacheTheSettings);
 
     void inject(TheSettingsShould theSettingsShould);
+
+    void inject(ResolveActionTest resolveActionTest);
+
+    void inject(TheResolveResponse theResolveResponse);
+
+    void inject(TheSugarActionObjectShould theSugarActionObjectShould);
+
+    void inject(TheSugarHistoryBodyShould theSugarHistoryBodyShould);
+
+    void inject(TheSugarScanobjectShould theSugarScanobjectShould);
+
+    void inject(TheResolveResponseShould theResolveResponseShould);
+
+    void inject(ApiServiceShould apiServiceShould);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

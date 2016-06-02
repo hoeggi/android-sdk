@@ -1,87 +1,58 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
-import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
-import com.sensorberg.sdk.testUtils.TestFileManager;
-import com.sensorberg.sdk.testUtils.TestPlatform;
+import com.sensorberg.sdk.internal.interfaces.FileManager;
 
-import android.content.Context;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import android.content.Intent;
-import android.test.AndroidTestCase;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TheSensorbergServiceShould extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class TheSensorbergServiceShould {
 
     private static final String NEW_API_TOKEN = "SOME_NEW_API_TOKEN";
+
     private static final String DEFAULT_API_KEY = "DEFAULT_API_KEY";
 
     @Inject
-    TestFileManager testFileManager;
-
-    private static final String DEFAULT_AD_ID = "DEFAULT_AD_ID";
-
-    private static final String NEW_AD_ID = "NEW_AD_ID";
+    FileManager fileManager;
 
     SensorbergService tested;
 
-    private Intent CHANGE_API_KEY_MESSAGE;
-
-    private Intent CHANGE_ADVERTISING_ID_MESSAGE;
-
-    private TestPlatform testPlatform;
-
-    private Context spyContext;
-
-    @Inject
-    @Named("androidPlatformIdentifier")
-    PlatformIdentifier platformIdentifier;
-
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        testPlatform = spy(new TestPlatform());
-        {
-            CHANGE_API_KEY_MESSAGE = new Intent();
-            CHANGE_API_KEY_MESSAGE.putExtra(SensorbergService.MSG_SET_API_TOKEN_TOKEN, NEW_API_TOKEN);
-            CHANGE_API_KEY_MESSAGE.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_TOKEN);
-        }
-        {
-            CHANGE_ADVERTISING_ID_MESSAGE = new Intent();
-            CHANGE_ADVERTISING_ID_MESSAGE.putExtra(SensorbergService.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER, NEW_AD_ID);
-            CHANGE_ADVERTISING_ID_MESSAGE.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_ADVERTISING_IDENTIFIER);
-        }
-
         tested = new SensorbergService();
-        tested.bluetoothPlatform = new TestBluetoothPlatform();
-        tested.platform = testPlatform;
+        tested.onCreate();
+        fileManager = spy(fileManager);
+        tested.fileManager = fileManager;
 
-        Intent startIntent = new Intent(getContext(), SensorbergService.class);
+        Intent startIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
         startIntent.putExtra(SensorbergService.EXTRA_API_KEY, DEFAULT_API_KEY);
 
         tested.onStartCommand(startIntent, -1, -1);
-        reset(testPlatform);
     }
 
+    @Test
     public void should_persist_the_settings_when_getting_a_new_API_token() throws Exception {
-        tested.onStartCommand(CHANGE_API_KEY_MESSAGE, -1, -1);
-        verify(testFileManager).write(any(ServiceConfiguration.class), any(String.class));
-    }
+        Intent changeApiKeyMessageIntent = new Intent();
+        changeApiKeyMessageIntent.putExtra(SensorbergService.MSG_SET_API_TOKEN_TOKEN, NEW_API_TOKEN);
+        changeApiKeyMessageIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_TOKEN);
 
-    public void should_persist_the_settings_when_getting_a_new_advertising_id() throws Exception {
-        PlatformIdentifier spiedPlatformIdentifier = spy(platformIdentifier);
-        tested.onStartCommand(CHANGE_ADVERTISING_ID_MESSAGE, -1, -1);
-        verify(spiedPlatformIdentifier, times(1)).setAdvertisingIdentifier(anyString());
+        //TODO check if this is really optimal, to have persistence called twice
+        tested.onStartCommand(changeApiKeyMessageIntent, -1, -1);
+        verify(fileManager, times(2)).write(any(ServiceConfiguration.class), any(String.class));
     }
 }

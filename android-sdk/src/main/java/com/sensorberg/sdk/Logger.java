@@ -1,11 +1,10 @@
 package com.sensorberg.sdk;
 
-import android.bluetooth.BluetoothAdapter;
-
-import com.android.sensorbergVolley.VolleyLog;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.scanner.ScanEvent;
+
+import android.bluetooth.BluetoothAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -130,7 +129,6 @@ public class Logger {
     static class VerboseLogger implements Log {
 
         VerboseLogger() {
-            VolleyLog.DEBUG = true;
         }
 
         public void beaconResolveState(ScanEvent event, String state) {

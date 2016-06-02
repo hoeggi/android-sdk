@@ -73,21 +73,21 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
     public String getDeviceInstallationIdentifier() {
         if (deviceInstallationIdentifier == null) {
             deviceInstallationIdentifier = getOrCreateInstallationIdentifier();
-        }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                long timeBefore = System.currentTimeMillis();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    long timeBefore = System.currentTimeMillis();
 
-                persistInstallationIdentifier(deviceInstallationIdentifier);
-                for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
-                    listener.deviceInstallationIdentifierChanged(deviceInstallationIdentifier);
+                    persistInstallationIdentifier(deviceInstallationIdentifier);
+                    for (DeviceInstallationIdentifierChangeListener listener : deviceInstallationIdentifierChangeListener) {
+                        listener.deviceInstallationIdentifierChanged(deviceInstallationIdentifier);
+                    }
+
+                    Logger.log.verbose("Fetching installation ID took " + (System.currentTimeMillis() - timeBefore) + " millis");
                 }
-
-                Logger.log.verbose("Fetching installation ID took " + (System.currentTimeMillis() - timeBefore) + " millis");
-            }
-        }).start();
+            }).start();
+        }
 
         return deviceInstallationIdentifier;
     }
@@ -128,7 +128,6 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
             value = uuidString;
         } else {
             value = uuidWithoutDashesString(UUID.randomUUID());
-            persistInstallationIdentifier(value);
         }
         return value;
     }
