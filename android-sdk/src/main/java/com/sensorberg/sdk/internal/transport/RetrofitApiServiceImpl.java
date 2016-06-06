@@ -157,7 +157,11 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
     }
 
     public Call<SettingsResponse> getSettings() {
-        return getApiService().getSettings(getSettingsURLString(mApiToken));
+        return getSettings(getSettingsURLString(mApiToken));
+    }
+
+    public Call<SettingsResponse> getSettings(@Url String url) {
+        return getApiService().getSettings(url);
     }
 
     @Override

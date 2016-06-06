@@ -29,7 +29,7 @@ public class TestConstants {
 
     public static final String API_TOKEN = "f257de3b91d141aa93b6a9b39c97b83df257de3b91d141aa93b6a9b39c97b83d";
     public static final String API_TOKEN_NO_SETTINGS = "9fa8eb37c8fe143cfee54def807bd778d05a8fa87c232d21aa9a45d4bd919181";
-
+    public static final String API_TOKEN_DEFAULT = "0000000000000000000000000000000000000000000000000000000000000000";
 
     public static final BeaconId IN_APP_BEACON_ID = new BeaconId(UUID.fromString("73676723-7400-0000-FFFF-0000FFFF0005"), 59364, 12297);
 
