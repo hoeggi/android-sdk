@@ -185,7 +185,7 @@ public class SensorbergService extends Service {
 
     private final MessengerList presentationDelegates = new MessengerList();
 
-    private InternalApplicationBootstrapper bootstrapper;
+    InternalApplicationBootstrapper bootstrapper;
 
     @Override
     public void onCreate() {
@@ -363,7 +363,7 @@ public class SensorbergService extends Service {
         return START_STICKY;
     }
 
-    private void handleDebuggingIntent(Intent intent, Context context) {
+    void handleDebuggingIntent(Intent intent, Context context) {
         switch (intent.getIntExtra(EXTRA_GENERIC_TYPE, -1)) {
             case MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
@@ -425,7 +425,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    private boolean handleIntentEvenIfNoBootstrapperPresent(Intent intent) {
+    boolean handleIntentEvenIfNoBootstrapperPresent(Intent intent) {
         if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
             int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
             switch (type) {
