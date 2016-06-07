@@ -197,9 +197,17 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         presentationDelegate = messengerList;
     }
 
+    //TODO add android 6 stuff possibly. At least for prompting dev to do something. logging.
     public void startScanning() {
         if (bluetoothPlatform.isBluetoothLowEnergySupported() && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
-            scanner.start();
+            //check for permissions if permission is not set, log message to developer. Show message to user,
+            if (permissionChecker.hasLocationPermission()) {
+                Logger.log.scannerStateChange("Correct permissions set for Android 6, scanner starting");
+                scanner.start();
+            } else {
+                //handle exception and log
+                Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
+            }
         }
     }
 

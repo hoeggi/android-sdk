@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Pair;
 import android.widget.TextView;
 
@@ -49,6 +50,7 @@ public class DemoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         BeaconEvent beaconEvent = new BeaconEvent.Builder()
                 .withAction(new InAppAction(uuid, null, null, null, null, 0))
                 .withPresentationTime(1337)
@@ -66,6 +68,7 @@ public class DemoActivity extends Activity {
                 return 0;
             }
         };
+
 
         //app = (SugarApp)getApplication();
         tested = SugarAction.from(beaconEvent, clock);

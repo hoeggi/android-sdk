@@ -42,7 +42,7 @@ public class AndroidHandler implements RunLoop {
 
             boolean result = getHandler().postDelayed(runnable, wait_time);
             if (!result) {
-                Logger.log.logError("could not schedule the runable in " + wait_time + " millis");
+                Logger.log.logError("could not schedule the runnable in " + wait_time + " millis");
             }
         } else {
             runnable.run();

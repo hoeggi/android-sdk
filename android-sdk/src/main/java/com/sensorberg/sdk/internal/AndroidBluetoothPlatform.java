@@ -7,7 +7,9 @@ import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.os.Build;
+import android.util.Log;
 
+//TODO could put android 6 bluetooth stuff here.
 public class AndroidBluetoothPlatform implements BluetoothPlatform {
 
     private final CrashCallBackWrapper crashCallBackWrapper;
@@ -48,6 +50,7 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
     public void startLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
         if (isBluetoothLowEnergySupported()) {
             if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+                Log.i("bluetooth adapter", Integer.toString(bluetoothAdapter.getState()));
                 //noinspection deprecation old API compatability
                 bluetoothAdapter.startLeScan(crashCallBackWrapper);
                 crashCallBackWrapper.setCallback(scanCallback);

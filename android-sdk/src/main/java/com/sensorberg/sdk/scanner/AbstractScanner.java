@@ -18,6 +18,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 import android.os.Message;
+import android.util.Log;
 import android.util.Pair;
 
 import java.io.File;
@@ -71,6 +72,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private RssiListener rssiListener = RssiListener.NONE;
 
+    //TODO somewhere in this class we have to deal with the new bluetooth android 6 permissions
     AbstractScanner(SettingsManager stgMgr, boolean shouldRestoreBeaconStates, Clock clk, FileManager fileManager,
             ServiceScheduler scheduler, HandlerManager handlerManager, BluetoothPlatform btPlatform) {
         settingsManager = stgMgr;
@@ -194,6 +196,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 lastBreakLength = clock.now() - lastExitCheckTimestamp;
                 Logger.log.scannerStateChange("starting to scan again, scan break was " + lastBreakLength + "millis");
                 if (scanning) {
+                    Log.i("scannerStatusUnpause", Boolean.toString(scanning));
                     Logger.log.scannerStateChange("scanning for" + scanTime + "millis");
                     bluetoothPlatform.startLeScan(scanCallback);
                     scheduleExecution(ScannerEvent.PAUSE_SCAN, scanTime);
@@ -301,6 +304,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 long lastWaitTime = clock.now() - lastExitCheckTimestamp;
                 clearScheduledExecutions();
                 if (lastWaitTime > waitTime) {
+                    //TODO probably need to handle permissions.
                     Logger.log.scannerStateChange("We have been waiting longer than the foreground wait time, so we´e going to scan right away");
                     runLoop.sendMessage(ScannerEvent.UN_PAUSE_SCAN);
                 } else {

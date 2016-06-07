@@ -26,8 +26,8 @@ allprojects {
     project.ext.SDK_VERSION = "2.0.0"
     project.ext.RC_VERSION = "-20160607"
     project.ext.buildToolsVersion = "23.0.3"
-    project.ext.compileSdkVersion = 22
-    project.ext.targetSdkVersion = 21
+    project.ext.compileSdkVersion = 23
+    project.ext.targetSdkVersion = 23
 
     project.ext.okhttpVersion = "2.2.0"
     project.ext.libraryBuild = false;
