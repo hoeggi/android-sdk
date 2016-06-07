@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.Getter;
 import lombok.ToString;
 
 @SuppressWarnings("WeakerAccess")
@@ -51,40 +52,42 @@ public class ResolveAction implements Serializable {
     };
 
     @Expose
-    public String eid;
+    private String eid;
 
     @Expose
-    public int trigger;
+    private int trigger;
 
     @Expose
-    public int type;
+    private int type;
 
     @Expose
-    public String name;
+    private String name;
 
     @Expose
-    public List<String> beacons;
+    private List<String> beacons;
 
     @Expose
-    public long suppressionTime; //in seconds
+    private long suppressionTime; //in seconds
 
     @Expose
-    public boolean sendOnlyOnce;
+    private boolean sendOnlyOnce;
 
     @Expose
-    public long delay;
+    private long delay;
 
     @Expose
-    public boolean reportImmediately;
+    @Getter
+    private boolean reportImmediately;
 
     @Expose
-    public JsonObject content;
+    @Getter
+    private JsonObject content;
 
     @Expose
-    public List<Timeframe> timeframes;
+    private List<Timeframe> timeframes;
 
     @Expose
-    public Date deliverAt;
+    private Date deliverAt;
 
     @SuppressWarnings("WeakerAccess")
     public ResolveAction(String uuid, int trigger, int type, String name, List<String> beacons, long suppressionTime, long delay,

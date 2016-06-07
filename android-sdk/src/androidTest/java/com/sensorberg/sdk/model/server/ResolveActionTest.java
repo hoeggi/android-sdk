@@ -42,9 +42,9 @@ public class ResolveActionTest {
         ResolveAction tested = gson.fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_action_001, InstrumentationRegistry
                 .getContext()), ResolveAction.class);
 
-        Assertions.assertThat(tested.content.get("url")).isNotNull();
-        Assertions.assertThat(tested.content.get("payload")).isNotNull();
-        JsonObject payload = tested.content.get("payload").getAsJsonObject();
+        Assertions.assertThat(tested.getContent().get("url")).isNotNull();
+        Assertions.assertThat(tested.getContent().get("payload")).isNotNull();
+        JsonObject payload = tested.getContent().get("payload").getAsJsonObject();
 
         Assertions.assertThat(payload.get("string").getAsString()).isEqualTo("string");
         Assertions.assertThat(payload.get("integer").getAsInt()).isEqualTo(123456);
@@ -68,8 +68,8 @@ public class ResolveActionTest {
 
         Assertions.assertThat(tested).hasSize(2);
 
-        Assertions.assertThat(tested[0].content.get("url")).isNotNull();
-        Assertions.assertThat(tested[1].content.get("url")).isNotNull();
+        Assertions.assertThat(tested[0].getContent().get("url")).isNotNull();
+        Assertions.assertThat(tested[1].getContent().get("url")).isNotNull();
     }
 
     @Test
