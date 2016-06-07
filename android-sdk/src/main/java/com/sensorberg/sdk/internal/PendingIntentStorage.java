@@ -18,9 +18,9 @@ public class PendingIntentStorage {
     private final SQLiteStore storage;
 
     @Inject
-    Context context;
+    protected Context context;
 
-    Clock clock;
+    private Clock clock;
 
     public PendingIntentStorage(ServiceScheduler serviceScheduler, Clock clk) {
         this.serviceScheduler = serviceScheduler;

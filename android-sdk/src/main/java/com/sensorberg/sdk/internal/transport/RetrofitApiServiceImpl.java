@@ -80,7 +80,7 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
         return mApiService;
     }
 
-    Interceptor headerAuthorizationInterceptor = new Interceptor() {
+    private Interceptor headerAuthorizationInterceptor = new Interceptor() {
         @Override
         public okhttp3.Response intercept(Chain chain) throws IOException {
             Request request = chain.request();

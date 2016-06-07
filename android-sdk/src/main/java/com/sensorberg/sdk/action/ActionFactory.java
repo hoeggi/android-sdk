@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class ActionFactory {
 
-    static Gson gson;
+    private static Gson gson;
 
     public interface ServerType {
 

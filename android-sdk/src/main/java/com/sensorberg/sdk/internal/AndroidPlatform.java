@@ -22,14 +22,14 @@ import javax.inject.Named;
 public class AndroidPlatform implements Platform {
 
     @Inject
-    SharedPreferences settingsPreferences;
+    protected SharedPreferences settingsPreferences;
 
     @Inject
     @Named("realClock")
-    Clock clock;
+    protected Clock clock;
 
     @Inject
-    ServiceScheduler mServiceScheduler;
+    protected ServiceScheduler mServiceScheduler;
 
     private final Context context;
 

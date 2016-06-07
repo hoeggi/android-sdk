@@ -26,7 +26,7 @@ import lombok.ToString;
 @ToString
 public class ResolveAction implements Serializable {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public static final ListUtils.Mapper<ResolveAction, BeaconEvent> BEACON_EVENT_MAPPER = new ListUtils.Mapper<ResolveAction, BeaconEvent>() {
         public BeaconEvent map(ResolveAction resolveAction) {
