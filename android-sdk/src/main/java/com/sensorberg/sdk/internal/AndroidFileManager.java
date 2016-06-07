@@ -65,12 +65,13 @@ public class AndroidFileManager implements FileManager {
             ois = new ObjectInputStream(fis);
             return ois.readObject();
         } catch (Exception e) {
-            return null;
             Logger.log.logError("error reading file", e);
         } finally {
             Closeables.close(fis);
             Closeables.close(ois);
         }
+
+        return null;
     }
 
     static class Closeables {
