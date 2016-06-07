@@ -1,14 +1,17 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
+import com.sensorberg.sdk.resolver.ResolverConfiguration;
 
 import org.fest.assertions.api.Assertions;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +20,9 @@ import org.mockito.Mockito;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,7 +69,7 @@ public class TheSensorbergServiceShould {
     public void setUp() throws Exception {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
-        tested = new SensorbergService();
+        tested = spy(new SensorbergService());
         tested.onCreate();
         fileManager = spy(fileManager);
         tested.fileManager = fileManager;
@@ -73,6 +79,38 @@ public class TheSensorbergServiceShould {
         startIntent.putExtra(SensorbergService.EXTRA_API_KEY, DEFAULT_API_KEY);
 
         tested.onStartCommand(startIntent, -1, -1);
+    }
+
+    @After
+    public void tearDown() {
+        fileManager.removeFile(SensorbergService.SERVICE_CONFIGURATION);
+    }
+
+    @Test
+    public void should_not_create_bootstrapper_from_null_disk_configuration() throws Exception {
+        ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+        Assertions.assertThat(diskConf).isNull();
+        tested.bootstrapper = null;
+
+        tested.createBootstrapperFromDiskConfiguration();
+
+        Assertions.assertThat(tested.bootstrapper).isNull();
+    }
+
+    @Test
+    public void should_create_bootstrapper_from_existing_disk_configuration() throws Exception {
+        tested.bootstrapper = null;
+
+        ServiceConfiguration diskConf = new ServiceConfiguration(new ResolverConfiguration());
+        diskConf.resolverConfiguration.setApiToken("123456");
+        diskConf.resolverConfiguration.setAdvertisingIdentifier("123456");
+        diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
+        fileManager.write(diskConf, SensorbergService.SERVICE_CONFIGURATION);
+
+        tested.createBootstrapperFromDiskConfiguration();
+
+        Assertions.assertThat(tested.bootstrapper).isNotNull();
     }
 
     @Test
@@ -151,5 +189,76 @@ public class TheSensorbergServiceShould {
         Mockito.verify(tested.fileManager, times(1)).removeFile(SensorbergService.SERVICE_CONFIGURATION);
         Assertions.assertThat(tested.bootstrapper).isNull();
         Assertions.assertThat(response).isTrue();
+    }
+
+    @Test
+    public void test_loadOrCreateNewServiceConfiguration_creates_new_config_if_null() {
+        ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+        Assertions.assertThat(diskConf).isNull();
+
+        ServiceConfiguration diskConfNew = tested.loadOrCreateNewServiceConfiguration(fileManager);
+        Assertions.assertThat(diskConfNew).isNotNull();
+        Assertions.assertThat(diskConfNew.resolverConfiguration).isNotNull();
+    }
+
+    @Test
+    public void test_updateDiskConfiguration_creates_new_disk_config_if_null() throws MalformedURLException {
+        URL resolverURL = new URL("http://resolver-new.sensorberg.com");
+
+        Intent serviceUpdateResolverIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
+        serviceUpdateResolverIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_TYPE_SET_RESOLVER_ENDPOINT);
+        serviceUpdateResolverIntent.putExtra(SensorbergService.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
+
+        tested.updateDiskConfiguration(serviceUpdateResolverIntent);
+
+        Mockito.verify(tested, times(1)).loadOrCreateNewServiceConfiguration(fileManager);
+    }
+
+    @Test
+    public void test_updateDiskConfiguration_persists_new_resolver_endpoint() throws MalformedURLException {
+        URL resolverURL = new URL("http://resolver-new.sensorberg.com");
+
+        Intent serviceUpdateResolverIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
+        serviceUpdateResolverIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_TYPE_SET_RESOLVER_ENDPOINT);
+        serviceUpdateResolverIntent.putExtra(SensorbergService.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
+
+        tested.updateDiskConfiguration(serviceUpdateResolverIntent);
+
+        ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+        Assertions.assertThat(diskConfNew.resolverConfiguration.getResolverLayoutURL()).isEqualTo(resolverURL);
+        Assertions.assertThat(URLFactory.getResolveURLString()).isEqualTo(resolverURL.toString());
+    }
+
+    @Test
+    public void test_updateDiskConfiguration_persists_new_api_token() {
+        String newApiToken = "123456";
+
+        Intent serviceUpdateApiTokenIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
+        serviceUpdateApiTokenIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_TOKEN);
+        serviceUpdateApiTokenIntent.putExtra(SensorbergService.MSG_SET_API_TOKEN_TOKEN, newApiToken);
+
+        tested.updateDiskConfiguration(serviceUpdateApiTokenIntent);
+
+        ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+        Assertions.assertThat(diskConfNew.resolverConfiguration.apiToken).isEqualTo(newApiToken);
+    }
+
+    @Test
+    public void test_updateDiskConfiguration_persists_new_advertising_identifier() {
+        String newAdvertisingIdentifier = "123456";
+
+        Intent serviceUpdateAdvertisingIdentifierIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
+        serviceUpdateAdvertisingIdentifierIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_ADVERTISING_IDENTIFIER);
+        serviceUpdateAdvertisingIdentifierIntent
+                .putExtra(SensorbergService.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER, newAdvertisingIdentifier);
+
+        tested.updateDiskConfiguration(serviceUpdateAdvertisingIdentifierIntent);
+
+        ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+        Assertions.assertThat(diskConfNew.resolverConfiguration.getAdvertisingIdentifier()).isEqualTo(newAdvertisingIdentifier);
     }
 }

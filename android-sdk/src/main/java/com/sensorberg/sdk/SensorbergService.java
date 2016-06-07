@@ -63,7 +63,7 @@ public class SensorbergService extends Service {
 
     public static final int MSG_BEACON_LAYOUT_UPDATE = 11;
 
-    public static final int MSG_SET_API_ADVERTISING_IDENTIFIER  = 12;
+    public static final int MSG_SET_API_ADVERTISING_IDENTIFIER = 12;
 
     public static final int GENERIC_TYPE_BEACON_ACTION = 1001;
 
@@ -87,7 +87,8 @@ public class SensorbergService extends Service {
 
     public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
 
-    public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
+    public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER
+            = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
 
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
@@ -380,20 +381,28 @@ public class SensorbergService extends Service {
         }
     }
 
-    private void updateDiskConfiguration(Intent intent) {
+    protected ServiceConfiguration loadOrCreateNewServiceConfiguration(FileManager fileManager) {
+        ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(SERVICE_CONFIGURATION));
+
+        if (diskConf == null) {
+            diskConf = new ServiceConfiguration(new ResolverConfiguration());
+        } else if (diskConf.resolverConfiguration == null) {
+            diskConf.resolverConfiguration = new ResolverConfiguration();
+        }
+
+        return diskConf;
+    }
+
+    protected void updateDiskConfiguration(Intent intent) {
         if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
             int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
-            ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(SERVICE_CONFIGURATION));
-            if (diskConf == null) {
-                diskConf = new ServiceConfiguration(null);
-            }
+            ServiceConfiguration diskConf = loadOrCreateNewServiceConfiguration(fileManager);
+
             Logger.log.serviceHandlesMessage(MSG.stringFrom(type));
+
             switch (type) {
                 case MSG_TYPE_SET_RESOLVER_ENDPOINT: {
                     if (intent.hasExtra(MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL)) {
-                        if (diskConf.resolverConfiguration == null) {
-                            diskConf.resolverConfiguration = new ResolverConfiguration();
-                        }
                         URL resolverURL = (URL) intent.getSerializableExtra(MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL);
                         diskConf.resolverConfiguration.setResolverLayoutURL(resolverURL);
                         URLFactory.setLayoutURL(diskConf.resolverConfiguration.getResolverLayoutURL().toString());
@@ -403,9 +412,6 @@ public class SensorbergService extends Service {
                 case MSG_SET_API_TOKEN: {
                     if (intent.hasExtra(MSG_SET_API_TOKEN_TOKEN)) {
                         String apiToken = intent.getStringExtra(MSG_SET_API_TOKEN_TOKEN);
-                        if (diskConf.resolverConfiguration == null) {
-                            diskConf.resolverConfiguration = new ResolverConfiguration();
-                        }
                         diskConf.resolverConfiguration.setApiToken(apiToken);
                     }
                     break;
@@ -413,9 +419,6 @@ public class SensorbergService extends Service {
                 case MSG_SET_API_ADVERTISING_IDENTIFIER: {
                     if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
                         String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
-                        if (diskConf.resolverConfiguration == null){
-                            diskConf.resolverConfiguration = new ResolverConfiguration();
-                        }
                         diskConf.resolverConfiguration.setAdvertisingIdentifier(advertisingIdentifier);
                     }
                     break;
@@ -447,7 +450,7 @@ public class SensorbergService extends Service {
         return false;
     }
 
-    private void createBootstrapperFromDiskConfiguration() {
+    protected void createBootstrapperFromDiskConfiguration() {
         try {
             ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(SERVICE_CONFIGURATION));
             if (diskConf != null && diskConf.resolverConfiguration.getResolverLayoutURL() != null) {
