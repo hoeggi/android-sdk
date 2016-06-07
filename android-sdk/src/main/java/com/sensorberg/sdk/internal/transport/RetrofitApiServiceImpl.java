@@ -39,7 +39,7 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
 
     private static final int CONNECTION_TIMEOUT = 30; //seconds
 
-    private static final long HTTP_RESPONSE_DISK_CACHE_MAX_SIZE = 5 * 1024 * 1024; //5MB
+    private static final long HTTP_RESPONSE_DISK_CACHE_MAX_SIZE = 5 * 1024L * 1024L; //5MB
 
     protected final Context mContext;
 
