@@ -6,8 +6,8 @@ import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
-import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.Platform;
+import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
@@ -279,7 +279,7 @@ public class SensorbergService extends Service {
                             Logger.log.beaconResolveState(beaconEvent, "end of the delay, now showing the BeaconEvent");
                             bootstrapper.presentEventDirectly(beaconEvent, index);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Logger.log.logError("Problem showing BeaconEvent: " + e.getMessage());
                         }
                         break;
                     }
@@ -460,8 +460,7 @@ public class SensorbergService extends Service {
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }
         } catch (Exception e) {
-            Logger.log.logError("something went wrong when loading the configuration from disk:" + e);
-            e.printStackTrace();
+            Logger.log.logError("something went wrong when loading the configuration from disk", e);
         }
     }
 
@@ -533,7 +532,7 @@ public class SensorbergService extends Service {
                 } catch (DeadObjectException d) {
                     //we need to remove this object!!
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    Logger.log.logError("something went wrong sending BeaconEvent through Messenger", e);
                 }
             }
         }
