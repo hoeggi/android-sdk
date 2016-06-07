@@ -29,6 +29,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import java.net.URL;
@@ -38,9 +39,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static android.text.TextUtils.isEmpty;
-
-@SuppressWarnings("WeakerAccess") //external API
+@SuppressWarnings({"WeakerAccess", "pmd:TooManyMethods", "squid:S1200"})
 public class SensorbergService extends Service {
 
     public static final int MSG_APPLICATION_IN_FOREGROUND = 1;
@@ -124,6 +123,7 @@ public class SensorbergService extends Service {
 
     private static class MSG {
 
+        @SuppressWarnings({"squid:S1142", "squid:MethodCyclomaticComplexity"})
         public static String stringFrom(int what) {
             switch (what) {
                 case MSG_APPLICATION_IN_FOREGROUND:
@@ -196,6 +196,7 @@ public class SensorbergService extends Service {
         JodaTimeAndroid.init(this);
     }
 
+    @SuppressWarnings("checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.NPathComplexityCheck")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.log.logServiceState("onStartCommand");
@@ -230,7 +231,7 @@ public class SensorbergService extends Service {
                 if (bootstrapper == null) {
                     String apiKey = intent.getStringExtra(EXTRA_API_KEY);
 
-                    if (!isEmpty(apiKey)) {
+                    if (!TextUtils.isEmpty(apiKey)) {
                         bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock, bluetoothPlatform);
                         bootstrapper.setApiToken(apiKey);
                         persistConfiguration(bootstrapper.resolver.configuration);
