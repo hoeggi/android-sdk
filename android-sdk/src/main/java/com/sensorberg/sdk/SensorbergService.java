@@ -92,34 +92,34 @@ public class SensorbergService extends Service {
     public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
 
     @Inject
-    FileManager fileManager;
+    protected FileManager fileManager;
 
     @Inject
-    ServiceScheduler serviceScheduler;
+    protected ServiceScheduler serviceScheduler;
 
     @Inject
     @Named("realHandlerManager")
-    HandlerManager handlerManager;
+    protected HandlerManager handlerManager;
 
     @Inject
     @Named("realClock")
-    Clock clock;
+    protected Clock clock;
 
     @Inject
     @Named("androidBluetoothPlatform")
-    BluetoothPlatform bluetoothPlatform;
+    protected BluetoothPlatform bluetoothPlatform;
 
     @Inject
     @Named("realTransport")
-    Transport transport;
+    protected Transport transport;
 
     @Inject
     @Named("androidPlatformIdentifier")
-    PlatformIdentifier platformIdentifier;
+    protected PlatformIdentifier platformIdentifier;
 
     @Inject
     @Named("androidPlatform")
-    Platform platform;
+    protected Platform platform;
 
     private static class MSG {
 
@@ -185,7 +185,7 @@ public class SensorbergService extends Service {
 
     private final MessengerList presentationDelegates = new MessengerList();
 
-    InternalApplicationBootstrapper bootstrapper;
+    protected InternalApplicationBootstrapper bootstrapper;
 
     @Override
     public void onCreate() {
@@ -363,7 +363,7 @@ public class SensorbergService extends Service {
         return START_STICKY;
     }
 
-    void handleDebuggingIntent(Intent intent, Context context) {
+    protected void handleDebuggingIntent(Intent intent, Context context) {
         switch (intent.getIntExtra(EXTRA_GENERIC_TYPE, -1)) {
             case MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
@@ -425,7 +425,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    boolean handleIntentEvenIfNoBootstrapperPresent(Intent intent) {
+    protected boolean handleIntentEvenIfNoBootstrapperPresent(Intent intent) {
         if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
             int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
             switch (type) {

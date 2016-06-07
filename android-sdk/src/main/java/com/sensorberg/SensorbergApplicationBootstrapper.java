@@ -41,8 +41,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
 
     @Inject
     @Named("androidBluetoothPlatform")
-    BluetoothPlatform bluetoothPlatform;
-
+    protected BluetoothPlatform bluetoothPlatform;
 
     class IncomingHandler extends Handler {
 

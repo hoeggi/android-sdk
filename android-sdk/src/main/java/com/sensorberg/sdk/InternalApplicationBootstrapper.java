@@ -51,38 +51,38 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     private static final boolean SURVIVE_REBOOT = true;
 
-    final Transport transport;
+    protected final Transport transport;
 
-    final Resolver resolver;
+    protected final Resolver resolver;
 
-    final Scanner scanner;
+    protected final Scanner scanner;
 
     @Inject
     @Named("realSettingsManager")
-    SettingsManager settingsManager;
+    protected SettingsManager settingsManager;
 
     @Inject
     @Named("realBeaconActionHistoryPublisher")
-    BeaconActionHistoryPublisher beaconActionHistoryPublisher;
+    protected BeaconActionHistoryPublisher beaconActionHistoryPublisher;
 
-    private final Object proximityUUIDsMonitor = new Object();
+    protected final Object proximityUUIDsMonitor = new Object();
 
-    private SensorbergService.MessengerList presentationDelegate;
+    protected SensorbergService.MessengerList presentationDelegate;
 
-    final Set<String> proximityUUIDs = new HashSet<>();
-
-    @Inject
-    Context context;
-
-    Clock clock;
+    protected final Set<String> proximityUUIDs = new HashSet<>();
 
     @Inject
-    FileManager fileManager;
+    protected Context context;
+
+    protected Clock clock;
 
     @Inject
-    PermissionChecker permissionChecker;
+    protected FileManager fileManager;
 
-    BluetoothPlatform bluetoothPlatform;
+    @Inject
+    protected PermissionChecker permissionChecker;
+
+    protected BluetoothPlatform bluetoothPlatform;
 
     public InternalApplicationBootstrapper(Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager,
             Clock clk, BluetoothPlatform btPlatform) {
@@ -300,7 +300,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     };
 
     @Getter
-    ResolverListener resolverListener = new ResolverListener() {
+    private ResolverListener resolverListener = new ResolverListener() {
         @Override
         public void onResolutionFailed(Resolution resolution, Throwable cause) {
             Logger.log.logError("resolution failed:" + resolution.configuration.getScanEvent().getBeaconId().toTraditionalString(), cause);
@@ -315,7 +315,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         }
     };
 
-    SettingsUpdateCallback settingsUpdateCallbackListener = new SettingsUpdateCallback() {
+    private SettingsUpdateCallback settingsUpdateCallbackListener = new SettingsUpdateCallback() {
         @Override
         public void onSettingsUpdateIntervalChange(Long updateIntervalMillies) {
             serviceScheduler.cancelIntent(SensorbergService.MSG_SETTINGS_UPDATE);
