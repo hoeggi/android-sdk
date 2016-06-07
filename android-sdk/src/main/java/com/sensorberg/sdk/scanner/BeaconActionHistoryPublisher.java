@@ -22,15 +22,20 @@ import lombok.Setter;
 public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.MessageHandlerCallback {
 
     private static final int MSG_SCAN_EVENT = 2;
-    private static final int MSG_MARK_SCANS_AS_SENT =  3;
+
+    private static final int MSG_MARK_SCANS_AS_SENT = 3;
+
     private static final int MSG_PUBLISH_HISTORY = 1;
+
     private static final int MSG_ACTION = 4;
+
     private static final int MSG_MARK_ACTIONS_AS_SENT = 5;
+
     private static final int MSG_DELETE_ALL_DATA = 6;
 
-    Context context;
+    private Context context;
 
-    Clock clock;
+    private Clock clock;
 
     private final RunLoop runloop;
 
@@ -41,7 +46,8 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
 
     private final SettingsManager settingsManager;
 
-    public BeaconActionHistoryPublisher(Context ctx, Transport transport, SettingsManager settingsManager, Clock clock, HandlerManager handlerManager) {
+    public BeaconActionHistoryPublisher(Context ctx, Transport transport, SettingsManager settingsManager, Clock clock,
+            HandlerManager handlerManager) {
         context = ctx;
         this.settingsManager = settingsManager;
         this.transport = transport;
@@ -57,7 +63,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
     @Override
     public void handleMessage(Message queueEvent) {
         long now = clock.now();
-        switch (queueEvent.what){
+        switch (queueEvent.what) {
             case MSG_SCAN_EVENT:
                 SugarScan scan = SugarScan.from((ScanEvent) queueEvent.obj, clock.now());
                 scan.save();
@@ -84,23 +90,24 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
                 break;
         }
     }
+
     private void publishHistorySynchronously() {
         List<SugarScan> scans = SugarScan.notSentScans();
         List<SugarAction> actions = SugarAction.notSentScans();
-        if (scans.isEmpty() && actions.isEmpty()){
+        if (scans.isEmpty() && actions.isEmpty()) {
             Logger.log.verbose("nothing to report");
             return;
         }
-        transport.publishHistory(scans, actions, new TransportHistoryCallback(){
+        transport.publishHistory(scans, actions, new TransportHistoryCallback() {
 
             @Override
-            public void onSuccess(List<SugarScan> scanObjectList, List<SugarAction> actionList){
+            public void onSuccess(List<SugarScan> scanObjectList, List<SugarAction> actionList) {
                 runloop.sendMessage(MSG_MARK_SCANS_AS_SENT, scanObjectList);
                 runloop.sendMessage(MSG_MARK_ACTIONS_AS_SENT, actionList);
             }
 
             @Override
-            public void onFailure(Exception throwable){
+            public void onFailure(Exception throwable) {
                 Logger.log.logError("not able to publish history", throwable);
             }
 
@@ -111,7 +118,7 @@ public class BeaconActionHistoryPublisher implements ScannerListener, RunLoop.Me
         });
     }
 
-    public void publishHistory(){
+    public void publishHistory() {
         runloop.add(runloop.obtainMessage(MSG_PUBLISH_HISTORY));
     }
 

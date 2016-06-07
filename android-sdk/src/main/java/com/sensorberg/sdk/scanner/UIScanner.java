@@ -16,15 +16,15 @@ public class UIScanner extends AbstractScanner {
 
     @Override
     protected void clearScheduledExecutions() {
-        runLoop.clearScheduledExecutions();
+        getRunLoop().clearScheduledExecutions();
     }
 
     @Override
     void scheduleExecution(final int type, long delay) {
-        runLoop.scheduleExecution(new Runnable() {
+        getRunLoop().scheduleExecution(new Runnable() {
             @Override
             public void run() {
-                runLoop.sendMessage(type);
+                getRunLoop().sendMessage(type);
             }
         }, delay);
     }

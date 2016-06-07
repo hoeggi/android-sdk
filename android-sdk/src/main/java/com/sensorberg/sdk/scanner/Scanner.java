@@ -21,15 +21,15 @@ public class Scanner extends AbstractScanner {
 
     @Override
     protected void clearScheduledExecutions() {
-        serviceScheduler.cancelServiceMessage(indexFor(ScannerEvent.PAUSE_SCAN));
-        serviceScheduler.cancelServiceMessage(indexFor(ScannerEvent.UN_PAUSE_SCAN));
+        getServiceScheduler().cancelServiceMessage(indexFor(ScannerEvent.PAUSE_SCAN));
+        getServiceScheduler().cancelServiceMessage(indexFor(ScannerEvent.UN_PAUSE_SCAN));
     }
 
     @Override
     protected void scheduleExecution(int type, long delay) {
         Bundle bundle = new Bundle();
         bundle.putInt(Scanner.SCANNER_EVENT, type);
-        serviceScheduler.postToServiceDelayed(delay, SensorbergService.MSG_SDK_SCANNER_MESSAGE, bundle, false, indexFor(type));
+        getServiceScheduler().postToServiceDelayed(delay, SensorbergService.MSG_SDK_SCANNER_MESSAGE, bundle, false, indexFor(type));
     }
 
     private int indexFor(int type) {
@@ -39,9 +39,9 @@ public class Scanner extends AbstractScanner {
     public void handlePlatformMessage(Bundle what){
         int messageId = what.getInt(SCANNER_EVENT, -1);
         if (messageId == ScannerEvent.UN_PAUSE_SCAN){
-            runLoop.sendMessage(ScannerEvent.UN_PAUSE_SCAN);
+            getRunLoop().sendMessage(ScannerEvent.UN_PAUSE_SCAN);
         } else if(messageId == ScannerEvent.PAUSE_SCAN) {
-            runLoop.sendMessage(ScannerEvent.PAUSE_SCAN);
+            getRunLoop().sendMessage(ScannerEvent.PAUSE_SCAN);
         } else{
             Logger.log.logError("unknown scheduled execution:" + messageId);
         }
