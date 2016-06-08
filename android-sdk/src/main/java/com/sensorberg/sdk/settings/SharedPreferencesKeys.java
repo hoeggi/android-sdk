@@ -63,4 +63,8 @@ public final class SharedPreferencesKeys {
             throw new IllegalAccessError("Utility class");
         }
     }
+
+    private SharedPreferencesKeys() {
+        throw new IllegalAccessError("Utility class");
+    }
 }

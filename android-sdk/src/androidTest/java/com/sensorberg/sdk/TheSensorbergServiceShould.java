@@ -100,17 +100,15 @@ public class TheSensorbergServiceShould {
 
     @Test
     public void should_create_bootstrapper_from_existing_disk_configuration() throws Exception {
-        tested.bootstrapper = null;
-
         ServiceConfiguration diskConf = new ServiceConfiguration(new ResolverConfiguration());
         diskConf.resolverConfiguration.setApiToken("123456");
         diskConf.resolverConfiguration.setAdvertisingIdentifier("123456");
         diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
         fileManager.write(diskConf, SensorbergServiceMessage.SERVICE_CONFIGURATION);
 
-        tested.createBootstrapperFromDiskConfiguration();
+        InternalApplicationBootstrapper bootstrapper = tested.createBootstrapperFromDiskConfiguration();
 
-        Assertions.assertThat(tested.bootstrapper).isNotNull();
+        Assertions.assertThat(bootstrapper).isNotNull();
     }
 
     @Test
