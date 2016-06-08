@@ -50,14 +50,13 @@ public class DemoApplication extends MultiDexApplication {
         super.onCreate();
         Log.d(TAG, "onCreate application");
 
-        boot = new SensorbergApplicationBootstrapper(this, true) {
+        boot = new SensorbergApplicationBootstrapper(this, true, API_KEY) {
             @Override
             public void presentBeaconEvent(BeaconEvent beaconEvent) {
                 Action action = beaconEvent.getAction();
                 showAlert(action, beaconEvent.trigger);
             }
         };
-        boot.activateService(API_KEY);
         boot.setLogging(BuildConfig.DEBUG);
 
         detector = new BackgroundDetector(boot);

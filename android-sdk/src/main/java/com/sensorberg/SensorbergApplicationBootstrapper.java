@@ -59,11 +59,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         }
     }
 
-    public SensorbergApplicationBootstrapper(Context context) {
-        this(context, false);
-    }
-
-    public SensorbergApplicationBootstrapper(Context context, boolean enablePresentationDelegation) {
+    public SensorbergApplicationBootstrapper(Context context, boolean enablePresentationDelegation, String apiKey) {
         this.context = context;
         this.presentationDelegationEnabled = enablePresentationDelegation;
         setComponent(buildComponentAndInject(context));
@@ -71,13 +67,11 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
 
         SugarContext.init(context);
         JodaTimeAndroid.init(context);
+
+        activateService(apiKey);
     }
 
-    public void activateService() {
-        activateService(null);
-    }
-
-    public void activateService(String apiKey) {
+    private void activateService(String apiKey) {
         if (bluetoothPlatform.isBluetoothLowEnergySupported()) {
             Intent service = new Intent(context, SensorbergService.class);
             service.putExtra(SensorbergService.EXTRA_START_SERVICE, 1);
@@ -89,7 +83,8 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     public void presentBeaconEvent(BeaconEvent beaconEvent) {
-
+        //TODO instead of overriding this, it should be a listener that is called
+        //something like presenterListener that would then be also used for notifications in android 6
     }
 
     public void setResolverBaseURL(URL resolverBaseURL) {
@@ -102,6 +97,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     public void setPresentationDelegationEnabled(boolean value) {
+        //TODO should use listener and registration
         presentationDelegationEnabled = value;
         if (value) {
             registerForPresentationDelegation();
@@ -111,14 +107,12 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     public void disableServiceCompletely(Context context) {
+        //TODO should be renamed to disableService to correspond to enableService?
         sendEmptyMessage(SensorbergService.MSG_SHUTDOWN);
     }
 
-    public void enableService(Context context) {
-        enableService(context, null);
-    }
-
     public void enableService(Context context, String apiKey) {
+        //TODO do we need this? It's not used anywhere
         ScannerBroadcastReceiver.setManifestReceiverEnabled(true, context);
         activateService(apiKey);
         hostApplicationInForeground();
