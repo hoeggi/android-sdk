@@ -1,8 +1,8 @@
 package com.sensorberg.sdk.internal;
 
+import com.sensorberg.sdk.SensorbergServiceMessage;
 import com.sensorberg.sdk.receivers.GenericBroadcastReceiver;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
@@ -65,7 +65,7 @@ public class AndroidServiceScheduler implements ServiceScheduler, MessageDelayWi
 
     private PendingIntent getPendingIntent(int MSG_type) {
         Intent intent = new Intent(context, GenericBroadcastReceiver.class);
-        intent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, MSG_type);
+        intent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, MSG_type);
         intent.setAction("broadcast_repeating:///message_" + MSG_type);
 
         return PendingIntent.getBroadcast(context,
@@ -147,9 +147,9 @@ public class AndroidServiceScheduler implements ServiceScheduler, MessageDelayWi
 
     private Bundle getScheduleBundle(int index, int type, Parcelable what) {
         Bundle bundle = new Bundle();
-        bundle.putInt(SensorbergService.EXTRA_GENERIC_TYPE, type);
-        bundle.putParcelable(SensorbergService.EXTRA_GENERIC_WHAT, what);
-        bundle.putInt(SensorbergService.EXTRA_GENERIC_INDEX, index);
+        bundle.putInt(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, type);
+        bundle.putParcelable(SensorbergServiceMessage.EXTRA_GENERIC_WHAT, what);
+        bundle.putInt(SensorbergServiceMessage.EXTRA_GENERIC_INDEX, index);
         return bundle;
     }
 
@@ -163,7 +163,7 @@ public class AndroidServiceScheduler implements ServiceScheduler, MessageDelayWi
         int index = postToServiceCounter.next();
         int hashcode = beaconEvent.hashCode();
 
-        Bundle bundle = getScheduleBundle(index, SensorbergService.GENERIC_TYPE_BEACON_ACTION, beaconEvent);
+        Bundle bundle = getScheduleBundle(index, SensorbergServiceMessage.GENERIC_TYPE_BEACON_ACTION, beaconEvent);
         PendingIntent pendingIntent = getPendingIntent(hashcode, bundle, "DeliverAt");
 
         scheduleAlarm(delayInMillis, pendingIntent);

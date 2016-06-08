@@ -76,20 +76,20 @@ public class TheSensorbergServiceShould {
         tested.transport = Mockito.mock(Transport.class);
 
         Intent startIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        startIntent.putExtra(SensorbergService.EXTRA_API_KEY, DEFAULT_API_KEY);
+        startIntent.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, DEFAULT_API_KEY);
 
         tested.onStartCommand(startIntent, -1, -1);
     }
 
     @After
     public void tearDown() {
-        fileManager.removeFile(SensorbergService.SERVICE_CONFIGURATION);
+        fileManager.removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
     }
 
     @Test
     public void should_not_create_bootstrapper_from_null_disk_configuration() throws Exception {
         ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
-                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+                fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConf).isNull();
         tested.bootstrapper = null;
 
@@ -106,7 +106,7 @@ public class TheSensorbergServiceShould {
         diskConf.resolverConfiguration.setApiToken("123456");
         diskConf.resolverConfiguration.setAdvertisingIdentifier("123456");
         diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
-        fileManager.write(diskConf, SensorbergService.SERVICE_CONFIGURATION);
+        fileManager.write(diskConf, SensorbergServiceMessage.SERVICE_CONFIGURATION);
 
         tested.createBootstrapperFromDiskConfiguration();
 
@@ -116,8 +116,8 @@ public class TheSensorbergServiceShould {
     @Test
     public void should_persist_the_settings_when_getting_a_new_API_token() throws Exception {
         Intent changeApiKeyMessageIntent = new Intent();
-        changeApiKeyMessageIntent.putExtra(SensorbergService.MSG_SET_API_TOKEN_TOKEN, NEW_API_TOKEN);
-        changeApiKeyMessageIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_TOKEN);
+        changeApiKeyMessageIntent.putExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN, NEW_API_TOKEN);
+        changeApiKeyMessageIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_TOKEN);
 
         //TODO check if this is really optimal, to have persistence called twice
         tested.onStartCommand(changeApiKeyMessageIntent, -1, -1);
@@ -127,7 +127,7 @@ public class TheSensorbergServiceShould {
     @Test
     public void should_turn_debugging_on_in_transport_from_intent() {
         Intent serviceDebuggingOnIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceDebuggingOnIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_TYPE_ENABLE_LOGGING);
+        serviceDebuggingOnIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_ENABLE_LOGGING);
 
         try {
             tested.handleDebuggingIntent(serviceDebuggingOnIntent, InstrumentationRegistry.getContext());
@@ -144,7 +144,7 @@ public class TheSensorbergServiceShould {
     @Test
     public void should_turn_debugging_off_in_transport_from_intent() {
         Intent serviceDebuggingOffIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceDebuggingOffIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_TYPE_DISABLE_LOGGING);
+        serviceDebuggingOffIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_DISABLE_LOGGING);
 
         try {
             tested.handleDebuggingIntent(serviceDebuggingOffIntent, InstrumentationRegistry.getContext());
@@ -161,7 +161,7 @@ public class TheSensorbergServiceShould {
     @Test
     public void should_handle_shutdown_message_with_existing_bootstrapper() {
         Intent serviceShutdownIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceShutdownIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SHUTDOWN);
+        serviceShutdownIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SHUTDOWN);
         InternalApplicationBootstrapper bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
                 bluetoothPlatform);
         bootstrapper.setApiToken(TestConstants.API_TOKEN_DEFAULT);
@@ -170,7 +170,7 @@ public class TheSensorbergServiceShould {
 
         boolean response = tested.handleIntentEvenIfNoBootstrapperPresent(serviceShutdownIntent);
 
-        Mockito.verify(tested.fileManager, times(1)).removeFile(SensorbergService.SERVICE_CONFIGURATION);
+        Mockito.verify(tested.fileManager, times(1)).removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
         Mockito.verify(bootstrapper, times(1)).unscheduleAllPendingActions();
         Mockito.verify(bootstrapper, times(1)).stopScanning();
         Mockito.verify(bootstrapper, times(1)).stopAllScheduledOperations();
@@ -181,12 +181,12 @@ public class TheSensorbergServiceShould {
     @Test
     public void should_handle_shutdown_message_with_null_bootstrapper() {
         Intent serviceShutdownIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceShutdownIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SHUTDOWN);
+        serviceShutdownIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SHUTDOWN);
         tested.bootstrapper = null;
 
         boolean response = tested.handleIntentEvenIfNoBootstrapperPresent(serviceShutdownIntent);
 
-        Mockito.verify(tested.fileManager, times(1)).removeFile(SensorbergService.SERVICE_CONFIGURATION);
+        Mockito.verify(tested.fileManager, times(1)).removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
         Assertions.assertThat(tested.bootstrapper).isNull();
         Assertions.assertThat(response).isTrue();
     }
@@ -194,7 +194,7 @@ public class TheSensorbergServiceShould {
     @Test
     public void test_loadOrCreateNewServiceConfiguration_creates_new_config_if_null() {
         ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
-                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+                fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConf).isNull();
 
         ServiceConfiguration diskConfNew = tested.loadOrCreateNewServiceConfiguration(fileManager);
@@ -207,8 +207,8 @@ public class TheSensorbergServiceShould {
         URL resolverURL = new URL("http://resolver-new.sensorberg.com");
 
         Intent serviceUpdateResolverIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateResolverIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_TYPE_SET_RESOLVER_ENDPOINT);
-        serviceUpdateResolverIntent.putExtra(SensorbergService.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
+        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT);
+        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
 
         tested.updateDiskConfiguration(serviceUpdateResolverIntent);
 
@@ -220,13 +220,13 @@ public class TheSensorbergServiceShould {
         URL resolverURL = new URL("http://resolver-new.sensorberg.com");
 
         Intent serviceUpdateResolverIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateResolverIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_TYPE_SET_RESOLVER_ENDPOINT);
-        serviceUpdateResolverIntent.putExtra(SensorbergService.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
+        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT);
+        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
 
         tested.updateDiskConfiguration(serviceUpdateResolverIntent);
 
         ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
-                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+                fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConfNew.resolverConfiguration.getResolverLayoutURL()).isEqualTo(resolverURL);
         Assertions.assertThat(URLFactory.getResolveURLString()).isEqualTo(resolverURL.toString());
     }
@@ -236,13 +236,13 @@ public class TheSensorbergServiceShould {
         String newApiToken = "123456";
 
         Intent serviceUpdateApiTokenIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateApiTokenIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_TOKEN);
-        serviceUpdateApiTokenIntent.putExtra(SensorbergService.MSG_SET_API_TOKEN_TOKEN, newApiToken);
+        serviceUpdateApiTokenIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_TOKEN);
+        serviceUpdateApiTokenIntent.putExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN, newApiToken);
 
         tested.updateDiskConfiguration(serviceUpdateApiTokenIntent);
 
         ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
-                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+                fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConfNew.resolverConfiguration.apiToken).isEqualTo(newApiToken);
     }
 
@@ -251,14 +251,14 @@ public class TheSensorbergServiceShould {
         String newAdvertisingIdentifier = "123456";
 
         Intent serviceUpdateAdvertisingIdentifierIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateAdvertisingIdentifierIntent.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_SET_API_ADVERTISING_IDENTIFIER);
+        serviceUpdateAdvertisingIdentifierIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER);
         serviceUpdateAdvertisingIdentifierIntent
-                .putExtra(SensorbergService.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER, newAdvertisingIdentifier);
+                .putExtra(SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER, newAdvertisingIdentifier);
 
         tested.updateDiskConfiguration(serviceUpdateAdvertisingIdentifierIntent);
 
         ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
-                fileManager.getFile(SensorbergService.SERVICE_CONFIGURATION));
+                fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConfNew.resolverConfiguration.getAdvertisingIdentifier()).isEqualTo(newAdvertisingIdentifier);
     }
 }

@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.scanner;
 
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.SensorbergServiceMessage;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
@@ -29,7 +29,7 @@ public class Scanner extends AbstractScanner {
     protected void scheduleExecution(int type, long delay) {
         Bundle bundle = new Bundle();
         bundle.putInt(Scanner.SCANNER_EVENT, type);
-        getServiceScheduler().postToServiceDelayed(delay, SensorbergService.MSG_SDK_SCANNER_MESSAGE, bundle, false, indexFor(type));
+        getServiceScheduler().postToServiceDelayed(delay, SensorbergServiceMessage.MSG_SDK_SCANNER_MESSAGE, bundle, false, indexFor(type));
     }
 
     private int indexFor(int type) {

@@ -42,55 +42,6 @@ import javax.inject.Named;
 @SuppressWarnings({"WeakerAccess", "pmd:TooManyMethods", "squid:S1200"})
 public class SensorbergService extends Service {
 
-    public static final int MSG_APPLICATION_IN_FOREGROUND = 1;
-
-    public static final int MSG_APPLICATION_IN_BACKGROUND = 2;
-
-    public static final int MSG_SET_API_TOKEN = 3;
-
-    public static final int MSG_PRESENT_ACTION = 4;
-
-    public static final int MSG_SHUTDOWN = 6;
-
-    public static final int MSG_PING = 7;
-
-    public static final int MSG_BLUETOOTH = 8;
-
-    public static final int MSG_SDK_SCANNER_MESSAGE = 9;
-
-    public static final int MSG_UPLOAD_HISTORY = 10;
-
-    public static final int MSG_BEACON_LAYOUT_UPDATE = 11;
-
-    public static final int MSG_SET_API_ADVERTISING_IDENTIFIER = 12;
-
-    public static final int GENERIC_TYPE_BEACON_ACTION = 1001;
-
-    public static final int GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT = 1002;
-
-    public static final int MSG_REGISTER_PRESENTATION_DELEGATE = 100;
-
-    public static final int MSG_UNREGISTER_PRESENTATION_DELEGATE = 101;
-
-    public static final int MSG_SETTINGS_UPDATE = 102;
-
-    public static final int MSG_TYPE_DISABLE_LOGGING = 103;
-
-    public static final int MSG_TYPE_ENABLE_LOGGING = 104;
-
-    public static final int MSG_TYPE_SET_RESOLVER_ENDPOINT = 105;
-
-    public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
-
-    public static final String MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL = "com.sensorberg.android.sdk.intent.recolverEndpoint";
-
-    public static final String MSG_PRESENT_ACTION_BEACONEVENT = "com.sensorberg.android.sdk.message.presentBeaconEvent.beaconEvent";
-
-    public static final String MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER
-            = "com.sensorberg.android.sdk.message.setAdvertisingIdentifier.advertisingIdentifier";
-
-    public static final String SERVICE_CONFIGURATION = "serviceConfiguration";
-
     @Inject
     protected FileManager fileManager;
 
@@ -121,69 +72,6 @@ public class SensorbergService extends Service {
     @Named("androidPlatform")
     protected Platform platform;
 
-    private static class MSG {
-
-        @SuppressWarnings({"squid:S1142", "squid:MethodCyclomaticComplexity"})
-        public static String stringFrom(int what) {
-            switch (what) {
-                case MSG_APPLICATION_IN_FOREGROUND:
-                    return "MSG_APPLICATION_IN_FOREGROUND";
-                case MSG_APPLICATION_IN_BACKGROUND:
-                    return "MSG_APPLICATION_IN_BACKGROUND";
-                case MSG_SET_API_TOKEN:
-                    return "MSG_SET_API_TOKEN";
-                case MSG_PRESENT_ACTION:
-                    return "MSG_PRESENT_ACTION";
-                case MSG_REGISTER_PRESENTATION_DELEGATE:
-                    return "MSG_REGISTER_PRESENTATION_DELEGATE";
-                case MSG_UNREGISTER_PRESENTATION_DELEGATE:
-                    return "MSG_UNREGISTER_PRESENTATION_DELEGATE";
-                case MSG_SHUTDOWN:
-                    return "MSG_SHUTDOWN";
-                case MSG_PING:
-                    return "MSG_PING";
-                case MSG_BLUETOOTH:
-                    return "MSG_BLUETOOTH";
-                case MSG_SETTINGS_UPDATE:
-                    return "MSG_SETTINGS_UPDATE";
-                case GENERIC_TYPE_BEACON_ACTION:
-                    return "GENERIC_TYPE_BEACON_ACTION";
-                case GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT:
-                    return "GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT";
-                case MSG_TYPE_DISABLE_LOGGING:
-                    return "MSG_TYPE_DISABLE_LOGGING";
-                case MSG_TYPE_ENABLE_LOGGING:
-                    return "MSG_TYPE_ENABLE_LOGGING";
-                case MSG_SDK_SCANNER_MESSAGE:
-                    return "MSG_SDK_SCANNER_MESSAGE";
-                case MSG_UPLOAD_HISTORY:
-                    return "MSG_UPLOAD_HISTORY";
-                case MSG_BEACON_LAYOUT_UPDATE:
-                    return "MSG_BEACON_LAYOUT_UPDATE";
-                case MSG_TYPE_SET_RESOLVER_ENDPOINT:
-                    return "MSG_TYPE_SET_RESOLVER_ENDPOINT";
-                case MSG_SET_API_ADVERTISING_IDENTIFIER:
-                    return "MSG_SET_API_ADVERTISING_IDENTIFIER";
-                default:
-                    return "unknown message" + what;
-            }
-        }
-    }
-
-    public static final String EXTRA_API_KEY = "com.sensorberg.android.sdk.intent.apiKey";
-
-    public static final String EXTRA_BLUETOOTH_STATE = "com.sensorberg.android.sdk.intent.bluetoothState";
-
-    public static final String EXTRA_GENERIC_WHAT = "com.sensorberg.android.sdk.intent.generic.what";
-
-    public static final String EXTRA_GENERIC_TYPE = "com.sensorberg.android.sdk.intent.generic.type";
-
-    public static final String EXTRA_GENERIC_INDEX = "com.sensorberg.android.sdk.intent.generic.index";
-
-    public static final String EXTRA_START_SERVICE = "com.sensorberg.android.sdk.intent.startService";
-
-    public static final String EXTRA_MESSENGER = "com.sensorberg.android.sdk.intent.messenger";
-
     private final MessengerList presentationDelegates = new MessengerList();
 
     protected InternalApplicationBootstrapper bootstrapper;
@@ -203,37 +91,33 @@ public class SensorbergService extends Service {
 
         if (!bluetoothPlatform.isBluetoothLowEnergySupported()) {
             Logger.log.logError("isBluetoothLowEnergySupported not true, shutting down.");
-            stopSelf();
-            return START_NOT_STICKY;
+            return stopSensorbergService();
         }
 
         if (!platform.registerBroadcastReceiver()) {
             Logger.log.logError("no BroadcastReceiver registered for Action:com.sensorberg.android.PRESENT_ACTION");
-            stopSelf();
-            return START_NOT_STICKY;
+            return stopSensorbergService();
         }
 
         if (intent != null) {
-            Logger.log.serviceHandlesMessage(MSG.stringFrom(intent.getIntExtra(SensorbergService.EXTRA_GENERIC_TYPE, -1)));
+            Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1)));
 
             handleDebuggingIntent(intent, this);
 
             if (handleIntentEvenIfNoBootstrapperPresent(intent)) {
-                stopSelf();
-                return START_NOT_STICKY;
+                return stopSensorbergService();
             }
 
             if (bootstrapper == null) {
                 updateDiskConfiguration(intent);
             }
 
-            if (intent.hasExtra(EXTRA_START_SERVICE)) {
+            if (intent.hasExtra(SensorbergServiceMessage.EXTRA_START_SERVICE)) {
                 if (bootstrapper == null) {
-                    String apiKey = intent.getStringExtra(EXTRA_API_KEY);
+                    String apiKey = intent.getStringExtra(SensorbergServiceMessage.EXTRA_API_KEY);
 
                     if (!TextUtils.isEmpty(apiKey)) {
-                        bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock, bluetoothPlatform);
-                        bootstrapper.setApiToken(apiKey);
+                        bootstrapper = createBootstrapper(apiKey);
                         persistConfiguration(bootstrapper.resolver.configuration);
                         bootstrapper.startScanning();
                         return START_STICKY;
@@ -243,41 +127,40 @@ public class SensorbergService extends Service {
                     Logger.log.logError("start intent was sent, but the scanner was already set up");
                     return START_STICKY;
                 }
+
                 Logger.log.logError("Intent to start the service was not correctly sent. not starting the service");
-                stopSelf();
-                return START_NOT_STICKY;
+                return stopSensorbergService();
             }
 
-            if (intent.hasExtra(SensorbergService.EXTRA_GENERIC_TYPE)) {
+            if (intent.hasExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE)) {
                 if (bootstrapper == null) {
                     createBootstrapperFromDiskConfiguration();
                     if (bootstrapper == null) {
                         Logger.log.logError("could set up the scanning infrastructure");
-                        stopSelf();
-                        return START_NOT_STICKY;
+                        return stopSensorbergService();
                     }
                 }
 
-                int what = intent.getIntExtra(SensorbergService.EXTRA_GENERIC_TYPE, -1);
-                Logger.log.serviceHandlesMessage(MSG.stringFrom(what));
+                int what = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1);
+                Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(what));
                 switch (what) {
-                    case MSG_BEACON_LAYOUT_UPDATE:
+                    case SensorbergServiceMessage.MSG_BEACON_LAYOUT_UPDATE:
                         bootstrapper.updateBeaconLayout();
                         break;
-                    case MSG_SDK_SCANNER_MESSAGE:
-                        Bundle message = intent.getParcelableExtra(EXTRA_GENERIC_WHAT);
+                    case SensorbergServiceMessage.MSG_SDK_SCANNER_MESSAGE:
+                        Bundle message = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_GENERIC_WHAT);
                         bootstrapper.scanner.handlePlatformMessage(message);
                         break;
-                    case MSG_SETTINGS_UPDATE:
+                    case SensorbergServiceMessage.MSG_SETTINGS_UPDATE:
                         bootstrapper.updateSettings();
                         break;
-                    case MSG_UPLOAD_HISTORY:
+                    case SensorbergServiceMessage.MSG_UPLOAD_HISTORY:
                         bootstrapper.uploadHistory();
                         break;
-                    case GENERIC_TYPE_BEACON_ACTION: {
+                    case SensorbergServiceMessage.GENERIC_TYPE_BEACON_ACTION: {
                         try {
-                            BeaconEvent beaconEvent = intent.getParcelableExtra(EXTRA_GENERIC_WHAT);
-                            int index = intent.getIntExtra(EXTRA_GENERIC_INDEX, 0);
+                            BeaconEvent beaconEvent = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_GENERIC_WHAT);
+                            int index = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_INDEX, 0);
                             Logger.log.beaconResolveState(beaconEvent, "end of the delay, now showing the BeaconEvent");
                             bootstrapper.presentEventDirectly(beaconEvent, index);
                         } catch (Exception e) {
@@ -285,59 +168,59 @@ public class SensorbergService extends Service {
                         }
                         break;
                     }
-                    case GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT: {
-                        ResolutionConfiguration configuration = intent.getParcelableExtra(EXTRA_GENERIC_WHAT);
+                    case SensorbergServiceMessage.GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT: {
+                        ResolutionConfiguration configuration = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_GENERIC_WHAT);
                         bootstrapper.retryScanEventResolve(configuration);
                         break;
                     }
-                    case MSG_APPLICATION_IN_FOREGROUND: {
+                    case SensorbergServiceMessage.MSG_APPLICATION_IN_FOREGROUND: {
                         bootstrapper.hostApplicationInForeground();
                         break;
                     }
-                    case MSG_APPLICATION_IN_BACKGROUND: {
+                    case SensorbergServiceMessage.MSG_APPLICATION_IN_BACKGROUND: {
                         bootstrapper.hostApplicationInBackground();
                         break;
                     }
-                    case MSG_SET_API_TOKEN: {
-                        if (intent.hasExtra(MSG_SET_API_TOKEN_TOKEN)) {
-                            String apiToken = intent.getStringExtra(MSG_SET_API_TOKEN_TOKEN);
+                    case SensorbergServiceMessage.MSG_SET_API_TOKEN: {
+                        if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN)) {
+                            String apiToken = intent.getStringExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN);
                             bootstrapper.setApiToken(apiToken);
                             persistConfiguration(bootstrapper.resolver.configuration);
                         }
                         break;
                     }
-                    case MSG_TYPE_SET_RESOLVER_ENDPOINT: {
-                        if (intent.hasExtra(MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL)) {
+                    case SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT: {
+                        if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL)) {
                             try {
-                                URL resolverURL = (URL) intent.getSerializableExtra(MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL);
+                                URL resolverURL = (URL) intent.getSerializableExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL);
                                 URLFactory.setLayoutURL(resolverURL.toString());
                             } catch (Exception e) {
-                                Logger.log.logError("Could not parse the extra " + MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, e);
+                                Logger.log.logError("Could not parse the extra " + SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, e);
                             }
                         }
                         break;
                     }
-                    case MSG_REGISTER_PRESENTATION_DELEGATE: {
-                        if (intent.hasExtra(EXTRA_MESSENGER)) {
-                            Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
+                    case SensorbergServiceMessage.MSG_REGISTER_PRESENTATION_DELEGATE: {
+                        if (intent.hasExtra(SensorbergServiceMessage.EXTRA_MESSENGER)) {
+                            Messenger messenger = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_MESSENGER);
                             presentationDelegates.add(messenger);
                         }
                         break;
                     }
-                    case MSG_UNREGISTER_PRESENTATION_DELEGATE: {
-                        if (intent.hasExtra(EXTRA_MESSENGER)) {
-                            Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
+                    case SensorbergServiceMessage.MSG_UNREGISTER_PRESENTATION_DELEGATE: {
+                        if (intent.hasExtra(SensorbergServiceMessage.EXTRA_MESSENGER)) {
+                            Messenger messenger = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_MESSENGER);
                             presentationDelegates.remove(messenger);
                         }
                         break;
                     }
-                    case MSG_PING: {
+                    case SensorbergServiceMessage.MSG_PING: {
                         bootstrapper.startScanning();
                         break;
                     }
-                    case MSG_BLUETOOTH: {
-                        if (intent.hasExtra(EXTRA_BLUETOOTH_STATE)) {
-                            boolean bluetoothOn = intent.getBooleanExtra(EXTRA_BLUETOOTH_STATE, true);
+                    case SensorbergServiceMessage.MSG_BLUETOOTH: {
+                        if (intent.hasExtra(SensorbergServiceMessage.EXTRA_BLUETOOTH_STATE)) {
+                            boolean bluetoothOn = intent.getBooleanExtra(SensorbergServiceMessage.EXTRA_BLUETOOTH_STATE, true);
                             if (bluetoothOn) {
                                 bootstrapper.startScanning();
                             } else {
@@ -346,9 +229,10 @@ public class SensorbergService extends Service {
                         }
                         break;
                     }
-                    case MSG_SET_API_ADVERTISING_IDENTIFIER: {
-                        if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
-                            String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
+                    case SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER: {
+                        if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
+                            String advertisingIdentifier = intent.getStringExtra(
+                                    SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
                             platformIdentifier.setAdvertisingIdentifier(advertisingIdentifier);
                         }
                         break;
@@ -365,15 +249,20 @@ public class SensorbergService extends Service {
         return START_STICKY;
     }
 
+    private int stopSensorbergService() {
+        stopSelf();
+        return START_NOT_STICKY;
+    }
+
     protected void handleDebuggingIntent(Intent intent, Context context) {
-        switch (intent.getIntExtra(EXTRA_GENERIC_TYPE, -1)) {
-            case MSG_TYPE_DISABLE_LOGGING: {
+        switch (intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1)) {
+            case SensorbergServiceMessage.MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
                 transport.setLoggingEnabled(false);
                 Toast.makeText(context, "Log disabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
                 break;
             }
-            case MSG_TYPE_ENABLE_LOGGING: {
+            case SensorbergServiceMessage.MSG_TYPE_ENABLE_LOGGING: {
                 Logger.enableVerboseLogging();
                 transport.setLoggingEnabled(true);
                 Toast.makeText(context, "Log enabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
@@ -383,7 +272,8 @@ public class SensorbergService extends Service {
     }
 
     protected ServiceConfiguration loadOrCreateNewServiceConfiguration(FileManager fileManager) {
-        ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(SERVICE_CONFIGURATION));
+        ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(
+                SensorbergServiceMessage.SERVICE_CONFIGURATION));
 
         if (diskConf == null) {
             diskConf = new ServiceConfiguration(new ResolverConfiguration());
@@ -395,31 +285,32 @@ public class SensorbergService extends Service {
     }
 
     protected void updateDiskConfiguration(Intent intent) {
-        if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
-            int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
+        if (intent.hasExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE)) {
+            int type = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1);
             ServiceConfiguration diskConf = loadOrCreateNewServiceConfiguration(fileManager);
 
-            Logger.log.serviceHandlesMessage(MSG.stringFrom(type));
+            Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(type));
 
             switch (type) {
-                case MSG_TYPE_SET_RESOLVER_ENDPOINT: {
-                    if (intent.hasExtra(MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL)) {
-                        URL resolverURL = (URL) intent.getSerializableExtra(MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL);
+                case SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT: {
+                    if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL)) {
+                        URL resolverURL = (URL) intent.getSerializableExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL);
                         diskConf.resolverConfiguration.setResolverLayoutURL(resolverURL);
                         URLFactory.setLayoutURL(diskConf.resolverConfiguration.getResolverLayoutURL().toString());
                     }
                     break;
                 }
-                case MSG_SET_API_TOKEN: {
-                    if (intent.hasExtra(MSG_SET_API_TOKEN_TOKEN)) {
-                        String apiToken = intent.getStringExtra(MSG_SET_API_TOKEN_TOKEN);
+                case SensorbergServiceMessage.MSG_SET_API_TOKEN: {
+                    if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN)) {
+                        String apiToken = intent.getStringExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN);
                         diskConf.resolverConfiguration.setApiToken(apiToken);
                     }
                     break;
                 }
-                case MSG_SET_API_ADVERTISING_IDENTIFIER: {
-                    if (intent.hasExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
-                        String advertisingIdentifier = intent.getStringExtra(MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
+                case SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER: {
+                    if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
+                        String advertisingIdentifier = intent.getStringExtra(
+                                SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);
                         diskConf.resolverConfiguration.setAdvertisingIdentifier(advertisingIdentifier);
                     }
                     break;
@@ -430,13 +321,13 @@ public class SensorbergService extends Service {
     }
 
     protected boolean handleIntentEvenIfNoBootstrapperPresent(Intent intent) {
-        if (intent.hasExtra(EXTRA_GENERIC_TYPE)) {
-            int type = intent.getIntExtra(EXTRA_GENERIC_TYPE, -1);
+        if (intent.hasExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE)) {
+            int type = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1);
             switch (type) {
-                case MSG_SHUTDOWN: {
-                    Logger.log.serviceHandlesMessage(MSG.stringFrom(type));
+                case SensorbergServiceMessage.MSG_SHUTDOWN: {
+                    Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(type));
                     MinimalBootstrapper minimalBootstrapper = bootstrapper != null ? bootstrapper : new MinimalBootstrapper(serviceScheduler);
-                    fileManager.removeFile(SERVICE_CONFIGURATION);
+                    fileManager.removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
                     ScannerBroadcastReceiver.setManifestReceiverEnabled(false, this);
                     GenericBroadcastReceiver.setManifestReceiverEnabled(false, this);
 
@@ -453,13 +344,13 @@ public class SensorbergService extends Service {
 
     protected void createBootstrapperFromDiskConfiguration() {
         try {
-            ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(SERVICE_CONFIGURATION));
+            ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(fileManager.getFile(
+                    SensorbergServiceMessage.SERVICE_CONFIGURATION));
             if (diskConf != null && diskConf.resolverConfiguration.getResolverLayoutURL() != null) {
                 URLFactory.setLayoutURL(diskConf.resolverConfiguration.getResolverLayoutURL().toString());
             }
             if (diskConf != null && diskConf.isComplete()) {
-                transport.setApiToken(diskConf.resolverConfiguration.apiToken);
-                bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock, bluetoothPlatform);
+                bootstrapper = createBootstrapper(diskConf.resolverConfiguration.apiToken);
             } else {
                 Logger.log.logError("configuration from disk could not be loaded or is not complete");
             }
@@ -468,8 +359,15 @@ public class SensorbergService extends Service {
         }
     }
 
+    private InternalApplicationBootstrapper createBootstrapper(String apikey) {
+        InternalApplicationBootstrapper bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock, bluetoothPlatform);
+        bootstrapper.setApiToken(apikey);
+
+        return bootstrapper;
+    }
+
     private void persistConfiguration(ServiceConfiguration conf) {
-        fileManager.write(conf, SERVICE_CONFIGURATION);
+        fileManager.write(conf, SensorbergServiceMessage.SERVICE_CONFIGURATION);
     }
 
     private void persistConfiguration(ResolverConfiguration resolverConfiguration) {
@@ -528,9 +426,9 @@ public class SensorbergService extends Service {
         public void send(BeaconEvent beaconEvent) {
             for (Messenger messenger : storage) {
                 try {
-                    Message message = Message.obtain(null, SensorbergService.MSG_PRESENT_ACTION);
+                    Message message = Message.obtain(null, SensorbergServiceMessage.MSG_PRESENT_ACTION);
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable(MSG_PRESENT_ACTION_BEACONEVENT, beaconEvent);
+                    bundle.putParcelable(SensorbergServiceMessage.MSG_PRESENT_ACTION_BEACONEVENT, beaconEvent);
                     message.setData(bundle);
                     messenger.send(message);
                 } catch (DeadObjectException d) {

@@ -2,6 +2,7 @@ package com.sensorberg.sdk.receivers;
 
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.SensorbergServiceMessage;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -35,21 +36,21 @@ public class ScannerBroadcastReceiver extends SensorbergBroadcastReceiver {
 
     private void pingScanner(Context context) {
         Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_PING);
+        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_PING);
         context.startService(service);
     }
 
     private void startScan(Context context) {
         Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_BLUETOOTH);
-        service.putExtra(SensorbergService.EXTRA_BLUETOOTH_STATE, true);
+        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_BLUETOOTH);
+        service.putExtra(SensorbergServiceMessage.EXTRA_BLUETOOTH_STATE, true);
         context.startService(service);
     }
 
     private void stopScan(Context context) {
         Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_BLUETOOTH);
-        service.putExtra(SensorbergService.EXTRA_BLUETOOTH_STATE, false);
+        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_BLUETOOTH);
+        service.putExtra(SensorbergServiceMessage.EXTRA_BLUETOOTH_STATE, false);
         context.startService(service);
     }
 }
