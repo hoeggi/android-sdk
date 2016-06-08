@@ -186,11 +186,11 @@ public class SensorbergService extends Service {
         }
     }
 
-    protected ServiceConfiguration loadOrCreateNewServiceConfiguration(FileManager fileManager) {
-        ServiceConfiguration diskConf = ServiceConfiguration.loadFromDisk(fileManager);
+    protected SensorbergServiceConfiguration loadOrCreateNewServiceConfiguration(FileManager fileManager) {
+        SensorbergServiceConfiguration diskConf = SensorbergServiceConfiguration.loadFromDisk(fileManager);
 
         if (diskConf == null) {
-            diskConf = new ServiceConfiguration(new ResolverConfiguration());
+            diskConf = new SensorbergServiceConfiguration(new ResolverConfiguration());
         } else if (diskConf.resolverConfiguration == null) {
             diskConf.resolverConfiguration = new ResolverConfiguration();
         }
@@ -201,7 +201,7 @@ public class SensorbergService extends Service {
     protected void updateDiskConfiguration(Intent intent) {
         if (intent.hasExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE)) {
             int type = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1);
-            ServiceConfiguration diskConf = loadOrCreateNewServiceConfiguration(fileManager);
+            SensorbergServiceConfiguration diskConf = loadOrCreateNewServiceConfiguration(fileManager);
 
             Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(type));
 
@@ -242,7 +242,7 @@ public class SensorbergService extends Service {
                 case SensorbergServiceMessage.MSG_SHUTDOWN: {
                     Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(type));
                     MinimalBootstrapper minimalBootstrapper = bootstrapper != null ? bootstrapper : new MinimalBootstrapper(serviceScheduler);
-                    ServiceConfiguration.removeConfigurationFromDisk(fileManager);
+                    SensorbergServiceConfiguration.removeConfigurationFromDisk(fileManager);
                     ScannerBroadcastReceiver.setManifestReceiverEnabled(false, this);
                     GenericBroadcastReceiver.setManifestReceiverEnabled(false, this);
 
@@ -261,7 +261,7 @@ public class SensorbergService extends Service {
         InternalApplicationBootstrapper newBootstrapper = null;
 
         try {
-            ServiceConfiguration diskConf = ServiceConfiguration.loadFromDisk(fileManager);
+            SensorbergServiceConfiguration diskConf = SensorbergServiceConfiguration.loadFromDisk(fileManager);
 
             //TODO is this a viable case, that we have resolver url but no api key? we're not creating a bootstrapper in first case
             if (diskConf != null && diskConf.resolverConfiguration.getResolverLayoutURL() != null) {
@@ -288,7 +288,7 @@ public class SensorbergService extends Service {
     }
 
     private void persistConfiguration(ResolverConfiguration resolverConfiguration) {
-        ServiceConfiguration conf = new ServiceConfiguration(resolverConfiguration);
+        SensorbergServiceConfiguration conf = new SensorbergServiceConfiguration(resolverConfiguration);
         conf.writeToDisk(fileManager);
     }
 

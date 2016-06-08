@@ -5,13 +5,13 @@ import com.sensorberg.sdk.resolver.ResolverConfiguration;
 
 import java.io.Serializable;
 
-public class ServiceConfiguration implements Serializable {
+public class SensorbergServiceConfiguration implements Serializable {
 
     private static final long serialVersionUID = 3L;
 
     public ResolverConfiguration resolverConfiguration;
 
-    public ServiceConfiguration(ResolverConfiguration resolverConfiguration) {
+    public SensorbergServiceConfiguration(ResolverConfiguration resolverConfiguration) {
         this.resolverConfiguration = resolverConfiguration;
     }
 
@@ -20,8 +20,8 @@ public class ServiceConfiguration implements Serializable {
                 resolverConfiguration.apiToken != null;
     }
 
-    public static ServiceConfiguration loadFromDisk(FileManager fileManager) {
-        return (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+    public static SensorbergServiceConfiguration loadFromDisk(FileManager fileManager) {
+        return (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
     }
 

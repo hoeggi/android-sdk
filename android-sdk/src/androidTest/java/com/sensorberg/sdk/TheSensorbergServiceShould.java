@@ -88,7 +88,7 @@ public class TheSensorbergServiceShould {
 
     @Test
     public void should_not_create_bootstrapper_from_null_disk_configuration() throws Exception {
-        ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+        SensorbergServiceConfiguration diskConf = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConf).isNull();
         tested.bootstrapper = null;
@@ -100,7 +100,7 @@ public class TheSensorbergServiceShould {
 
     @Test
     public void should_create_bootstrapper_from_existing_disk_configuration() throws Exception {
-        ServiceConfiguration diskConf = new ServiceConfiguration(new ResolverConfiguration());
+        SensorbergServiceConfiguration diskConf = new SensorbergServiceConfiguration(new ResolverConfiguration());
         diskConf.resolverConfiguration.setApiToken("123456");
         diskConf.resolverConfiguration.setAdvertisingIdentifier("123456");
         diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
@@ -119,7 +119,7 @@ public class TheSensorbergServiceShould {
 
         //TODO check if this is really optimal, to have persistence called twice
         tested.onStartCommand(changeApiKeyMessageIntent, -1, -1);
-        verify(fileManager, times(2)).write(any(ServiceConfiguration.class), any(String.class));
+        verify(fileManager, times(2)).write(any(SensorbergServiceConfiguration.class), any(String.class));
     }
 
     @Test
@@ -191,11 +191,11 @@ public class TheSensorbergServiceShould {
 
     @Test
     public void test_loadOrCreateNewServiceConfiguration_creates_new_config_if_null() {
-        ServiceConfiguration diskConf = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+        SensorbergServiceConfiguration diskConf = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConf).isNull();
 
-        ServiceConfiguration diskConfNew = tested.loadOrCreateNewServiceConfiguration(fileManager);
+        SensorbergServiceConfiguration diskConfNew = tested.loadOrCreateNewServiceConfiguration(fileManager);
         Assertions.assertThat(diskConfNew).isNotNull();
         Assertions.assertThat(diskConfNew.resolverConfiguration).isNotNull();
     }
@@ -223,7 +223,7 @@ public class TheSensorbergServiceShould {
 
         tested.updateDiskConfiguration(serviceUpdateResolverIntent);
 
-        ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+        SensorbergServiceConfiguration diskConfNew = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConfNew.resolverConfiguration.getResolverLayoutURL()).isEqualTo(resolverURL);
         Assertions.assertThat(URLFactory.getResolveURLString()).isEqualTo(resolverURL.toString());
@@ -239,7 +239,7 @@ public class TheSensorbergServiceShould {
 
         tested.updateDiskConfiguration(serviceUpdateApiTokenIntent);
 
-        ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+        SensorbergServiceConfiguration diskConfNew = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConfNew.resolverConfiguration.apiToken).isEqualTo(newApiToken);
     }
@@ -255,7 +255,7 @@ public class TheSensorbergServiceShould {
 
         tested.updateDiskConfiguration(serviceUpdateAdvertisingIdentifierIntent);
 
-        ServiceConfiguration diskConfNew = (ServiceConfiguration) fileManager.getContentsOfFileOrNull(
+        SensorbergServiceConfiguration diskConfNew = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConfNew.resolverConfiguration.getAdvertisingIdentifier()).isEqualTo(newAdvertisingIdentifier);
     }
