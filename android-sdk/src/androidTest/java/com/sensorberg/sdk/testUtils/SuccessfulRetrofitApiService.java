@@ -9,6 +9,7 @@ import com.sensorberg.sdk.internal.transport.model.HistoryBody;
 import com.sensorberg.sdk.internal.transport.model.SettingsResponse;
 import com.sensorberg.sdk.model.server.BaseResolveResponse;
 import com.sensorberg.sdk.model.server.ResolveResponse;
+import com.sensorberg.sdk.settings.Settings;
 
 import android.content.Context;
 
@@ -92,7 +93,7 @@ public class SuccessfulRetrofitApiService extends RetrofitApiServiceImpl {
     @Override
     public Call<SettingsResponse> getSettings() {
         //TODO
-        SettingsResponse response = new SettingsResponse();
+        SettingsResponse response = new SettingsResponse(0, new Settings());
         return delegate.returningResponse(response).getSettings("");
     }
 
