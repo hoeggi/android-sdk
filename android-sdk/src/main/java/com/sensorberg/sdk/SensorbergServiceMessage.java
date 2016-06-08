@@ -65,6 +65,9 @@ public class SensorbergServiceMessage {
 
     public static final String EXTRA_MESSENGER = "com.sensorberg.android.sdk.intent.messenger";
 
+    private SensorbergServiceMessage() {
+        throw new IllegalAccessError("Utility class");
+    }
 
     @SuppressWarnings({"squid:S1142", "squid:MethodCyclomaticComplexity"})
     public static String stringFrom(int what) {

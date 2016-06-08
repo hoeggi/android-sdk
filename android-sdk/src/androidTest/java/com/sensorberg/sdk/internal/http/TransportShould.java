@@ -2,7 +2,6 @@ package com.sensorberg.sdk.internal.http;
 
 import com.google.gson.Gson;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.URLFactory;
@@ -24,6 +23,7 @@ import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.settings.Settings;
+import com.sensorberg.sdk.settings.TimeConstants;
 import com.sensorberg.sdk.testUtils.TestClock;
 
 import junit.framework.Assert;
@@ -185,7 +185,7 @@ public class TransportShould {
         List<SugarAction> actions = new ArrayList<>();
 
         SugarScan scan1 = new SugarScan();
-        scan1.setCreatedAt(System.currentTimeMillis() - Constants.Time.ONE_HOUR);
+        scan1.setCreatedAt(System.currentTimeMillis() - TimeConstants.ONE_HOUR);
         scan1.setIsEntry(true);
         scan1.setProximityUUID(TestConstants.ANY_BEACON_ID.getUuid().toString());
         scan1.setProximityMajor(TestConstants.ANY_BEACON_ID.getMajorId());

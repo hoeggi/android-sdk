@@ -1,8 +1,8 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
+import com.sensorberg.sdk.settings.TimeConstants;
 import com.sensorberg.sdk.test.RepeatFlaky;
 import com.sensorberg.sdk.test.RepeatFlakyRule;
 import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
@@ -50,7 +50,7 @@ public class TheIntentSchedulingShould {
         ((TestComponent) SensorbergTestApplication.getComponent()).inject(this);
 
         testServiceScheduler = new TestServiceScheduler(InstrumentationRegistry.getContext(), alarmManager, androidClock, persistentIntegerCounter,
-                Constants.Time.ONE_SECOND);
+                TimeConstants.ONE_SECOND);
         INTENT_BUNDLE = new Bundle();
         INTENT_BUNDLE.putString("foo", "bar");
         TestGenericBroadcastReceiver.reset();

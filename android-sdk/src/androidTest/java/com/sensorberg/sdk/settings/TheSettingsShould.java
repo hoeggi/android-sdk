@@ -2,7 +2,6 @@ package com.sensorberg.sdk.settings;
 
 import com.google.gson.Gson;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -109,12 +108,12 @@ public class TheSettingsShould {
     public void test_update_the_default_values_if_the_constants_change() throws Exception {
         //prepare the shared preferences
         SharedPreferences.Editor editor = testedSharedPreferences.edit();
-        editor.putLong(Constants.SharedPreferencesKeys.Scanner.BACKGROUND_WAIT_TIME, Constants.Time.ONE_MINUTE * 6);
+        editor.putLong(SharedPreferencesKeys.Scanner.BACKGROUND_WAIT_TIME, TimeConstants.ONE_MINUTE * 6);
         editor.commit();
 
         //load the last values from the shared preferences, as it happens after a restart
         Settings settingsFromPrefs = new Settings(testedSharedPreferences);
-        Assertions.assertThat(settingsFromPrefs.getBackgroundWaitTime()).isEqualTo(Constants.Time.ONE_MINUTE * 6);
+        Assertions.assertThat(settingsFromPrefs.getBackgroundWaitTime()).isEqualTo(TimeConstants.ONE_MINUTE * 6);
     }
 
     public void test_advertising_id_gets_persisted() throws Exception {

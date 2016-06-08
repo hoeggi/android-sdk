@@ -1,10 +1,10 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.settings.SettingsManager;
+import com.sensorberg.sdk.settings.TimeConstants;
 import com.sensorberg.sdk.testUtils.DumbSucessTransport;
 import com.sensorberg.sdk.testUtils.TestBluetoothPlatform;
 import com.sensorberg.sdk.testUtils.TestFileManager;
@@ -52,8 +52,8 @@ public class ScannerWithLongScanTime {
         spyBluetoothPlatform = spy(new TestBluetoothPlatform());
         modifiedSettings = spy(new SettingsManager(new DumbSucessTransport(), sharedPreferences));
 
-        when(modifiedSettings.getForeGroundScanTime()).thenReturn(Constants.Time.ONE_DAY);
-        when(modifiedSettings.getForeGroundWaitTime()).thenReturn(Constants.Time.ONE_SECOND);
+        when(modifiedSettings.getForeGroundScanTime()).thenReturn(TimeConstants.ONE_DAY);
+        when(modifiedSettings.getForeGroundWaitTime()).thenReturn(TimeConstants.ONE_SECOND);
         tested = new UIScanner(modifiedSettings, handlerManager.getCustomClock(), testFileManager, testServiceScheduler, handlerManager, spyBluetoothPlatform);
     }
 

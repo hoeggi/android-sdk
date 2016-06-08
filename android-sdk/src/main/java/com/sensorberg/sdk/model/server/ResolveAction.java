@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.settings.TimeConstants;
 import com.sensorberg.utils.ListUtils;
 import com.sensorberg.utils.UUIDUtils;
 
@@ -34,13 +34,13 @@ public class ResolveAction implements Serializable {
             try {
                 Action action = ActionFactory
                         .getAction(resolveAction.type, resolveAction.content, UUID.fromString(UUIDUtils.addUuidDashes(resolveAction.eid)),
-                                resolveAction.delay * Constants.Time.ONE_SECOND);
+                                resolveAction.delay * TimeConstants.ONE_SECOND);
                 if (action == null) {
                     return null;
                 }
                 return new BeaconEvent.Builder()
                         .withAction(action)
-                        .withSuppressionTime(resolveAction.suppressionTime * Constants.Time.ONE_SECOND)
+                        .withSuppressionTime(resolveAction.suppressionTime * TimeConstants.ONE_SECOND)
                         .withSendOnlyOnce(resolveAction.sendOnlyOnce)
                         .withDeliverAtDate(resolveAction.deliverAt)
                         .withTrigger(resolveAction.trigger)

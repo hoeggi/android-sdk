@@ -1,9 +1,9 @@
 package com.sensorberg.sdk.internal;
 
 import com.sensorberg.sdk.BuildConfig;
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.PlatformIdentifier;
+import com.sensorberg.sdk.settings.SharedPreferencesKeys;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -42,8 +42,8 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
         context = ctx;
         sharedPreferences = sharedPrefs;
 
-        if (sharedPrefs.contains(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER)) {
-            advertiserIdentifier = sharedPrefs.getString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, null);
+        if (sharedPrefs.contains(SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER)) {
+            advertiserIdentifier = sharedPrefs.getString(SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, null);
         }
     }
 
@@ -154,9 +154,9 @@ public class AndroidPlatformIdentifier implements PlatformIdentifier {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         if (advertisingIdentifier == null) {
-            editor.remove(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER);
+            editor.remove(SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER);
         } else {
-            editor.putString(Constants.SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, advertisingIdentifier);
+            editor.putString(SharedPreferencesKeys.Network.ADVERTISING_IDENTIFIER, advertisingIdentifier);
             editor.apply();
         }
     }

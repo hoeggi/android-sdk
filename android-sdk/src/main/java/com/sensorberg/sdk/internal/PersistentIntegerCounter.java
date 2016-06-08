@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.settings.SharedPreferencesKeys;
 
 import android.content.SharedPreferences;
 
@@ -19,9 +19,9 @@ public class PersistentIntegerCounter {
     public PersistentIntegerCounter(SharedPreferences prefs) {
         settingsSharedPrefs = prefs;
 
-        if (settingsSharedPrefs.contains(Constants.SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER)) {
+        if (settingsSharedPrefs.contains(SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER)) {
             try {
-                postToServiceCounter = settingsSharedPrefs.getInt(Constants.SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER, 0);
+                postToServiceCounter = settingsSharedPrefs.getInt(SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER, 0);
             } catch (Exception e) {
                 Logger.log.logError("Could not fetch the last postToServiceCounter because of some weird Framework bug", e);
                 postToServiceCounter = 0;
@@ -45,7 +45,7 @@ public class PersistentIntegerCounter {
             }
 
             settingsSharedPrefs.edit()
-                    .putInt(Constants.SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER, postToServiceCounter)
+                    .putInt(SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER, postToServiceCounter)
                     .apply();
             return postToServiceCounter;
         }

@@ -2,12 +2,12 @@ package com.sensorberg.sdk.resolver;
 
 import com.google.gson.Gson;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.SensorbergTestApplication;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.model.server.ResolveResponse;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+import com.sensorberg.sdk.settings.TimeConstants;
 
 import org.fest.assertions.api.Assertions;
 import org.junit.Before;
@@ -112,7 +112,7 @@ public class TheResolveResponseShould {
         ResolveResponse tested = gson
                 .fromJson(Utils.getRawResourceAsString(com.sensorberg.sdk.test.R.raw.resolve_response_005, InstrumentationRegistry.getContext()), ResolveResponse.class);
 
-        Assertions.assertThat(tested.resolve(RESOLVABLE_ENTRY_EVENT_WITH_ID_1, new Date(Constants.Time.ONE_HOUR * 12).getTime())).hasSize(1);
+        Assertions.assertThat(tested.resolve(RESOLVABLE_ENTRY_EVENT_WITH_ID_1, new Date(TimeConstants.ONE_HOUR * 12).getTime())).hasSize(1);
         Assertions.assertThat(tested.resolve(RESOLVABLE_ENTRY_EVENT_WITH_ID_1, newDate(1968, Calendar.JANUARY, 0, 0).getTime())).hasSize(1);
         Assertions.assertThat(tested.resolve(RESOLVABLE_ENTRY_EVENT_WITH_ID_1, newDate(1971, Calendar.FEBRUARY, 0, 0).getTime())).hasSize(1);
 

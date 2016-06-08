@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
@@ -12,6 +11,7 @@ import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.SettingsManager;
+import com.sensorberg.sdk.settings.TimeConstants;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
@@ -203,7 +203,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                         public void run() {
                             loop();
                         }
-                    }, 0, Constants.Time.ONE_SECOND);
+                    }, 0, TimeConstants.ONE_SECOND);
                 }
                 break;
             }
