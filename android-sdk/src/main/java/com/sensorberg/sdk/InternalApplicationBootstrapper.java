@@ -181,6 +181,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
                 LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
             } else {
                 Logger.log.beaconResolveState(beaconEvent, "delegating the display of the beacon event to the application");
+                //send beacon event.
                 presentationDelegate.send(beaconEvent);
             }
         }
@@ -201,8 +202,10 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     public void startScanning() {
         if (bluetoothPlatform.isBluetoothLowEnergySupported() && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
             //check for permissions if permission is not set, log message to developer. Show message to user,
+            //check if the app is less than 22.. if so deactivate location. might not be able to do this.
             if (permissionChecker.hasLocationPermission()) {
                 Logger.log.scannerStateChange("Correct permissions set for Android 6, scanner starting");
+                //send information to messenger.
                 scanner.start();
             } else {
                 //handle exception and log
