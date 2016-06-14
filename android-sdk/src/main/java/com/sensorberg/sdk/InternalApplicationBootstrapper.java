@@ -37,6 +37,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.net.Inet4Address;
@@ -222,7 +223,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         } else {
             //handle exception and log
             Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
-            //presentationDelegate.send(false);
+            setLocationServicesHaveBeenSet(false);
         }
 
     }
@@ -358,4 +359,15 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
             serviceScheduler.scheduleRepeating(SensorbergServiceMessage.MSG_UPLOAD_HISTORY, newHistoryUploadInterval, TimeUnit.MILLISECONDS);
         }
     };
+
+    /**
+     *
+     * @param hasLocationServicesBeenSet - Has the location services been set (applicable for > And 6).
+     */
+    public void setLocationServicesHaveBeenSet(boolean hasLocationServicesBeenSet) {
+        Intent service = new Intent(context, SensorbergService.class);
+        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_LOCATION_SERVICES_IS_SET);
+        service.putExtra(SensorbergService.MSG_SET_LOCATION_SERVICES, hasLocationServicesBeenSet);
+        context.startService(service);
+    }
 }
