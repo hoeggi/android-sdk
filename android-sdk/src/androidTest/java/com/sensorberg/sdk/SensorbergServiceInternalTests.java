@@ -61,7 +61,7 @@ public class SensorbergServiceInternalTests {
     @Named("realTransport")
     Transport transport;
 
-    SensorbergService tested;
+    private SensorbergService tested;
 
     @Before
     public void setUp() throws Exception {
@@ -81,11 +81,78 @@ public class SensorbergServiceInternalTests {
 
     @After
     public void tearDown() {
-        fileManager.removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
     }
 
     @Test
+    public void startSensorbergService_with_no_api_key_and_null_bootstrapper_should_stop_service() {
+        tested.bootstrapper = null;
+
+        int returnNotSticky = tested.startSensorbergService(null);
+
+        Assertions.assertThat(returnNotSticky).isEqualTo(SensorbergService.START_NOT_STICKY);
+        Mockito.verify(tested, times(1)).stopSensorbergService();
+    }
+
+    @Test
+    public void startSensorbergService_with_api_key_and_null_bootstrapper_should_create_bootstrapper() {
+        tested.bootstrapper = null;
+
+        int returnNotSticky = tested.startSensorbergService(TestConstants.API_TOKEN_DEFAULT);
+
+        Assertions.assertThat(returnNotSticky).isEqualTo(SensorbergService.START_STICKY);
+        Assertions.assertThat(tested.bootstrapper).isNotNull();
+    }
+
+    @Test
+    public void startSensorbergService_with_api_key_and_bootstrapper_should_start_scanning() {
+        tested.bootstrapper = createSpyBootstrapper();
+
+        int returnNotSticky = tested.startSensorbergService(TestConstants.API_TOKEN_DEFAULT);
+
+        Assertions.assertThat(returnNotSticky).isEqualTo(SensorbergService.START_STICKY);
+        Assertions.assertThat(tested.bootstrapper).isNotNull();
+        verify(tested.bootstrapper, times(1)).startScanning();
+    }
+
+    @Test
+    public void restartSensorbergService_should_not_do_anything_if_no_disk_configuration() {
+        fileManager.removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
+        int returnSticky = tested.restartSensorbergService();
+
+        Assertions.assertThat(returnSticky).isEqualTo(SensorbergService.START_STICKY);
+        Mockito.verify(tested, times(1)).createBootstrapperFromDiskConfiguration();
+        Assertions.assertThat(tested.bootstrapper).isNull();
+    }
+
+    @Test
+    public void restartSensorbergService_should_start_scanning_if_disk_configuration() throws Exception {
+        tested.fileManager = fileManager;
+
+        SensorbergServiceConfiguration diskConf = new SensorbergServiceConfiguration(new ResolverConfiguration());
+        diskConf.resolverConfiguration.setApiToken("123456");
+        diskConf.resolverConfiguration.setAdvertisingIdentifier("123456");
+        diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
+        fileManager.write(diskConf, SensorbergServiceMessage.SERVICE_CONFIGURATION);
+
+        int returnSticky = tested.restartSensorbergService();
+
+        Assertions.assertThat(returnSticky).isEqualTo(SensorbergService.START_STICKY);
+        Mockito.verify(tested, times(1)).createBootstrapperFromDiskConfiguration();
+        Assertions.assertThat(tested.bootstrapper).isNotNull();
+    }
+
+    //TODO fix this, blocks all other tests
+//    @Test
+//    public void stopSensorbergService_should_stop_service() {
+//        int returnNotSticky = tested.stopSensorbergService();
+//
+//        Assertions.assertThat(returnNotSticky).isEqualTo(SensorbergService.START_NOT_STICKY);
+//        Mockito.verify(tested, times(1)).stopSelf();
+//    }
+
+    @Test
     public void should_not_create_bootstrapper_from_null_disk_configuration() throws Exception {
+        fileManager.removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
         SensorbergServiceConfiguration diskConf = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConf).isNull();
@@ -115,7 +182,6 @@ public class SensorbergServiceInternalTests {
         changeApiKeyMessageIntent.putExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN, NEW_API_TOKEN);
         changeApiKeyMessageIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_TOKEN);
 
-        //TODO check if this is really optimal, to have persistence called twice
         tested.onStartCommand(changeApiKeyMessageIntent, -1, -1);
         verify(fileManager, times(2)).write(any(SensorbergServiceConfiguration.class), any(String.class));
     }
@@ -158,10 +224,7 @@ public class SensorbergServiceInternalTests {
     public void should_handle_shutdown_message_with_existing_bootstrapper() {
         Intent serviceShutdownIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
         serviceShutdownIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SHUTDOWN);
-        InternalApplicationBootstrapper bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
-                bluetoothPlatform);
-        bootstrapper.setApiToken(TestConstants.API_TOKEN_DEFAULT);
-        bootstrapper = spy(bootstrapper);
+        InternalApplicationBootstrapper bootstrapper = createSpyBootstrapper();
         tested.bootstrapper = bootstrapper;
 
         boolean response = tested.handleIntentEvenIfNoBootstrapperPresent(serviceShutdownIntent);
@@ -189,6 +252,7 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void test_loadOrCreateNewServiceConfiguration_creates_new_config_if_null() {
+        fileManager.removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
         SensorbergServiceConfiguration diskConf = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConf).isNull();
@@ -257,5 +321,13 @@ public class SensorbergServiceInternalTests {
         SensorbergServiceConfiguration diskConfNew = (SensorbergServiceConfiguration) fileManager.getContentsOfFileOrNull(
                 fileManager.getFile(SensorbergServiceMessage.SERVICE_CONFIGURATION));
         Assertions.assertThat(diskConfNew.resolverConfiguration.getAdvertisingIdentifier()).isEqualTo(newAdvertisingIdentifier);
+    }
+
+    private InternalApplicationBootstrapper createSpyBootstrapper(){
+        InternalApplicationBootstrapper bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
+                bluetoothPlatform);
+        bootstrapper.setApiToken(TestConstants.API_TOKEN_DEFAULT);
+        bootstrapper = spy(bootstrapper);
+        return bootstrapper;
     }
 }
