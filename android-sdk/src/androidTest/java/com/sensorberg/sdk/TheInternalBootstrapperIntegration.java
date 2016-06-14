@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BeaconResponseHandler;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.transport.RetrofitApiServiceImpl;
@@ -22,6 +21,8 @@ import com.sensorberg.sdk.presenter.ManifestParser;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver2;
 import com.sensorberg.sdk.testUtils.TestHandlerManager;
 import com.sensorberg.sdk.testUtils.TestServiceScheduler;
 
@@ -133,6 +134,7 @@ public class TheInternalBootstrapperIntegration {
                 new IntentFilter(ManifestParser.actionString));
 
         TestGenericBroadcastReceiver.reset();
+        TestGenericBroadcastReceiver2.reset();
     }
 
     @Test
