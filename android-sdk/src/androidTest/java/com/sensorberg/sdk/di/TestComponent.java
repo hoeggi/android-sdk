@@ -1,6 +1,7 @@
 package com.sensorberg.sdk.di;
 
 import com.sensorberg.di.Component;
+import com.sensorberg.sdk.SensorbergServiceIntentHandlingTests;
 import com.sensorberg.sdk.SensorbergServiceInternalTests;
 import com.sensorberg.sdk.SensorbergServiceStartTests;
 import com.sensorberg.sdk.TheInternalApplicationBootstrapperShould;
@@ -104,6 +105,8 @@ public interface TestComponent extends Component {
     void inject(ApiServiceShould apiServiceShould);
 
     void inject(SensorbergServiceStartTests sensorbergServiceStartTests);
+
+    void inject(SensorbergServiceIntentHandlingTests sensorbergServiceIntentHandlingTests);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

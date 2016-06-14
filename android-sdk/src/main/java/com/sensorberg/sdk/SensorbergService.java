@@ -292,7 +292,7 @@ public class SensorbergService extends Service {
         conf.writeToDisk(fileManager);
     }
 
-    private void handleIntentMessage(Intent intent) {
+    protected void handleIntentMessage(Intent intent) {
         int what = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1);
         Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(what));
 
