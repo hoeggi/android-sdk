@@ -35,11 +35,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
-public class TheSensorbergServiceShould {
+public class SensorbergServiceInternalTests {
 
     private static final String NEW_API_TOKEN = "SOME_NEW_API_TOKEN";
-
-    private static final String DEFAULT_API_KEY = "DEFAULT_API_KEY";
 
     @Inject
     FileManager fileManager;
@@ -76,7 +74,7 @@ public class TheSensorbergServiceShould {
         tested.transport = Mockito.mock(Transport.class);
 
         Intent startIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        startIntent.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, DEFAULT_API_KEY);
+        startIntent.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, TestConstants.API_TOKEN_DEFAULT);
 
         tested.onStartCommand(startIntent, -1, -1);
     }
@@ -249,7 +247,8 @@ public class TheSensorbergServiceShould {
         String newAdvertisingIdentifier = "123456";
 
         Intent serviceUpdateAdvertisingIdentifierIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateAdvertisingIdentifierIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER);
+        serviceUpdateAdvertisingIdentifierIntent
+                .putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER);
         serviceUpdateAdvertisingIdentifierIntent
                 .putExtra(SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER, newAdvertisingIdentifier);
 
