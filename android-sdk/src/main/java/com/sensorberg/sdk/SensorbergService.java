@@ -106,7 +106,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    private int handleIntent(Intent intent) {
+    protected int handleIntent(Intent intent) {
         Logger.log.serviceHandlesMessage(
                 SensorbergServiceMessage.stringFrom(intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1)));
 
@@ -139,7 +139,7 @@ public class SensorbergService extends Service {
         return START_STICKY;
     }
 
-    private int startSensorbergService(String apiKey) {
+    protected int startSensorbergService(String apiKey) {
         if (bootstrapper == null && (!TextUtils.isEmpty(apiKey))) {
             bootstrapper = createBootstrapper(apiKey);
             persistConfiguration(bootstrapper.resolver.configuration);
@@ -155,7 +155,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    private int restartSensorbergService() {
+    protected int restartSensorbergService() {
         Logger.log.logError("there was no intent in onStartCommand we must assume we are beeing restarted due to a kill event");
         bootstrapper = createBootstrapperFromDiskConfiguration();
         if (bootstrapper != null) {
@@ -164,7 +164,7 @@ public class SensorbergService extends Service {
         return START_STICKY;
     }
 
-    private int stopSensorbergService() {
+    protected int stopSensorbergService() {
         stopSelf();
         return START_NOT_STICKY;
     }
