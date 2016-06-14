@@ -1,8 +1,6 @@
 package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.di.TestComponent;
-import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
-import com.sensorberg.sdk.internal.interfaces.Platform;
 
 import org.fest.assertions.api.Assertions;
 import org.junit.After;
@@ -31,8 +29,6 @@ public class SensorbergServiceIntentHandlingTests {
 
         tested = spy(new SensorbergService());
         tested.onCreate();
-        tested.bluetoothPlatform = Mockito.mock(BluetoothPlatform.class);
-        tested.platform = Mockito.mock(Platform.class);
     }
 
     @After
@@ -40,7 +36,7 @@ public class SensorbergServiceIntentHandlingTests {
     }
 
     @Test
-    public void should_handle_empty_intent() throws Exception {
+    public void should_handle_empty_intent() {
         Intent sensorbergServiceStartIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
 
         int handleIntentResult = tested.handleIntent(sensorbergServiceStartIntent);
@@ -58,7 +54,7 @@ public class SensorbergServiceIntentHandlingTests {
     }
 
     @Test
-    public void should_handle_intent_with_shutdown_message() throws Exception {
+    public void should_handle_intent_with_shutdown_message() {
         Intent sensorbergServiceShutdownIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
         sensorbergServiceShutdownIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SHUTDOWN);
 
@@ -75,7 +71,7 @@ public class SensorbergServiceIntentHandlingTests {
     }
 
     @Test
-    public void should_handle_intent_with_start_message_and_api_key() throws Exception {
+    public void should_handle_intent_with_start_message_and_api_key() {
         Intent sensorbergServiceStartIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
         sensorbergServiceStartIntent.putExtra(SensorbergServiceMessage.EXTRA_START_SERVICE, 1);
         sensorbergServiceStartIntent.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, TestConstants.API_TOKEN_DEFAULT);
@@ -93,7 +89,7 @@ public class SensorbergServiceIntentHandlingTests {
     }
 
     @Test
-    public void should_handle_intent_with_generic_noop_message() throws Exception {
+    public void should_handle_intent_with_generic_noop_message() {
         Intent sensorbergServiceStartIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
         sensorbergServiceStartIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1);
 
@@ -110,6 +106,4 @@ public class SensorbergServiceIntentHandlingTests {
         Mockito.verify(tested, Mockito.times(0)).startSensorbergService(anyString());
         Mockito.verify(tested, Mockito.times(0)).stopSensorbergService();
     }
-
-    //TODO handleIntentMessage
 }
