@@ -2,7 +2,6 @@ package com.sensorberg.sdk;
 
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
-import com.sensorberg.sdk.scanner.Scanner;
 import com.sensorberg.sdk.scanner.ScannerEvent;
 
 import org.fest.assertions.api.Assertions;
@@ -17,6 +16,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+
+import java.net.URL;
 
 import util.TestConstants;
 
@@ -35,9 +36,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
         tested = spy(new SensorbergService());
         tested.onCreate();
 
-        Intent startIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        startIntent.putExtra(SensorbergServiceMessage.EXTRA_START_SERVICE, 1);
-        startIntent.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, TestConstants.API_TOKEN_DEFAULT);
+        Intent startIntent = SensorbergServiceIntents.getStartServiceIntent(InstrumentationRegistry.getContext(), TestConstants.API_TOKEN_DEFAULT);
 
         tested.onStartCommand(startIntent, -1, -1);
         tested.bootstrapper = spy(tested.bootstrapper);
@@ -76,8 +75,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_beacon_layout_update_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_BEACON_LAYOUT_UPDATE);
+        Intent serviceIntent = SensorbergServiceIntents.getBeaconLayoutUpdateIntent(InstrumentationRegistry.getContext());
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -86,22 +84,17 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_scanner_message() {
-        Bundle bundle = new Bundle();
-        bundle.putInt(Scanner.SCANNER_EVENT, ScannerEvent.UN_PAUSE_SCAN);
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SDK_SCANNER_MESSAGE);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_WHAT, bundle);
-
         tested.bootstrapper.scanner = spy(tested.bootstrapper.scanner);
-        tested.handleIntentMessage(serviceIntent);
 
-        Mockito.verify(tested.bootstrapper.scanner, Mockito.times(1)).handlePlatformMessage(bundle);
+        tested.handleIntentMessage(
+                SensorbergServiceIntents.getSdkScannerMessageIntent(InstrumentationRegistry.getContext(), ScannerEvent.UN_PAUSE_SCAN));
+
+        Mockito.verify(tested.bootstrapper.scanner, Mockito.times(1)).handlePlatformMessage(any(Bundle.class));
     }
 
     @Test
     public void should_handle_intent_with_update_settings_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SETTINGS_UPDATE);
+        Intent serviceIntent = SensorbergServiceIntents.getUpdateSettingsIntent(InstrumentationRegistry.getContext());
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -110,8 +103,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_upload_history_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_UPLOAD_HISTORY);
+        Intent serviceIntent = SensorbergServiceIntents.getUploadHistoryIntent(InstrumentationRegistry.getContext());
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -120,8 +112,8 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_beacon_action_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.GENERIC_TYPE_BEACON_ACTION);
+        Intent serviceIntent = SensorbergServiceIntents
+                .getBeaconActionIntent(InstrumentationRegistry.getContext(), TestConstants.getBeaconEvent(), 0);
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -132,18 +124,15 @@ public class SensorbergServiceIntentMessageHandlingTests {
     public void should_handle_intent_with_retry_scan_event_resolve_message() {
         ResolutionConfiguration configuration = new ResolutionConfiguration();
         configuration.setScanEvent(TestConstants.REGULAR_BEACON_SCAN_EVENT(DateTime.now().getMillis()));
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.GENERIC_TYPE_RETRY_RESOLVE_SCANEVENT);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_WHAT, configuration);
 
-        tested.handleIntentMessage(serviceIntent);
+        tested.handleIntentMessage(SensorbergServiceIntents.getRetryResolveScanEventIntent(InstrumentationRegistry.getContext(), configuration));
+
         Mockito.verify(tested.bootstrapper, Mockito.times(1)).retryScanEventResolve(configuration);
     }
 
     @Test
     public void should_handle_intent_with_app_in_foreground_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_APPLICATION_IN_FOREGROUND);
+        Intent serviceIntent = SensorbergServiceIntents.getAppInForegroundIntent(InstrumentationRegistry.getContext());
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -152,8 +141,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_app_in_background_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_APPLICATION_IN_BACKGROUND);
+        Intent serviceIntent = SensorbergServiceIntents.getAppInBackgroundIntent(InstrumentationRegistry.getContext());
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -162,8 +150,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_set_api_token_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_TOKEN);
+        Intent serviceIntent = SensorbergServiceIntents.getApiTokenIntent(InstrumentationRegistry.getContext(), "api_token");
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -171,9 +158,9 @@ public class SensorbergServiceIntentMessageHandlingTests {
     }
 
     @Test
-    public void should_handle_intent_with_set_resolver_endpoint_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT);
+    public void should_handle_intent_with_set_resolver_endpoint_message() throws Exception {
+        Intent serviceIntent = SensorbergServiceIntents
+                .getResolverEndpointIntent(InstrumentationRegistry.getContext(), new URL("http://resolver-new.sensorberg.com"));
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -182,8 +169,8 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_register_presentation_delegate_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_REGISTER_PRESENTATION_DELEGATE);
+        Intent serviceIntent = SensorbergServiceIntents.getServiceIntentWithMessage(InstrumentationRegistry.getContext(),
+                SensorbergServiceMessage.MSG_REGISTER_PRESENTATION_DELEGATE);
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -192,8 +179,8 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_unregister_presentation_delegate_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_UNREGISTER_PRESENTATION_DELEGATE);
+        Intent serviceIntent = SensorbergServiceIntents.getServiceIntentWithMessage(InstrumentationRegistry.getContext(),
+                SensorbergServiceMessage.MSG_UNREGISTER_PRESENTATION_DELEGATE);
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -202,8 +189,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_ping_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_PING);
+        Intent serviceIntent = SensorbergServiceIntents.getPingIntent(InstrumentationRegistry.getContext());
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -212,8 +198,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_bluetooth_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_BLUETOOTH);
+        Intent serviceIntent = SensorbergServiceIntents.getBluetoothMessageIntent(InstrumentationRegistry.getContext(), true);
 
         tested.handleIntentMessage(serviceIntent);
 
@@ -222,8 +207,7 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
     @Test
     public void should_handle_intent_with_set_advertising_id_message() {
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER);
+        Intent serviceIntent = SensorbergServiceIntents.getAdvertisingIdentifierIntent(InstrumentationRegistry.getContext(), "testId");
 
         tested.handleIntentMessage(serviceIntent);
 

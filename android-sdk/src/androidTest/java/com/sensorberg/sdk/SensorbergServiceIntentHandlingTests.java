@@ -55,8 +55,7 @@ public class SensorbergServiceIntentHandlingTests {
 
     @Test
     public void should_handle_intent_with_shutdown_message() {
-        Intent sensorbergServiceShutdownIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        sensorbergServiceShutdownIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SHUTDOWN);
+        Intent sensorbergServiceShutdownIntent = SensorbergServiceIntents.getShutdownServiceIntent(InstrumentationRegistry.getContext());
 
         int handleIntentResult = tested.handleIntent(sensorbergServiceShutdownIntent);
 
@@ -72,9 +71,8 @@ public class SensorbergServiceIntentHandlingTests {
 
     @Test
     public void should_handle_intent_with_start_message_and_api_key() {
-        Intent sensorbergServiceStartIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        sensorbergServiceStartIntent.putExtra(SensorbergServiceMessage.EXTRA_START_SERVICE, 1);
-        sensorbergServiceStartIntent.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, TestConstants.API_TOKEN_DEFAULT);
+        Intent sensorbergServiceStartIntent = SensorbergServiceIntents
+                .getStartServiceIntent(InstrumentationRegistry.getContext(), TestConstants.API_TOKEN_DEFAULT);
 
         int handleIntentResult = tested.handleIntent(sensorbergServiceStartIntent);
 

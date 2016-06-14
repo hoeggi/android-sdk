@@ -8,7 +8,6 @@ import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
-import com.sensorberg.sdk.resolver.ResolverConfiguration;
 
 import org.fest.assertions.api.Assertions;
 import org.junit.After;
@@ -127,12 +126,7 @@ public class SensorbergServiceInternalTests {
     @Test
     public void restartSensorbergService_should_start_scanning_if_disk_configuration() throws Exception {
         tested.fileManager = fileManager;
-
-        SensorbergServiceConfiguration diskConf = new SensorbergServiceConfiguration(new ResolverConfiguration());
-        diskConf.resolverConfiguration.setApiToken("123456");
-        diskConf.resolverConfiguration.setAdvertisingIdentifier("123456");
-        diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
-        fileManager.write(diskConf, SensorbergServiceMessage.SERVICE_CONFIGURATION);
+        fileManager.write(TestConstants.getDiskConfiguration(), SensorbergServiceMessage.SERVICE_CONFIGURATION);
 
         int returnSticky = tested.restartSensorbergService();
 
@@ -165,11 +159,7 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void should_create_bootstrapper_from_existing_disk_configuration() throws Exception {
-        SensorbergServiceConfiguration diskConf = new SensorbergServiceConfiguration(new ResolverConfiguration());
-        diskConf.resolverConfiguration.setApiToken("123456");
-        diskConf.resolverConfiguration.setAdvertisingIdentifier("123456");
-        diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
-        fileManager.write(diskConf, SensorbergServiceMessage.SERVICE_CONFIGURATION);
+        fileManager.write(TestConstants.getDiskConfiguration(), SensorbergServiceMessage.SERVICE_CONFIGURATION);
 
         InternalApplicationBootstrapper bootstrapper = tested.createBootstrapperFromDiskConfiguration();
 
@@ -178,9 +168,7 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void should_persist_the_settings_when_getting_a_new_API_token() throws Exception {
-        Intent changeApiKeyMessageIntent = new Intent();
-        changeApiKeyMessageIntent.putExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN, NEW_API_TOKEN);
-        changeApiKeyMessageIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_TOKEN);
+        Intent changeApiKeyMessageIntent = SensorbergServiceIntents.getApiTokenIntent(InstrumentationRegistry.getContext(), NEW_API_TOKEN);
 
         tested.onStartCommand(changeApiKeyMessageIntent, -1, -1);
         verify(fileManager, times(2)).write(any(SensorbergServiceConfiguration.class), any(String.class));
@@ -188,8 +176,7 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void should_turn_debugging_on_in_transport_from_intent() {
-        Intent serviceDebuggingOnIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceDebuggingOnIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_ENABLE_LOGGING);
+        Intent serviceDebuggingOnIntent = SensorbergServiceIntents.getServiceLoggingIntent(InstrumentationRegistry.getContext(), true);
 
         try {
             tested.handleDebuggingIntent(serviceDebuggingOnIntent, InstrumentationRegistry.getContext());
@@ -205,8 +192,7 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void should_turn_debugging_off_in_transport_from_intent() {
-        Intent serviceDebuggingOffIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceDebuggingOffIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_DISABLE_LOGGING);
+        Intent serviceDebuggingOffIntent = SensorbergServiceIntents.getServiceLoggingIntent(InstrumentationRegistry.getContext(), false);
 
         try {
             tested.handleDebuggingIntent(serviceDebuggingOffIntent, InstrumentationRegistry.getContext());
@@ -222,8 +208,7 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void should_handle_shutdown_message_with_existing_bootstrapper() {
-        Intent serviceShutdownIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceShutdownIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SHUTDOWN);
+        Intent serviceShutdownIntent = SensorbergServiceIntents.getShutdownServiceIntent(InstrumentationRegistry.getContext());
         InternalApplicationBootstrapper bootstrapper = createSpyBootstrapper();
         tested.bootstrapper = bootstrapper;
 
@@ -239,8 +224,7 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void should_handle_shutdown_message_with_null_bootstrapper() {
-        Intent serviceShutdownIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceShutdownIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SHUTDOWN);
+        Intent serviceShutdownIntent = SensorbergServiceIntents.getShutdownServiceIntent(InstrumentationRegistry.getContext());
         tested.bootstrapper = null;
 
         boolean response = tested.handleIntentEvenIfNoBootstrapperPresent(serviceShutdownIntent);
@@ -265,10 +249,7 @@ public class SensorbergServiceInternalTests {
     @Test
     public void test_updateDiskConfiguration_creates_new_disk_config_if_null() throws MalformedURLException {
         URL resolverURL = new URL("http://resolver-new.sensorberg.com");
-
-        Intent serviceUpdateResolverIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT);
-        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
+        Intent serviceUpdateResolverIntent = SensorbergServiceIntents.getResolverEndpointIntent(InstrumentationRegistry.getContext(), resolverURL);
 
         tested.updateDiskConfiguration(serviceUpdateResolverIntent);
 
@@ -278,10 +259,7 @@ public class SensorbergServiceInternalTests {
     @Test
     public void test_updateDiskConfiguration_persists_new_resolver_endpoint() throws MalformedURLException {
         URL resolverURL = new URL("http://resolver-new.sensorberg.com");
-
-        Intent serviceUpdateResolverIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT);
-        serviceUpdateResolverIntent.putExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverURL);
+        Intent serviceUpdateResolverIntent = SensorbergServiceIntents.getResolverEndpointIntent(InstrumentationRegistry.getContext(), resolverURL);
 
         tested.updateDiskConfiguration(serviceUpdateResolverIntent);
 
@@ -294,10 +272,7 @@ public class SensorbergServiceInternalTests {
     @Test
     public void test_updateDiskConfiguration_persists_new_api_token() {
         String newApiToken = "123456";
-
-        Intent serviceUpdateApiTokenIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateApiTokenIntent.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_TOKEN);
-        serviceUpdateApiTokenIntent.putExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN, newApiToken);
+        Intent serviceUpdateApiTokenIntent = SensorbergServiceIntents.getApiTokenIntent(InstrumentationRegistry.getContext(), newApiToken);
 
         tested.updateDiskConfiguration(serviceUpdateApiTokenIntent);
 
@@ -309,12 +284,8 @@ public class SensorbergServiceInternalTests {
     @Test
     public void test_updateDiskConfiguration_persists_new_advertising_identifier() {
         String newAdvertisingIdentifier = "123456";
-
-        Intent serviceUpdateAdvertisingIdentifierIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        serviceUpdateAdvertisingIdentifierIntent
-                .putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER);
-        serviceUpdateAdvertisingIdentifierIntent
-                .putExtra(SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER, newAdvertisingIdentifier);
+        Intent serviceUpdateAdvertisingIdentifierIntent = SensorbergServiceIntents
+                .getAdvertisingIdentifierIntent(InstrumentationRegistry.getContext(), newAdvertisingIdentifier);
 
         tested.updateDiskConfiguration(serviceUpdateAdvertisingIdentifierIntent);
 
@@ -323,11 +294,23 @@ public class SensorbergServiceInternalTests {
         Assertions.assertThat(diskConfNew.resolverConfiguration.getAdvertisingIdentifier()).isEqualTo(newAdvertisingIdentifier);
     }
 
-    private InternalApplicationBootstrapper createSpyBootstrapper(){
+    private InternalApplicationBootstrapper createSpyBootstrapper() {
         InternalApplicationBootstrapper bootstrapper = new InternalApplicationBootstrapper(transport, serviceScheduler, handlerManager, clock,
                 bluetoothPlatform);
         bootstrapper.setApiToken(TestConstants.API_TOKEN_DEFAULT);
         bootstrapper = spy(bootstrapper);
         return bootstrapper;
+    }
+
+    @Test
+    public void should_present_valid_beacon_event() {
+        //TODO
+//        Intent serviceIntent = SensorbergServiceIntents
+//                .getBeaconActionIntent(InstrumentationRegistry.getContext(), TestConstants.getBeaconEvent(), 0);
+//        tested.bootstrapper = createSpyBootstrapper();
+//
+//        tested.presentBeaconEvent(serviceIntent);
+
+//        Mockito.verify(tested.bootstrapper, Mockito.times(1)).presentEventDirectly(any(BeaconEvent.class), anyInt());
     }
 }

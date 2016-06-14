@@ -3,6 +3,7 @@ package com.sensorberg;
 import com.sensorberg.di.Component;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.SensorbergServiceIntents;
 import com.sensorberg.sdk.SensorbergServiceMessage;
 import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
@@ -74,12 +75,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
 
     private void activateService(String apiKey) {
         if (bluetoothPlatform.isBluetoothLowEnergySupported()) {
-            Intent service = new Intent(context, SensorbergService.class);
-            service.putExtra(SensorbergServiceMessage.EXTRA_START_SERVICE, 1);
-            if (apiKey != null) {
-                service.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, apiKey);
-            }
-            context.startService(service);
+            context.startService(SensorbergServiceIntents.getStartServiceIntent(context, apiKey));
         }
     }
 
@@ -89,12 +85,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     public void setResolverBaseURL(URL resolverBaseURL) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT);
-        if (resolverBaseURL != null) {
-            service.putExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, resolverBaseURL);
-        }
-        context.startService(service);
+        context.startService(SensorbergServiceIntents.getResolverEndpointIntent(context, resolverBaseURL));
     }
 
     public void setPresentationDelegationEnabled(boolean value) {
@@ -109,7 +100,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
 
     public void disableServiceCompletely(Context context) {
         //TODO should be renamed to disableService to correspond to enableService?
-        sendEmptyMessage(SensorbergServiceMessage.MSG_SHUTDOWN);
+        context.startService(SensorbergServiceIntents.getShutdownServiceIntent(context));
     }
 
     public void enableService(Context context, String apiKey) {
@@ -121,21 +112,15 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
 
     public void hostApplicationInBackground() {
         Logger.log.applicationStateChanged("hostApplicationInBackground");
-        sendEmptyMessage(SensorbergServiceMessage.MSG_APPLICATION_IN_BACKGROUND);
+        context.startService(SensorbergServiceIntents.getAppInBackgroundIntent(context));
         unRegisterFromPresentationDelegation();
     }
 
     public void hostApplicationInForeground() {
-        sendEmptyMessage(SensorbergServiceMessage.MSG_APPLICATION_IN_FOREGROUND);
+        context.startService(SensorbergServiceIntents.getAppInForegroundIntent(context));
         if (presentationDelegationEnabled) {
             registerForPresentationDelegation();
         }
-    }
-
-    protected void sendEmptyMessage(int messageType) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, messageType);
-        context.startService(service);
     }
 
     protected void unRegisterFromPresentationDelegation() {
@@ -154,24 +139,16 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     public void changeAPIToken(String newApiToken) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_TOKEN);
-        service.putExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN, newApiToken);
-        context.startService(service);
+        context.startService(SensorbergServiceIntents.getApiTokenIntent(context, newApiToken));
     }
 
     public void setAdvertisingIdentifier(String advertisingIdentifier) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER);
-        service.putExtra(SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER, advertisingIdentifier);
+        Intent service = SensorbergServiceIntents.getAdvertisingIdentifierIntent(context, advertisingIdentifier);
         context.startService(service);
     }
 
     public void setLogging(boolean enableLogging) {
-        Intent service = new Intent(context, SensorbergService.class);
-        int message = enableLogging ? SensorbergServiceMessage.MSG_TYPE_ENABLE_LOGGING : SensorbergServiceMessage.MSG_TYPE_DISABLE_LOGGING;
-        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, message);
-        context.startService(service);
+        context.startService(SensorbergServiceIntents.getServiceLoggingIntent(context, enableLogging));
     }
 
     public Component buildComponentAndInject(Context context) {
