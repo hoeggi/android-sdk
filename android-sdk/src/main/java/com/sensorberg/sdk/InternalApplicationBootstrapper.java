@@ -2,12 +2,14 @@ package com.sensorberg.sdk;
 
 import com.sensorberg.SensorbergSdk;
 import com.sensorberg.sdk.action.Action;
+import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
+import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
@@ -34,8 +36,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.os.Build;
 import android.util.Log;
 
+import java.net.Inet4Address;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -200,18 +204,27 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     //TODO add android 6 stuff possibly. At least for prompting dev to do something. logging.
     public void startScanning() {
-        if (bluetoothPlatform.isBluetoothLowEnergySupported() && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
-            //check for permissions if permission is not set, log message to developer. Show message to user,
-            //check if the app is less than 22.. if so deactivate location. might not be able to do this.
-            if (permissionChecker.hasLocationPermission()) {
-                Logger.log.scannerStateChange("Correct permissions set for Android 6, scanner starting");
-                //send information to messenger.
-                scanner.start();
-            } else {
-                //handle exception and log
-                Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
-            }
+        if (bluetoothPlatform.isBluetoothLowEnergySupported()
+                && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.M ) {
+            scanner.start();
         }
+
+        //need to send boolean package from here.  not after. grr.
+        //check for permissions if permission is not set, log message to developer. Show message to user,
+        //check if the app is less than 22.. if so deactivate location. might not be able to do this.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M && permissionChecker.hasLocationPermission()) {
+            Logger.log.scannerStateChange("Correct permissions set for Android 6, scanner starting");
+            //send information to messenger.
+            Log.i("sdk_int", Integer.toString(Build.VERSION.SDK_INT));
+            Log.i("marshmallow", Integer.toString(Build.VERSION_CODES.M));
+            scanner.start();
+        } else {
+            //handle exception and log
+            Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
+            //presentationDelegate.send(false);
+        }
+
     }
 
     public void stopScanning() {

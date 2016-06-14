@@ -13,6 +13,7 @@ import com.sensorberg.sdk.action.ActionType;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.action.UriMessageAction;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
+import com.sensorberg.sdk.demo.presenters.MyActionPresenter;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.testApp.BuildConfig;
 
@@ -164,5 +165,9 @@ public class DemoApplication extends MultiDexApplication {
 
     public void setActivityContext(Context activityContext) {
         this.activityContext = activityContext;
+    }
+
+    public void showLocationAlert(Context activityContext) {
+
     }
 }

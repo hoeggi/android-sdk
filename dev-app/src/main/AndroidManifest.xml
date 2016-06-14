@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.sensorberg.sdk.demo.MyActionPresenter"
+        <receiver android:name="com.sensorberg.sdk.demo.presenters.MyActionPresenter"
                   android:process=".sensorberg"
                   android:exported="false">
             <intent-filter>
