@@ -55,7 +55,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     protected final Resolver resolver;
 
-    protected final Scanner scanner;
+    protected Scanner scanner;
 
     @Inject
     @Named("realSettingsManager")

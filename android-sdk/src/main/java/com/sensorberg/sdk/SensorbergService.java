@@ -358,7 +358,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    private void presentBeaconEvent(Intent intent) {
+    protected void presentBeaconEvent(Intent intent) {
         try {
             BeaconEvent beaconEvent = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_GENERIC_WHAT);
             int index = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_INDEX, 0);
@@ -369,7 +369,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    private void setApiToken(Intent intent) {
+    protected void setApiToken(Intent intent) {
         if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN)) {
             String apiToken = intent.getStringExtra(SensorbergServiceMessage.MSG_SET_API_TOKEN_TOKEN);
             bootstrapper.setApiToken(apiToken);
@@ -377,7 +377,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    private void setResolverEndpoint(Intent intent) {
+    protected void setResolverEndpoint(Intent intent) {
         if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL)) {
             try {
                 URL resolverURL = (URL) intent.getSerializableExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL);
@@ -389,21 +389,21 @@ public class SensorbergService extends Service {
         }
     }
 
-    private void registerPresentationDelegate(Intent intent) {
+    protected void registerPresentationDelegate(Intent intent) {
         if (intent.hasExtra(SensorbergServiceMessage.EXTRA_MESSENGER)) {
             Messenger messenger = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_MESSENGER);
             presentationDelegates.add(messenger);
         }
     }
 
-    private void unregisterPresentationDelegate(Intent intent) {
+    protected void unregisterPresentationDelegate(Intent intent) {
         if (intent.hasExtra(SensorbergServiceMessage.EXTRA_MESSENGER)) {
             Messenger messenger = intent.getParcelableExtra(SensorbergServiceMessage.EXTRA_MESSENGER);
             presentationDelegates.remove(messenger);
         }
     }
 
-    private void processBluetoothStateMessage(Intent intent) {
+    protected void processBluetoothStateMessage(Intent intent) {
         if (intent.hasExtra(SensorbergServiceMessage.EXTRA_BLUETOOTH_STATE)) {
             boolean bluetoothOn = intent.getBooleanExtra(SensorbergServiceMessage.EXTRA_BLUETOOTH_STATE, true);
             if (bluetoothOn) {
@@ -414,7 +414,7 @@ public class SensorbergService extends Service {
         }
     }
 
-    private void setAdvertisingIdentifier(Intent intent) {
+    protected void setAdvertisingIdentifier(Intent intent) {
         if (intent.hasExtra(SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER)) {
             String advertisingIdentifier = intent.getStringExtra(
                     SensorbergServiceMessage.MSG_SET_API_ADVERTISING_IDENTIFIER_ADVERTISING_IDENTIFIER);

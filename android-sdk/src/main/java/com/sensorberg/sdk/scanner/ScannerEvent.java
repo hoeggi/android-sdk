@@ -2,7 +2,7 @@ package com.sensorberg.sdk.scanner;
 
 import lombok.Getter;
 
-class ScannerEvent {
+public class ScannerEvent {
 
     @Getter
     private final int type;

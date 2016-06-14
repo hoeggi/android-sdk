@@ -12,7 +12,7 @@ import com.sensorberg.sdk.settings.SettingsManager;
 import android.os.Bundle;
 
 public class Scanner extends AbstractScanner {
-    private static final String SCANNER_EVENT = "com.sensorberg.sdk.scanner.SDKScanner.SCANNER_EVENT";
+    public static final String SCANNER_EVENT = "com.sensorberg.sdk.scanner.SDKScanner.SCANNER_EVENT";
 
     public Scanner(SettingsManager stgMgr, boolean shouldRestoreBeaconStates, Clock clock, FileManager fileManager,
             ServiceScheduler scheduler, HandlerManager handlerManager, BluetoothPlatform bluetoothPlatform) {
