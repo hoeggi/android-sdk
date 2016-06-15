@@ -13,6 +13,7 @@ import com.sensorberg.utils.UUIDUtils;
 
 import org.json.JSONException;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +23,9 @@ import lombok.ToString;
 
 @SuppressWarnings("WeakerAccess")
 @ToString
-public class ResolveAction {
+public class ResolveAction implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final ListUtils.Mapper<ResolveAction, BeaconEvent> BEACON_EVENT_MAPPER = new ListUtils.Mapper<ResolveAction, BeaconEvent>() {
         public BeaconEvent map(ResolveAction resolveAction) {
