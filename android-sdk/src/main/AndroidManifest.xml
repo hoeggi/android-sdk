@@ -50,7 +50,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".NetworkInfoBroadcastReceiver"
+        <receiver android:name=".receivers.NetworkInfoBroadcastReceiver"
                   android:process=":sensorberg">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
