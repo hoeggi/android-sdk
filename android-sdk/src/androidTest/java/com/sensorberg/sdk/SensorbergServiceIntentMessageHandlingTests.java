@@ -3,6 +3,8 @@ package com.sensorberg.sdk;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.resolver.ResolutionConfiguration;
 import com.sensorberg.sdk.scanner.ScannerEvent;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver2;
 
 import org.fest.assertions.api.Assertions;
 import org.joda.time.DateTime;
@@ -40,6 +42,9 @@ public class SensorbergServiceIntentMessageHandlingTests {
 
         tested.onStartCommand(startIntent, -1, -1);
         tested.bootstrapper = spy(tested.bootstrapper);
+
+        TestGenericBroadcastReceiver.reset();
+        TestGenericBroadcastReceiver2.reset();
     }
 
     @After
