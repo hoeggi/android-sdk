@@ -2,12 +2,11 @@ package com.sensorberg;
 
 import com.sensorberg.di.Component;
 import com.sensorberg.sdk.Logger;
-import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.SensorbergServiceIntents;
 import com.sensorberg.sdk.SensorbergServiceMessage;
-import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Platform;
+import com.sensorberg.sdk.receivers.ScannerBroadcastReceiver;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorbergorm.SugarContext;
 
@@ -124,18 +123,13 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     protected void unRegisterFromPresentationDelegation() {
-        sendReplyToMessage(SensorbergServiceMessage.MSG_UNREGISTER_PRESENTATION_DELEGATE);
-    }
-
-    protected void sendReplyToMessage(int messageType) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, messageType);
-        service.putExtra(SensorbergServiceMessage.EXTRA_MESSENGER, messenger);
-        context.startService(service);
+        context.startService(SensorbergServiceIntents.getIntentWithReplyToMessenger(context,
+                SensorbergServiceMessage.MSG_UNREGISTER_PRESENTATION_DELEGATE, messenger));
     }
 
     protected void registerForPresentationDelegation() {
-        sendReplyToMessage(SensorbergServiceMessage.MSG_REGISTER_PRESENTATION_DELEGATE);
+        context.startService(SensorbergServiceIntents.getIntentWithReplyToMessenger(context,
+                SensorbergServiceMessage.MSG_REGISTER_PRESENTATION_DELEGATE, messenger));
     }
 
     public void changeAPIToken(String newApiToken) {

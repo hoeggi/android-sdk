@@ -7,6 +7,7 @@ import com.sensorberg.sdk.scanner.Scanner;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Messenger;
 
 import java.net.URL;
 
@@ -120,5 +121,11 @@ public class SensorbergServiceIntents {
     public static Intent getServiceLoggingIntent(Context ctx, boolean enableLogging) {
         int message = enableLogging ? SensorbergServiceMessage.MSG_TYPE_ENABLE_LOGGING : SensorbergServiceMessage.MSG_TYPE_DISABLE_LOGGING;
         return getServiceIntentWithMessage(ctx, message);
+    }
+
+    public static Intent getIntentWithReplyToMessenger(Context ctx, int messageType, Messenger messenger) {
+        Intent serviceIntent = getServiceIntentWithMessage(ctx, messageType);
+        serviceIntent.putExtra(SensorbergServiceMessage.EXTRA_MESSENGER, messenger);
+        return serviceIntent;
     }
 }

@@ -16,6 +16,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import util.TestConstants;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.spy;
 
 @RunWith(AndroidJUnit4.class)
@@ -57,6 +58,7 @@ public class SensorbergServiceStartTests {
 
         tested.onStartCommand(sensorbergServiceStartIntent, -1, -1);
 
+        Mockito.verify(tested, Mockito.times(1)).logError(anyString());
         Mockito.verify(tested, Mockito.times(1)).stopSensorbergService();
     }
 

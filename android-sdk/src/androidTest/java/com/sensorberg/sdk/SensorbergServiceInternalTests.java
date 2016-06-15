@@ -8,6 +8,9 @@ import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
+import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver;
+import com.sensorberg.sdk.test.TestGenericBroadcastReceiver2;
 
 import org.fest.assertions.api.Assertions;
 import org.junit.After;
@@ -17,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Messenger;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -29,6 +34,8 @@ import javax.inject.Named;
 import util.TestConstants;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,10 +79,11 @@ public class SensorbergServiceInternalTests {
         tested.fileManager = fileManager;
         tested.transport = Mockito.mock(Transport.class);
 
-        Intent startIntent = new Intent(InstrumentationRegistry.getContext(), SensorbergService.class);
-        startIntent.putExtra(SensorbergServiceMessage.EXTRA_API_KEY, TestConstants.API_TOKEN_DEFAULT);
-
+        Intent startIntent = SensorbergServiceIntents.getStartServiceIntent(InstrumentationRegistry.getContext(), TestConstants.API_TOKEN_DEFAULT);
         tested.onStartCommand(startIntent, -1, -1);
+
+        TestGenericBroadcastReceiver.reset();
+        TestGenericBroadcastReceiver2.reset();
     }
 
     @After
@@ -135,15 +143,6 @@ public class SensorbergServiceInternalTests {
         Assertions.assertThat(tested.bootstrapper).isNotNull();
     }
 
-    //TODO fix this, blocks all other tests
-//    @Test
-//    public void stopSensorbergService_should_stop_service() {
-//        int returnNotSticky = tested.stopSensorbergService();
-//
-//        Assertions.assertThat(returnNotSticky).isEqualTo(SensorbergService.START_NOT_STICKY);
-//        Mockito.verify(tested, times(1)).stopSelf();
-//    }
-
     @Test
     public void should_not_create_bootstrapper_from_null_disk_configuration() throws Exception {
         fileManager.removeFile(SensorbergServiceMessage.SERVICE_CONFIGURATION);
@@ -178,13 +177,15 @@ public class SensorbergServiceInternalTests {
     public void should_turn_debugging_on_in_transport_from_intent() {
         Intent serviceDebuggingOnIntent = SensorbergServiceIntents.getServiceLoggingIntent(InstrumentationRegistry.getContext(), true);
 
-        try {
-            tested.handleDebuggingIntent(serviceDebuggingOnIntent, InstrumentationRegistry.getContext());
-            Assertions.fail("Should've gone into catch branch!");
-        } catch (Exception e) {
-            Assertions.assertThat(e).isInstanceOf(RuntimeException.class);
-            Assertions.assertThat(e.getMessage()).containsIgnoringCase("Looper.prepare()");
-        }
+        tested.handleDebuggingIntent(serviceDebuggingOnIntent, InstrumentationRegistry.getContext(), false);
+
+//        try {
+//            tested.handleDebuggingIntent(serviceDebuggingOnIntent, InstrumentationRegistry.getContext());
+//            Assertions.fail("Should've gone into catch branch!");
+//        } catch (Exception e) {
+//            Assertions.assertThat(e).isInstanceOf(RuntimeException.class);
+//            Assertions.assertThat(e.getMessage()).containsIgnoringCase("Looper.prepare()");
+//        }
 
         Mockito.verify(tested.transport, times(1)).setLoggingEnabled(true);
         Assertions.assertThat(Logger.log).isInstanceOf(Logger.VerboseLogger.class);
@@ -194,13 +195,15 @@ public class SensorbergServiceInternalTests {
     public void should_turn_debugging_off_in_transport_from_intent() {
         Intent serviceDebuggingOffIntent = SensorbergServiceIntents.getServiceLoggingIntent(InstrumentationRegistry.getContext(), false);
 
-        try {
-            tested.handleDebuggingIntent(serviceDebuggingOffIntent, InstrumentationRegistry.getContext());
-            Assertions.fail("Should've gone into catch branch!");
-        } catch (Exception e) {
-            Assertions.assertThat(e).isInstanceOf(RuntimeException.class);
-            Assertions.assertThat(e.getMessage()).containsIgnoringCase("Looper.prepare()");
-        }
+        tested.handleDebuggingIntent(serviceDebuggingOffIntent, InstrumentationRegistry.getContext(), false);
+
+//        try {
+//            tested.handleDebuggingIntent(serviceDebuggingOffIntent, InstrumentationRegistry.getContext(), false);
+//            Assertions.fail("Should've gone into catch branch!");
+//        } catch (Exception e) {
+//            Assertions.assertThat(e).isInstanceOf(RuntimeException.class);
+//            Assertions.assertThat(e.getMessage()).containsIgnoringCase("Looper.prepare()");
+//        }
 
         Mockito.verify(tested.transport, times(1)).setLoggingEnabled(false);
         Assertions.assertThat(Logger.log).isEqualTo(Logger.QUIET_LOG);
@@ -304,13 +307,101 @@ public class SensorbergServiceInternalTests {
 
     @Test
     public void should_present_valid_beacon_event() {
-        //TODO
-//        Intent serviceIntent = SensorbergServiceIntents
-//                .getBeaconActionIntent(InstrumentationRegistry.getContext(), TestConstants.getBeaconEvent(), 0);
-//        tested.bootstrapper = createSpyBootstrapper();
-//
-//        tested.presentBeaconEvent(serviceIntent);
+        Intent serviceIntent = SensorbergServiceIntents
+                .getBeaconActionIntent(InstrumentationRegistry.getContext(), TestConstants.getBeaconEvent(), 0);
+        tested.bootstrapper = createSpyBootstrapper();
 
-//        Mockito.verify(tested.bootstrapper, Mockito.times(1)).presentEventDirectly(any(BeaconEvent.class), anyInt());
+        tested.presentBeaconEvent(serviceIntent);
+
+        Mockito.verify(tested, Mockito.times(0)).logError(anyString());
+        Mockito.verify(tested.bootstrapper, Mockito.times(1)).presentEventDirectly(any(BeaconEvent.class), anyInt());
+    }
+
+    @Test
+    public void setting_invalid_resolver_endpoint_shouldnt_change_endpoint() {
+        String oldResolverUrl = URLFactory.getResolveURLString();
+        Intent serviceIntent = TestConstants.getInvalidResolverEndpointIntent(InstrumentationRegistry.getContext());
+
+        tested.setResolverEndpoint(serviceIntent);
+
+        Assertions.assertThat(oldResolverUrl).isEqualTo(URLFactory.getResolveURLString());
+    }
+
+    @Test
+    public void setting_valid_resolver_endpoint_should_change_endpoint() throws Exception {
+        String oldResolverUrl = URLFactory.getResolveURLString();
+        Intent serviceIntent = SensorbergServiceIntents.getResolverEndpointIntent(InstrumentationRegistry.getContext(),
+                new URL("http://newresolver.sensorberg.com"));
+
+        tested.setResolverEndpoint(serviceIntent);
+
+        Assertions.assertThat(oldResolverUrl).isNotEqualTo(URLFactory.getResolveURLString());
+    }
+
+    @Test
+    public void process_start_scan_bluetooth_message_should_start_scanning() {
+        Intent serviceIntent = SensorbergServiceIntents.getBluetoothMessageIntent(InstrumentationRegistry.getContext(), true);
+        tested.bootstrapper = createSpyBootstrapper();
+
+        tested.processBluetoothStateMessage(serviceIntent);
+
+        Mockito.verify(tested.bootstrapper, Mockito.times(1)).startScanning();
+    }
+
+    @Test
+    public void process_stop_scan_bluetooth_message_should_stop_scanning() {
+        Intent serviceIntent = SensorbergServiceIntents.getBluetoothMessageIntent(InstrumentationRegistry.getContext(), false);
+        tested.bootstrapper = createSpyBootstrapper();
+
+        tested.processBluetoothStateMessage(serviceIntent);
+
+        Mockito.verify(tested.bootstrapper, Mockito.times(1)).stopScanning();
+    }
+
+    @Test
+    public void process_on_destroy_should_stop_scanning() {
+        tested.bootstrapper = createSpyBootstrapper();
+
+        tested.onDestroy();
+
+        Mockito.verify(tested.bootstrapper, Mockito.times(1)).stopScanning();
+    }
+
+    @Test
+    public void registerPresentationDelegate_should_add_delegate_to_messengerList() {
+        Messenger messenger = new Messenger(new Handler(InstrumentationRegistry.getContext().getMainLooper()));
+        tested.presentationDelegates = spy(tested.presentationDelegates);
+
+        try {
+            tested.registerPresentationDelegate(SensorbergServiceIntents.getIntentWithReplyToMessenger(InstrumentationRegistry.getContext(),
+                    SensorbergServiceMessage.MSG_REGISTER_PRESENTATION_DELEGATE, messenger));
+        } catch (Exception e) {
+            //this happens because the MessengerList, as an internal class of SensorbergService, has its own instance which is different
+            //from the proxied spy instance we use for testing; MessengerList.add() calls bootstrapper.sentPresentationDelegationTo()
+            //and that will cause the NPE
+            Assertions.assertThat(e).isInstanceOf(NullPointerException.class);
+        }
+
+        Assertions.assertThat(tested.presentationDelegates.getSize()).isEqualTo(1);
+        Mockito.verify(tested.presentationDelegates, Mockito.times(1)).add(messenger);
+    }
+
+    @Test
+    public void unregisterPresentationDelegate_should_remove_delegate_from_messengerList() {
+        Messenger messenger = new Messenger(new Handler(InstrumentationRegistry.getContext().getMainLooper()));
+        tested.presentationDelegates = spy(tested.presentationDelegates);
+
+        try {
+            tested.unregisterPresentationDelegate(SensorbergServiceIntents.getIntentWithReplyToMessenger(InstrumentationRegistry.getContext(),
+                    SensorbergServiceMessage.MSG_UNREGISTER_PRESENTATION_DELEGATE, messenger));
+        } catch (Exception e) {
+            //this happens because the MessengerList, as an internal class of SensorbergService, has its own instance which is different
+            //from the proxied spy instance we use for testing; MessengerList.add() calls bootstrapper.sentPresentationDelegationTo()
+            //and that will cause the NPE
+            Assertions.assertThat(e).isInstanceOf(NullPointerException.class);
+        }
+
+        Assertions.assertThat(tested.presentationDelegates.getSize()).isEqualTo(0);
+        Mockito.verify(tested.presentationDelegates, Mockito.times(1)).remove(messenger);
     }
 }

@@ -1,6 +1,8 @@
 package util;
 
 import com.sensorberg.sdk.SensorbergServiceConfiguration;
+import com.sensorberg.sdk.SensorbergServiceIntents;
+import com.sensorberg.sdk.SensorbergServiceMessage;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.action.UriMessageAction;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
@@ -10,6 +12,8 @@ import com.sensorberg.sdk.resolver.ResolverConfiguration;
 import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
 import java.net.URL;
@@ -108,5 +112,12 @@ public class TestConstants {
         diskConf.resolverConfiguration.setResolverLayoutURL(new URL("http://resolver-new.sensorberg.com"));
 
         return diskConf;
+    }
+
+    public static Intent getInvalidResolverEndpointIntent(Context ctx) {
+        Intent serviceIntent = SensorbergServiceIntents.getServiceIntentWithMessage(ctx, SensorbergServiceMessage.MSG_TYPE_SET_RESOLVER_ENDPOINT);
+        serviceIntent.putExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, "this is not a valid url");
+
+        return serviceIntent;
     }
 }

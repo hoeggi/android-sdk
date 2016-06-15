@@ -72,7 +72,7 @@ public class SensorbergService extends Service {
     @Named("androidPlatform")
     protected Platform platform;
 
-    private final MessengerList presentationDelegates = new MessengerList();
+    protected MessengerList presentationDelegates = new MessengerList();
 
     protected InternalApplicationBootstrapper bootstrapper;
 
@@ -84,18 +84,26 @@ public class SensorbergService extends Service {
         JodaTimeAndroid.init(this);
     }
 
+    protected void logError(String message) {
+        Logger.log.logError(message);
+    }
+
+    protected void logError(String message, Exception e) {
+        Logger.log.logError(message, e);
+    }
+
     @SuppressWarnings("checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.NPathComplexityCheck")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.log.logServiceState("onStartCommand");
 
         if (!bluetoothPlatform.isBluetoothLowEnergySupported()) {
-            Logger.log.logError("isBluetoothLowEnergySupported not true, shutting down.");
+            logError("isBluetoothLowEnergySupported not true, shutting down.");
             return stopSensorbergService();
         }
 
         if (!platform.registerBroadcastReceiver()) {
-            Logger.log.logError("no BroadcastReceiver registered for Action:com.sensorberg.android.PRESENT_ACTION");
+            logError("no BroadcastReceiver registered for Action:com.sensorberg.android.PRESENT_ACTION");
             return stopSensorbergService();
         }
 
@@ -110,7 +118,7 @@ public class SensorbergService extends Service {
         Logger.log.serviceHandlesMessage(
                 SensorbergServiceMessage.stringFrom(intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1)));
 
-        handleDebuggingIntent(intent, this);
+        handleDebuggingIntent(intent, this, true);
 
         if (handleIntentEvenIfNoBootstrapperPresent(intent)) {
             return stopSensorbergService();
@@ -125,15 +133,7 @@ public class SensorbergService extends Service {
         }
 
         if (intent.hasExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE)) {
-            if (bootstrapper == null) {
-                bootstrapper = createBootstrapperFromDiskConfiguration();
-                if (bootstrapper == null) {
-                    Logger.log.logError("couldn't start the SDK!");
-                    return stopSensorbergService();
-                }
-            }
-
-            handleIntentMessage(intent);
+            return handleIntentMessage(intent);
         }
 
         return START_STICKY;
@@ -147,16 +147,16 @@ public class SensorbergService extends Service {
             return START_STICKY;
         } else if (bootstrapper != null) {
             bootstrapper.startScanning();
-            Logger.log.logError("start intent was sent, but the scanner was already set up");
+            logError("start intent was sent, but the scanner was already set up");
             return START_STICKY;
         } else {
-            Logger.log.logError("Intent to start the service was not correctly sent. not starting the service");
+            logError("Intent to start the service was not correctly sent. not starting the service");
             return stopSensorbergService();
         }
     }
 
     protected int restartSensorbergService() {
-        Logger.log.logError("there was no intent in onStartCommand we must assume we are beeing restarted due to a kill event");
+        logError("there was no intent in onStartCommand we must assume we are beeing restarted due to a kill event");
         bootstrapper = createBootstrapperFromDiskConfiguration();
         if (bootstrapper != null) {
             bootstrapper.startScanning();
@@ -169,18 +169,22 @@ public class SensorbergService extends Service {
         return START_NOT_STICKY;
     }
 
-    protected void handleDebuggingIntent(Intent intent, Context context) {
+    protected void handleDebuggingIntent(Intent intent, Context context, boolean showMessage) {
         switch (intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1)) {
             case SensorbergServiceMessage.MSG_TYPE_DISABLE_LOGGING: {
                 Logger.log = Logger.QUIET_LOG;
                 transport.setLoggingEnabled(false);
-                Toast.makeText(context, "Log disabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
+                if (showMessage) {
+                    Toast.makeText(context, "Log disabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
+                }
                 break;
             }
             case SensorbergServiceMessage.MSG_TYPE_ENABLE_LOGGING: {
                 Logger.enableVerboseLogging();
                 transport.setLoggingEnabled(true);
-                Toast.makeText(context, "Log enabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
+                if (showMessage) {
+                    Toast.makeText(context, "Log enabled " + context.getPackageName(), Toast.LENGTH_SHORT).show();
+                }
                 break;
             }
         }
@@ -270,10 +274,10 @@ public class SensorbergService extends Service {
             if (diskConf != null && diskConf.isComplete()) {
                 newBootstrapper = createBootstrapper(diskConf.resolverConfiguration.apiToken);
             } else {
-                Logger.log.logError("configuration from disk could not be loaded or is not complete");
+                logError("configuration from disk could not be loaded or is not complete");
             }
         } catch (Exception e) {
-            Logger.log.logError("something went wrong when loading the configuration from disk", e);
+            logError("something went wrong when loading the configuration from disk", e);
         }
 
         return newBootstrapper;
@@ -292,9 +296,14 @@ public class SensorbergService extends Service {
         conf.writeToDisk(fileManager);
     }
 
-    protected void handleIntentMessage(Intent intent) {
+    protected int handleIntentMessage(Intent intent) {
         int what = intent.getIntExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, -1);
         Logger.log.serviceHandlesMessage(SensorbergServiceMessage.stringFrom(what));
+
+        if (!isBootstrapperInitialized()) {
+            logError("couldn't start the SDK!");
+            return stopSensorbergService();
+        }
 
         switch (what) {
             case SensorbergServiceMessage.MSG_BEACON_LAYOUT_UPDATE:
@@ -356,6 +365,16 @@ public class SensorbergService extends Service {
                 break;
             }
         }
+
+        return START_STICKY;
+    }
+
+    protected boolean isBootstrapperInitialized() {
+        if (bootstrapper == null) {
+            bootstrapper = createBootstrapperFromDiskConfiguration();
+        }
+
+        return bootstrapper != null;
     }
 
     protected void presentBeaconEvent(Intent intent) {
@@ -365,7 +384,7 @@ public class SensorbergService extends Service {
             Logger.log.beaconResolveState(beaconEvent, "end of the delay, now showing the BeaconEvent");
             bootstrapper.presentEventDirectly(beaconEvent, index);
         } catch (Exception e) {
-            Logger.log.logError("Problem showing BeaconEvent: " + e.getMessage());
+            logError("Problem showing BeaconEvent: " + e.getMessage());
         }
     }
 
@@ -383,8 +402,7 @@ public class SensorbergService extends Service {
                 URL resolverURL = (URL) intent.getSerializableExtra(SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL);
                 URLFactory.setLayoutURL(resolverURL.toString());
             } catch (Exception e) {
-                Logger.log
-                        .logError("Could not parse the extra " + SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, e);
+                logError("Could not parse the extra " + SensorbergServiceMessage.MSG_SET_RESOLVER_ENDPOINT_ENDPOINT_URL, e);
             }
         }
     }
@@ -449,12 +467,16 @@ public class SensorbergService extends Service {
         return null;
     }
 
-    class MessengerList {
+    protected class MessengerList {
 
         private final Set<Messenger> storage = new HashSet<>();
 
+        public int getSize() {
+            return storage.size();
+        }
+
         public void add(Messenger replyTo) {
-            storage.clear();
+            storage.clear(); //TODO we're limiting this to only one delegate?
             storage.add(replyTo);
             if (storage.size() >= 1) {
                 bootstrapper.sentPresentationDelegationTo(this);
@@ -463,7 +485,7 @@ public class SensorbergService extends Service {
 
         public void remove(Messenger replyTo) {
             storage.remove(replyTo);
-            storage.clear();
+            storage.clear();  //TODO we're limiting this to only one delegate?
             if (storage.size() == 0) {
                 bootstrapper.sentPresentationDelegationTo(null);
             }
@@ -480,7 +502,7 @@ public class SensorbergService extends Service {
                 } catch (DeadObjectException d) {
                     //we need to remove this object!!
                 } catch (RemoteException e) {
-                    Logger.log.logError("something went wrong sending BeaconEvent through Messenger", e);
+                    logError("something went wrong sending BeaconEvent through Messenger", e);
                 }
             }
         }
