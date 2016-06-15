@@ -102,8 +102,6 @@ android {
         }
         release {
             minifyEnabled false
-            proguardFile getDefaultProguardFile('proguard-android.txt')
-            proguardFile 'proguard-release.txt'
         }
         minified {
             minifyEnabled true
