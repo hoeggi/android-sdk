@@ -1,7 +1,6 @@
 package com.sensorberg.sdk.model.server;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 
 import com.sensorberg.sdk.action.Action;
@@ -14,8 +13,6 @@ import com.sensorberg.utils.UUIDUtils;
 
 import org.json.JSONException;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -25,9 +22,7 @@ import lombok.ToString;
 
 @SuppressWarnings("WeakerAccess")
 @ToString
-public class ResolveAction implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ResolveAction {
 
     public static final ListUtils.Mapper<ResolveAction, BeaconEvent> BEACON_EVENT_MAPPER = new ListUtils.Mapper<ResolveAction, BeaconEvent>() {
         public BeaconEvent map(ResolveAction resolveAction) {
@@ -102,37 +97,6 @@ public class ResolveAction implements Serializable {
         this.reportImmediately = reportImmediately;
         this.content = content;
         this.deliverAt = deliverAt;
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeObject(eid);
-        out.writeInt(trigger);
-        out.writeInt(type);
-        out.writeObject(name);
-        out.writeObject(beacons);
-        out.writeLong(suppressionTime);
-        out.writeLong(delay);
-        out.writeBoolean(reportImmediately);
-        out.writeObject(content.toString());
-        out.writeObject(deliverAt);
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException, JSONException {
-        eid = (String) in.readObject();
-        trigger = in.readInt();
-        type = in.readInt();
-        name = (String) in.readObject();
-        //noinspection unchecked -> see writeObject
-        beacons = (List<String>) in.readObject();
-        suppressionTime = in.readLong();
-        delay = in.readLong();
-        reportImmediately = in.readBoolean();
-        String jsonString = (String) in.readObject();
-        if (jsonString != null) {
-            JsonParser parser = new JsonParser();
-            content = parser.parse(jsonString).getAsJsonObject();
-        }
-        deliverAt = (Date) in.readObject();
     }
 
     public boolean matchTrigger(int eventMask) {
