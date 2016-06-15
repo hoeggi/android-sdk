@@ -72,7 +72,6 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private RssiListener rssiListener = RssiListener.NONE;
 
-    //TODO somewhere in this class we have to deal with the new bluetooth android 6 permissions
     AbstractScanner(SettingsManager stgMgr, boolean shouldRestoreBeaconStates, Clock clk, FileManager fileManager,
             ServiceScheduler scheduler, HandlerManager handlerManager, BluetoothPlatform btPlatform) {
         settingsManager = stgMgr;
@@ -275,6 +274,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
      * Starts scanning.
      */
     public void start() {
+        Log.i("Scan: ", "Scanner started");
         runLoop.sendMessage(ScannerEvent.LOGICAL_SCAN_START_REQUESTED);
     }
 
@@ -283,6 +283,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
      * Stop the scanning.
      */
     public void stop() {
+        Log.i("Scan: ", "Scanner stopped");
         runLoop.sendMessage(ScannerEvent.SCAN_STOP_REQUESTED);
     }
 

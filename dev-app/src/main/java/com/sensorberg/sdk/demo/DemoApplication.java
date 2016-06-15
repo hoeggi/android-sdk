@@ -8,6 +8,7 @@ import com.sensorberg.BackgroundDetector;
 import com.sensorberg.SensorbergSdk;
 import com.sensorberg.SensorbergSdkEventListener;
 import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;
 import com.sensorberg.sdk.action.InAppAction;
@@ -170,7 +171,11 @@ public class DemoApplication extends MultiDexApplication {
         this.activityContext = activityContext;
     }
 
-    public void showLocationAlert(Context activityContext) {
-
+    /**
+     *
+     * @param type
+     */
+    public void setScannerStatus(int type) {
+        boot.sendLocationFlagToReceiver(type);
     }
 }

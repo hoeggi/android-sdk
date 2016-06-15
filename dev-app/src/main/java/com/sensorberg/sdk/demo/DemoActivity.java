@@ -7,6 +7,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -195,9 +196,9 @@ public class DemoActivity extends Activity {
             case 1: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("blah", "coarse location permission granted");
-                    ((DemoApplication) getApplication()).startScan();
+                    //((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_SERVICES_IS_SET);
                 } else {
-                    ((DemoApplication) getApplication()).stopScan();
+                    //((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
 
                     //Alternative, sent dialogue
                    /* final AlertDialog.Builder builder = new AlertDialog.Builder(this);

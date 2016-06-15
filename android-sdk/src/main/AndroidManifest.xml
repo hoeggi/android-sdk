@@ -58,7 +58,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.PermissionReceiver"
+        <receiver android:name=".receivers.PermissionBroadcastReceiver"
             android:process=":sensorberg"
             android:exported="false">
             <intent-filter>

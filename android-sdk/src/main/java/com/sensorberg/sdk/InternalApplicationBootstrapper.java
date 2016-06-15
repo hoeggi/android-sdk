@@ -213,8 +213,8 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
                 Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
 
 
-
-                setLocationServicesHaveBeenSet();
+                //scanner.stop();
+                //setLocationServicesHaveBeenSet();
             } else {
                 scanner.start();
             }
