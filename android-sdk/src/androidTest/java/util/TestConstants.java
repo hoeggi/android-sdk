@@ -94,6 +94,7 @@ public class TestConstants {
 
     public static BeaconEvent getBeaconEvent() {
         return new BeaconEvent.Builder()
+                .withBeaconId(ANY_BEACON_ID)
                 .withAction(new InAppAction(TestConstants.BEACON_PROXIMITY_ID, "irrelevant", "irrelevant", null, null, 0))
                 .withSendOnlyOnce(true)
                 .withPresentationTime(0)
