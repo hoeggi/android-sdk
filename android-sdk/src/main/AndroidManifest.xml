@@ -62,7 +62,7 @@
             android:process=":sensorberg"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.CONFIGURATION_CHANGED"/>
+                <action android:name="com.sensorberg.android.sdk.intent.permissionState"/>
             </intent-filter>
         </receiver>
     </application>

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.internal.PermissionChecker;
@@ -22,13 +23,7 @@ public class PermissionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-        if (action.equals("android.intent.action.CONFIGURATION_CHANGED")) {
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M && permissionChecker.hasLocationPermission()) {
-                showPermission(context);
-            } else {
-                dontShowPermission(context);
-            }
-        }
+
     }
 
     /**

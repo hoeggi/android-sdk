@@ -151,8 +151,6 @@ public class DemoActivity extends Activity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-
     }
 
     @Override
@@ -190,7 +188,6 @@ public class DemoActivity extends Activity {
         return intent;
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -198,8 +195,12 @@ public class DemoActivity extends Activity {
             case 1: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("blah", "coarse location permission granted");
+                    ((DemoApplication) getApplication()).startScan();
                 } else {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    ((DemoApplication) getApplication()).stopScan();
+
+                    //Alternative, sent dialogue
+                   /* final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Functionality limited");
                     builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
                     builder.setPositiveButton(android.R.string.ok, null);
@@ -207,10 +208,11 @@ public class DemoActivity extends Activity {
 
                         @Override
                         public void onDismiss(DialogInterface dialog) {
+                            ((DemoApplication) getApplication()).stopScan();
                         }
 
                     });
-                    builder.show();
+                    builder.show();*/
                 }
                 return;
             }

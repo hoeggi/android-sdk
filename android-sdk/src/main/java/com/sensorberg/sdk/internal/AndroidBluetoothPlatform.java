@@ -32,7 +32,7 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
     @Override
     public boolean isBluetoothLowEnergyDeviceTurnedOn() {
         //noinspection SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement
-        return isBluetoothLowEnergySupported() && (bluetoothAdapter.isEnabled());
+        return  isBluetoothLowEnergySupported() && (bluetoothAdapter.isEnabled());
     }
 
     /**

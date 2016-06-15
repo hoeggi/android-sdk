@@ -38,6 +38,8 @@ import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
 
 import java.net.Inet4Address;
@@ -206,15 +208,23 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     //TODO add android 6 stuff possibly. At least for prompting dev to do something. logging.
     public void startScanning() {
         if (bluetoothPlatform.isBluetoothLowEnergySupported()
-                && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.M ) {
-            scanner.start();
+                && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !permissionChecker.hasLocationPermission()) {
+                Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
+
+
+
+                setLocationServicesHaveBeenSet();
+            } else {
+                scanner.start();
+            }
         }
+
 
         //need to send boolean package from here.  not after. grr.
         //check for permissions if permission is not set, log message to developer. Show message to user,
         //check if the app is less than 22.. if so deactivate location. might not be able to do this.
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M && permissionChecker.hasLocationPermission()) {
+       /* if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M && permissionChecker.hasLocationPermission()) {
             Logger.log.scannerStateChange("Correct permissions set for Android 6, scanner starting");
             //send information to messenger.
             Log.i("sdk_int", Integer.toString(Build.VERSION.SDK_INT));
@@ -224,8 +234,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
             //handle exception and log
             Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
             setLocationServicesHaveBeenSet(false);
-        }
-
+        }*/
     }
 
     public void stopScanning() {
@@ -362,12 +371,10 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
     /**
      *
-     * @param hasLocationServicesBeenSet - Has the location services been set (applicable for > And 6).
      */
-    public void setLocationServicesHaveBeenSet(boolean hasLocationServicesBeenSet) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_LOCATION_SERVICES_IS_SET);
-        service.putExtra(SensorbergService.MSG_SET_LOCATION_SERVICES, hasLocationServicesBeenSet);
-        context.startService(service);
+    public void setLocationServicesHaveBeenSet() {
+        Intent intent = new Intent();
+        intent.setAction(SensorbergService.EXTRA_LOCATION_PERMISSION);
+        context.sendBroadcast(intent);
     }
 }
