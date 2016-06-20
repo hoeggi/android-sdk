@@ -39,6 +39,7 @@ public class SensorbergSdkTests {
                 tested = Mockito.spy(new SensorbergSdk(InstrumentationRegistry.getContext(), TestConstants.API_TOKEN_DEFAULT));
             }
         });
+        SensorbergSdk.listeners.clear();
     }
 
     @Test
@@ -58,11 +59,11 @@ public class SensorbergSdkTests {
             }
         };
 
-        Assertions.assertThat(tested.listeners.size()).isEqualTo(0);
+        Assertions.assertThat(SensorbergSdk.listeners.size()).isEqualTo(0);
 
         tested.registerEventListener(listener);
 
-        Assertions.assertThat(tested.listeners.size()).isEqualTo(1);
+        Assertions.assertThat(SensorbergSdk.listeners.size()).isEqualTo(1);
         verify(tested, times(1)).setPresentationDelegationEnabled(true);
         verify(tested, times(1)).registerForPresentationDelegation();
     }
@@ -76,12 +77,12 @@ public class SensorbergSdkTests {
             }
         };
 
-        Assertions.assertThat(tested.listeners.size()).isEqualTo(0);
+        Assertions.assertThat(SensorbergSdk.listeners.size()).isEqualTo(0);
 
         tested.registerEventListener(listener);
         tested.unregisterEventListener(listener);
 
-        Assertions.assertThat(tested.listeners.size()).isEqualTo(0);
+        Assertions.assertThat(SensorbergSdk.listeners.size()).isEqualTo(0);
         verify(tested, times(1)).setPresentationDelegationEnabled(false);
         verify(tested, times(1)).unRegisterFromPresentationDelegation();
     }
@@ -105,7 +106,7 @@ public class SensorbergSdkTests {
         tested.registerEventListener(listener);
         tested.hostApplicationInForeground();
 
-        Assertions.assertThat(tested.listeners.size()).isEqualTo(1);
+        Assertions.assertThat(SensorbergSdk.listeners.size()).isEqualTo(1);
         verify(tested, times(2)).registerForPresentationDelegation(); //called once by registerEventListener and once by hostApplicationInForeground
     }
 
@@ -113,7 +114,7 @@ public class SensorbergSdkTests {
     public void hostApplicationInForeground_without_listeners_doesnt_register_messenger_with_service() {
         tested.hostApplicationInForeground();
 
-        Assertions.assertThat(tested.listeners.size()).isEqualTo(0);
+        Assertions.assertThat(SensorbergSdk.listeners.size()).isEqualTo(0);
         verify(tested, times(0)).registerForPresentationDelegation();
     }
 }

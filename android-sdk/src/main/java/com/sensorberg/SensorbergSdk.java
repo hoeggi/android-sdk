@@ -45,7 +45,7 @@ public class SensorbergSdk implements Platform.ForegroundStateListener {
 
     protected final Messenger messenger = new Messenger(new IncomingHandler());
 
-    protected final Set<SensorbergSdkEventListener> listeners = new HashSet<>();
+    protected static final Set<SensorbergSdkEventListener> listeners = new HashSet<>();
 
     @Getter
     @Setter
@@ -55,7 +55,7 @@ public class SensorbergSdk implements Platform.ForegroundStateListener {
     @Named("androidBluetoothPlatform")
     protected BluetoothPlatform bluetoothPlatform;
 
-    class IncomingHandler extends Handler {
+    static class IncomingHandler extends Handler {
 
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -129,7 +129,7 @@ public class SensorbergSdk implements Platform.ForegroundStateListener {
         }
     }
 
-    protected void notifyEventListeners(BeaconEvent beaconEvent) {
+    protected static void notifyEventListeners(BeaconEvent beaconEvent) {
         for (SensorbergSdkEventListener listener : listeners) {
             listener.presentBeaconEvent(beaconEvent);
         }
