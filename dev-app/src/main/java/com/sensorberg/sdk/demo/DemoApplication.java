@@ -6,6 +6,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import com.sensorberg.BackgroundDetector;
 import com.sensorberg.SensorbergApplicationBootstrapper;
+import com.sensorberg.SensorbergSdkEventListener;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;
@@ -50,14 +51,14 @@ public class DemoApplication extends MultiDexApplication {
         super.onCreate();
         Log.d(TAG, "onCreate application");
 
-        boot = new SensorbergApplicationBootstrapper(this, true, API_KEY) {
+        boot = new SensorbergApplicationBootstrapper(this, API_KEY);
+        boot.setLogging(BuildConfig.DEBUG);
+        boot.registerEventListener(new SensorbergSdkEventListener() {
             @Override
             public void presentBeaconEvent(BeaconEvent beaconEvent) {
-                Action action = beaconEvent.getAction();
-                showAlert(action, beaconEvent.trigger);
+                showAlert(beaconEvent.getAction(), beaconEvent.trigger);
             }
-        };
-        boot.setLogging(BuildConfig.DEBUG);
+        });
 
         detector = new BackgroundDetector(boot);
         registerActivityLifecycleCallbacks(detector);

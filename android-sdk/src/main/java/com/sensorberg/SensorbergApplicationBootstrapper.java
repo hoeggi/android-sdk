@@ -21,6 +21,8 @@ import android.os.Message;
 import android.os.Messenger;
 
 import java.net.URL;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,13 +30,22 @@ import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * {@code SensorbergApplicationBootstrapper} This is the entry point to the Sensorberg SDK. You should use this class to manage the SDK.
+ *
+ * @since 1.0
+ */
+
 public class SensorbergApplicationBootstrapper implements Platform.ForegroundStateListener {
 
     protected final Context context;
 
+    @Getter
     protected boolean presentationDelegationEnabled;
 
     protected final Messenger messenger = new Messenger(new IncomingHandler());
+
+    protected final Set<SensorbergSdkEventListener> listeners = new HashSet<>();
 
     @Getter
     @Setter
@@ -52,7 +63,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
                     Bundle bundle = msg.getData();
                     bundle.setClassLoader(BeaconEvent.class.getClassLoader());
                     BeaconEvent beaconEvent = bundle.getParcelable(SensorbergServiceMessage.MSG_PRESENT_ACTION_BEACONEVENT);
-                    presentBeaconEvent(beaconEvent);
+                    notifyEventListeners(beaconEvent);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -60,9 +71,14 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         }
     }
 
-    public SensorbergApplicationBootstrapper(Context context, boolean enablePresentationDelegation, String apiKey) {
+    /**
+     * Constructor to be used for starting the SDK.
+     *
+     * @param context {@code Context} Context used for starting the service.
+     * @param apiKey {@code String} Your API key that you can get from your Sensorberg dashboard.
+     */
+    public SensorbergApplicationBootstrapper(Context context, String apiKey) {
         this.context = context;
-        this.presentationDelegationEnabled = enablePresentationDelegation;
         setComponent(buildComponentAndInject(context));
         getComponent().inject(this);
 
@@ -72,23 +88,39 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         activateService(apiKey);
     }
 
-    private void activateService(String apiKey) {
-        if (bluetoothPlatform.isBluetoothLowEnergySupported()) {
-            context.startService(SensorbergServiceIntents.getStartServiceIntent(context, apiKey));
+    /**
+     * To receive Sensorberg SDK events, you should register your {@code SensorbergEventListener} with this method. Depending on how you structure
+     * your app, this can be done on an Application or on an Activity level.
+     *
+     * @param listener {@code SensorbergSdkEventListener} Your implementation of the listener that will receive Sensorberg SDK events that
+     *                                                should be presented via UI.
+     */
+    public void registerEventListener(SensorbergSdkEventListener listener) {
+        if (listener != null) {
+            listeners.add(listener);
+        }
+
+        if (!listeners.isEmpty() && !isPresentationDelegationEnabled()) {
+            setPresentationDelegationEnabled(true);
         }
     }
 
-    public void presentBeaconEvent(BeaconEvent beaconEvent) {
-        //TODO instead of overriding this, it should be a listener that is called
-        //something like presenterListener that would then be also used for notifications in android 6
+    /**
+     * If you don't want to receive Sensorberg SDK events any more, you should unregister your {@code SensorbergEventListener} with this method.
+     * Depending on how you structure your app, this can be done on an Application or on an Activity level.
+     *
+     * @param listener {@code SensorbergSdkEventListener} Reference to your implementation of the listener that was registered with
+     *                                                  {@code registerEventListener}.
+     */
+    public void unregisterEventListener(SensorbergSdkEventListener listener) {
+        listeners.remove(listener);
+
+        if (listeners.isEmpty() && isPresentationDelegationEnabled()) {
+            setPresentationDelegationEnabled(false);
+        }
     }
 
-    public void setResolverBaseURL(URL resolverBaseURL) {
-        context.startService(SensorbergServiceIntents.getResolverEndpointIntent(context, resolverBaseURL));
-    }
-
-    public void setPresentationDelegationEnabled(boolean value) {
-        //TODO should use listener and registration
+    protected void setPresentationDelegationEnabled(boolean value) {
         presentationDelegationEnabled = value;
         if (value) {
             registerForPresentationDelegation();
@@ -97,9 +129,20 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         }
     }
 
-    public void disableServiceCompletely(Context context) {
-        //TODO should be renamed to disableService to correspond to enableService?
-        context.startService(SensorbergServiceIntents.getShutdownServiceIntent(context));
+    protected void notifyEventListeners(BeaconEvent beaconEvent) {
+        for (SensorbergSdkEventListener listener : listeners) {
+            listener.presentBeaconEvent(beaconEvent);
+        }
+    }
+
+    protected void activateService(String apiKey) {
+        if (bluetoothPlatform.isBluetoothLowEnergySupported()) {
+            context.startService(SensorbergServiceIntents.getStartServiceIntent(context, apiKey));
+        }
+    }
+
+    public void setResolverBaseURL(URL resolverBaseURL) {
+        context.startService(SensorbergServiceIntents.getResolverEndpointIntent(context, resolverBaseURL));
     }
 
     public void enableService(Context context, String apiKey) {
@@ -107,6 +150,10 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         ScannerBroadcastReceiver.setManifestReceiverEnabled(true, context);
         activateService(apiKey);
         hostApplicationInForeground();
+    }
+
+    public void disableService(Context context) {
+        context.startService(SensorbergServiceIntents.getShutdownServiceIntent(context));
     }
 
     public void hostApplicationInBackground() {
@@ -145,7 +192,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
         context.startService(SensorbergServiceIntents.getServiceLoggingIntent(context, enableLogging));
     }
 
-    public Component buildComponentAndInject(Context context) {
+    protected Component buildComponentAndInject(Context context) {
         return Component.Initializer.init((Application) context.getApplicationContext());
     }
 }

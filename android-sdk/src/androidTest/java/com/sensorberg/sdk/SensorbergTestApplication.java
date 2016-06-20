@@ -21,7 +21,7 @@ public class SensorbergTestApplication extends Application {
         setComponent(buildComponentAndInject());
 
         //we need this because this is the entry point for dagger
-        SensorbergApplicationBootstrapper bootstrapper = new SensorbergApplicationBootstrapper(this, false, null);
+        SensorbergApplicationBootstrapper bootstrapper = new SensorbergApplicationBootstrapper(this, null);
     }
 
     public Component buildComponentAndInject() {
