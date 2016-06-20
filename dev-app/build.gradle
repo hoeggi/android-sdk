@@ -39,6 +39,8 @@ android {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "ø"
+            minifyEnabled false
+            proguardFile getDefaultProguardFile('proguard-android.txt')
             manifestPlaceholders = [
                     applicationLabelAddition :  " Debug ø"
             ]
@@ -46,6 +48,8 @@ android {
 
         release {
             applicationIdSuffix null
+            minifyEnabled false
+            proguardFile getDefaultProguardFile('proguard-android.txt')
             if (isReleaseAble) {
                 signingConfig signingConfigs.release
             }

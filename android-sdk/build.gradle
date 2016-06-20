@@ -50,7 +50,7 @@ android {
         minSdkVersion 9
         targetSdkVersion project.ext.targetSdkVersion
         buildConfigField "String", "SDK_VERSION", "\"" + project.ext.SDK_VERSION + "\""
-
+        consumerProguardFiles 'proguard-proguarded.txt'
 		testInstrumentationRunner "com.sensorberg.sdk.test.SensorbergTestRunner"
     }
     lintOptions {
@@ -82,15 +82,11 @@ android {
         }
         release {
             minifyEnabled false
-            proguardFile getDefaultProguardFile('proguard-android.txt')
             proguardFile 'proguard-release.txt'
-            proguardFile 'proguard-realm.txt'
         }
         minified {
             minifyEnabled true
-            proguardFile getDefaultProguardFile('proguard-android.txt')
             proguardFile 'proguard-proguarded.txt'
-            proguardFile 'proguard-realm.txt'
         }
     }
 }

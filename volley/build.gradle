@@ -15,6 +15,9 @@ version = "1.2.5"
 android {
     compileSdkVersion project.ext.compileSdkVersion
     buildToolsVersion = project.ext.buildToolsVersion
+    defaultConfig {
+        consumerProguardFiles 'proguard.cfg'
+    }
 }
 
 apply from: '../uploadConf.gradle'
