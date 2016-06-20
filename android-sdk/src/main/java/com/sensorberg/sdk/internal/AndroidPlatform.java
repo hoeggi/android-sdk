@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.SensorbergApplicationBootstrapper;
+import com.sensorberg.SensorbergSdk;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
@@ -38,7 +38,7 @@ public class AndroidPlatform implements Platform {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidPlatform(Context context) {
         this.context = context;
-        SensorbergApplicationBootstrapper.getComponent().inject(this);
+        SensorbergSdk.getComponent().inject(this);
     }
 
     @Override

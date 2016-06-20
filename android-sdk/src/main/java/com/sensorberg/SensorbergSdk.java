@@ -31,12 +31,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * {@code SensorbergApplicationBootstrapper} This is the entry point to the Sensorberg SDK. You should use this class to manage the SDK.
+ * {@code SensorbergSdk} This is the entry point to the Sensorberg SDK. You should use this class to manage the SDK.
  *
  * @since 1.0
  */
 
-public class SensorbergApplicationBootstrapper implements Platform.ForegroundStateListener {
+public class SensorbergSdk implements Platform.ForegroundStateListener {
 
     protected final Context context;
 
@@ -77,7 +77,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
      * @param context {@code Context} Context used for starting the service.
      * @param apiKey {@code String} Your API key that you can get from your Sensorberg dashboard.
      */
-    public SensorbergApplicationBootstrapper(Context context, String apiKey) {
+    public SensorbergSdk(Context context, String apiKey) {
         this.context = context;
         setComponent(buildComponentAndInject(context));
         getComponent().inject(this);
@@ -89,7 +89,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     /**
-     * To receive Sensorberg SDK events, you should register your {@code SensorbergEventListener} with this method. Depending on how you structure
+     * To receive Sensorberg SDK events, you should register your {@code SensorbergSdkEventListener} with this method. Depending on how you structure
      * your app, this can be done on an Application or on an Activity level.
      *
      * @param listener {@code SensorbergSdkEventListener} Your implementation of the listener that will receive Sensorberg SDK events that
@@ -106,7 +106,7 @@ public class SensorbergApplicationBootstrapper implements Platform.ForegroundSta
     }
 
     /**
-     * If you don't want to receive Sensorberg SDK events any more, you should unregister your {@code SensorbergEventListener} with this method.
+     * If you don't want to receive Sensorberg SDK events any more, you should unregister your {@code SensorbergSdkEventListener} with this method.
      * Depending on how you structure your app, this can be done on an Application or on an Activity level.
      *
      * @param listener {@code SensorbergSdkEventListener} Reference to your implementation of the listener that was registered with

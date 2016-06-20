@@ -5,7 +5,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import com.sensorberg.BackgroundDetector;
-import com.sensorberg.SensorbergApplicationBootstrapper;
+import com.sensorberg.SensorbergSdk;
 import com.sensorberg.SensorbergSdkEventListener;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.action.Action;
@@ -33,7 +33,7 @@ public class DemoApplication extends MultiDexApplication {
 
     public static final String API_KEY = "e33f35cae664e7ae50250f6f62296762936eb84200a2aa4522f0b22599959cbe";
 
-    private SensorbergApplicationBootstrapper boot;
+    private SensorbergSdk boot;
 
     private BackgroundDetector detector;
 
@@ -51,7 +51,7 @@ public class DemoApplication extends MultiDexApplication {
         super.onCreate();
         Log.d(TAG, "onCreate application");
 
-        boot = new SensorbergApplicationBootstrapper(this, API_KEY);
+        boot = new SensorbergSdk(this, API_KEY);
         boot.setLogging(BuildConfig.DEBUG);
         boot.registerEventListener(new SensorbergSdkEventListener() {
             @Override

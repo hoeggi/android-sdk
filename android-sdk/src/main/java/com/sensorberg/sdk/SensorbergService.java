@@ -1,6 +1,6 @@
 package com.sensorberg.sdk;
 
-import com.sensorberg.SensorbergApplicationBootstrapper;
+import com.sensorberg.SensorbergSdk;
 import com.sensorberg.sdk.internal.URLFactory;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -79,7 +79,7 @@ public class SensorbergService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        SensorbergApplicationBootstrapper.getComponent().inject(this);
+        SensorbergSdk.getComponent().inject(this);
         Logger.log.logServiceState("onCreate");
         JodaTimeAndroid.init(this);
     }

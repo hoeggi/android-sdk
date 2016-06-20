@@ -1,6 +1,6 @@
 package com.sensorberg.sdk;
 
-import com.sensorberg.SensorbergApplicationBootstrapper;
+import com.sensorberg.SensorbergSdk;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
@@ -87,7 +87,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     public InternalApplicationBootstrapper(Transport transport, ServiceScheduler scheduler, HandlerManager handlerManager,
             Clock clk, BluetoothPlatform btPlatform) {
         super(scheduler);
-        SensorbergApplicationBootstrapper.getComponent().inject(this);
+        SensorbergSdk.getComponent().inject(this);
 
         this.transport = transport;
         settingsManager.setSettingsUpdateCallback(settingsUpdateCallbackListener);
