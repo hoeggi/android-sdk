@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.os.Build;
 import android.util.Log;
 
-//TODO could put android 6 bluetooth stuff here.
 public class AndroidBluetoothPlatform implements BluetoothPlatform {
 
     private final CrashCallBackWrapper crashCallBackWrapper;
@@ -32,7 +31,7 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
     @Override
     public boolean isBluetoothLowEnergyDeviceTurnedOn() {
         //noinspection SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement,SimplifiableIfStatement
-        return  isBluetoothLowEnergySupported() && (bluetoothAdapter.isEnabled());
+        return isBluetoothLowEnergySupported() && (bluetoothAdapter.isEnabled());
     }
 
     /**

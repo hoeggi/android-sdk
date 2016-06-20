@@ -188,7 +188,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
                 LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
             } else {
                 Logger.log.beaconResolveState(beaconEvent, "delegating the display of the beacon event to the application");
-                //send beacon event.
                 presentationDelegate.send(beaconEvent);
             }
         }
@@ -214,7 +213,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
 
                 //scanner.stop();
-                //setLocationServicesHaveBeenSet();
+                setLocationServicesHaveBeenSet();
             } else {
                 scanner.start();
             }
