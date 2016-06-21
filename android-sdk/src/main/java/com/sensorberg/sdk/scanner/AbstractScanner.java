@@ -305,7 +305,6 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 long lastWaitTime = clock.now() - lastExitCheckTimestamp;
                 clearScheduledExecutions();
                 if (lastWaitTime > waitTime) {
-                    //TODO probably need to handle permissions.
                     Logger.log.scannerStateChange("We have been waiting longer than the foreground wait time, so we´e going to scan right away");
                     runLoop.sendMessage(ScannerEvent.UN_PAUSE_SCAN);
                 } else {
