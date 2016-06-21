@@ -195,10 +195,10 @@ public class DemoActivity extends Activity {
         switch (requestCode) {
             case 1: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("blah", "coarse location permission granted");
-                    //((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_SERVICES_IS_SET);
+                    Log.d("Scanner Message", "coarse location permission granted");
+                    ((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_SET);
                 } else {
-                    //((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
+                    ((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
 
                     //Alternative, sent dialogue
                    /* final AlertDialog.Builder builder = new AlertDialog.Builder(this);

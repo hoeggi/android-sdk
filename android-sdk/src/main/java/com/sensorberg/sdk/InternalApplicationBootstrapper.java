@@ -204,7 +204,6 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
         presentationDelegate = messengerList;
     }
 
-    //TODO add android 6 stuff possibly. At least for prompting dev to do something. logging.
     public void startScanning() {
         if (bluetoothPlatform.isBluetoothLowEnergySupported()
                 && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
@@ -213,7 +212,7 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
 
 
                 //scanner.stop();
-                setLocationServicesHaveBeenSet();
+                //setLocationServicesHaveBeenSet();
             } else {
                 scanner.start();
             }

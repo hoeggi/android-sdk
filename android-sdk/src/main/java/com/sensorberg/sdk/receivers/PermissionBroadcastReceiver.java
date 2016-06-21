@@ -15,7 +15,7 @@ import javax.inject.Inject;
  * @author skraynick
  * @date 16-06-13
  */
-public class PermissionReceiver extends BroadcastReceiver {
+public class PermissionBroadcastReceiver extends BroadcastReceiver {
 
     @Inject
     PermissionChecker permissionChecker;
@@ -24,6 +24,17 @@ public class PermissionReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
 
+        if (action.equals(SensorbergService.EXTRA_LOCATION_PERMISSION)) {
+            final int flagType = intent.getExtras().getInt("type");
+            switch (flagType) {
+                case SensorbergService.MSG_LOCATION_SET:
+                    dontShowPermission(context);
+                    break;
+                case SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED:
+                    showPermission(context);
+                    break;
+            }
+        }
     }
 
     /**
