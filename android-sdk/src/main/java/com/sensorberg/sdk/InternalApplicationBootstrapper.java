@@ -209,30 +209,11 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
                 && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !permissionChecker.hasLocationPermission()) {
                 Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
-
-
-                //scanner.stop();
                 //setLocationServicesHaveBeenSet();
             } else {
                 scanner.start();
             }
         }
-
-
-        //need to send boolean package from here.  not after. grr.
-        //check for permissions if permission is not set, log message to developer. Show message to user,
-        //check if the app is less than 22.. if so deactivate location. might not be able to do this.
-       /* if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M && permissionChecker.hasLocationPermission()) {
-            Logger.log.scannerStateChange("Correct permissions set for Android 6, scanner starting");
-            //send information to messenger.
-            Log.i("sdk_int", Integer.toString(Build.VERSION.SDK_INT));
-            Log.i("marshmallow", Integer.toString(Build.VERSION_CODES.M));
-            scanner.start();
-        } else {
-            //handle exception and log
-            Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
-            setLocationServicesHaveBeenSet(false);
-        }*/
     }
 
     public void stopScanning() {
@@ -366,13 +347,4 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
             serviceScheduler.scheduleRepeating(SensorbergServiceMessage.MSG_UPLOAD_HISTORY, newHistoryUploadInterval, TimeUnit.MILLISECONDS);
         }
     };
-
-    /**
-     *
-     */
-    public void setLocationServicesHaveBeenSet() {
-        Intent intent = new Intent();
-        intent.setAction(SensorbergService.EXTRA_LOCATION_PERMISSION);
-        context.sendBroadcast(intent);
-    }
 }
