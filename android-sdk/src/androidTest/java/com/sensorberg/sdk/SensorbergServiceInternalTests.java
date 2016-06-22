@@ -179,14 +179,6 @@ public class SensorbergServiceInternalTests {
 
         tested.handleDebuggingIntent(serviceDebuggingOnIntent, InstrumentationRegistry.getContext(), false);
 
-//        try {
-//            tested.handleDebuggingIntent(serviceDebuggingOnIntent, InstrumentationRegistry.getContext());
-//            Assertions.fail("Should've gone into catch branch!");
-//        } catch (Exception e) {
-//            Assertions.assertThat(e).isInstanceOf(RuntimeException.class);
-//            Assertions.assertThat(e.getMessage()).containsIgnoringCase("Looper.prepare()");
-//        }
-
         Mockito.verify(tested.transport, times(1)).setLoggingEnabled(true);
         Assertions.assertThat(Logger.log).isInstanceOf(Logger.VerboseLogger.class);
     }
@@ -196,14 +188,6 @@ public class SensorbergServiceInternalTests {
         Intent serviceDebuggingOffIntent = SensorbergServiceIntents.getServiceLoggingIntent(InstrumentationRegistry.getContext(), false);
 
         tested.handleDebuggingIntent(serviceDebuggingOffIntent, InstrumentationRegistry.getContext(), false);
-
-//        try {
-//            tested.handleDebuggingIntent(serviceDebuggingOffIntent, InstrumentationRegistry.getContext(), false);
-//            Assertions.fail("Should've gone into catch branch!");
-//        } catch (Exception e) {
-//            Assertions.assertThat(e).isInstanceOf(RuntimeException.class);
-//            Assertions.assertThat(e.getMessage()).containsIgnoringCase("Looper.prepare()");
-//        }
 
         Mockito.verify(tested.transport, times(1)).setLoggingEnabled(false);
         Assertions.assertThat(Logger.log).isEqualTo(Logger.QUIET_LOG);
@@ -376,9 +360,9 @@ public class SensorbergServiceInternalTests {
             tested.registerPresentationDelegate(SensorbergServiceIntents.getIntentWithReplyToMessenger(InstrumentationRegistry.getContext(),
                     SensorbergServiceMessage.MSG_REGISTER_PRESENTATION_DELEGATE, messenger));
         } catch (Exception e) {
-            //this happens because the MessengerList, as an internal class of SensorbergService, has its own instance which is different
-            //from the proxied spy instance we use for testing; MessengerList.add() calls bootstrapper.sentPresentationDelegationTo()
-            //and that will cause the NPE
+            /* this happens because the MessengerList, as an internal class of SensorbergService, has its own instance which is different
+            from the proxied spy instance we use for testing; MessengerList.add() calls bootstrapper.sentPresentationDelegationTo()
+            and that will cause the NPE */
             Assertions.assertThat(e).isInstanceOf(NullPointerException.class);
         }
 
@@ -395,9 +379,9 @@ public class SensorbergServiceInternalTests {
             tested.unregisterPresentationDelegate(SensorbergServiceIntents.getIntentWithReplyToMessenger(InstrumentationRegistry.getContext(),
                     SensorbergServiceMessage.MSG_UNREGISTER_PRESENTATION_DELEGATE, messenger));
         } catch (Exception e) {
-            //this happens because the MessengerList, as an internal class of SensorbergService, has its own instance which is different
-            //from the proxied spy instance we use for testing; MessengerList.add() calls bootstrapper.sentPresentationDelegationTo()
-            //and that will cause the NPE
+            /* this happens because the MessengerList, as an internal class of SensorbergService, has its own instance which is different
+            from the proxied spy instance we use for testing; MessengerList.add() calls bootstrapper.sentPresentationDelegationTo()
+            and that will cause the NPE */
             Assertions.assertThat(e).isInstanceOf(NullPointerException.class);
         }
 

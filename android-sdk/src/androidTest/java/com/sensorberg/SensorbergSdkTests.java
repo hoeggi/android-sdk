@@ -31,8 +31,8 @@ public class SensorbergSdkTests {
 
     @Before
     public void setup() {
-        // this is one way of solving the "Can't create handler inside thread that has not called Looper.prepare()" error when creating
-        // SensorbergApplicationBootstrapper inside a test
+        /* this is one way of solving the "Can't create handler inside thread that has not called Looper.prepare()" error when creating
+         SensorbergApplicationBootstrapper inside a test */
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -107,7 +107,8 @@ public class SensorbergSdkTests {
         tested.hostApplicationInForeground();
 
         Assertions.assertThat(SensorbergSdk.listeners.size()).isEqualTo(1);
-        verify(tested, times(2)).registerForPresentationDelegation(); //called once by registerEventListener and once by hostApplicationInForeground
+        /* called once by registerEventListener and once by hostApplicationInForeground */
+        verify(tested, times(2)).registerForPresentationDelegation();
     }
 
     @Test
