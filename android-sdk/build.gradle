@@ -113,7 +113,6 @@ android {
             proguardFile 'proguard-realm.txt'
         }
     }
-    buildToolsVersion '23.0.3'
 }
 
 checkstyle {
