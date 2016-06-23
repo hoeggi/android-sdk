@@ -2,14 +2,12 @@ package com.sensorberg.sdk;
 
 import com.sensorberg.SensorbergSdk;
 import com.sensorberg.sdk.action.Action;
-import com.sensorberg.sdk.internal.AndroidPlatform;
 import com.sensorberg.sdk.internal.PermissionChecker;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 import com.sensorberg.sdk.internal.interfaces.HandlerManager;
 import com.sensorberg.sdk.internal.interfaces.MessageDelayWindowLengthListener;
-import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.internal.transport.interfaces.Transport;
 import com.sensorberg.sdk.model.sugarorm.SugarAction;
@@ -37,12 +35,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 
-import java.net.Inet4Address;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
