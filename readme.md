@@ -6,7 +6,9 @@ You are viewing the sources of version 1.2.0RC1 . The SDK is released. Feel free
 
 #Last stable release
 
-Until 1.2.0RC1 is released stable.
+The last stable release was 1.0.0.  It is not recommended to use this as the 1.2.0RC1 is the latest. For now you can read the old [samples page](https://github.com/sensorberg-dev/android-sdk-samples) page for all neccesary information.
+Please be aware, we are not currently updating the samples. We are in process of updating the sdk and will release better and updated samples in the future. 
+If you have any specific questions, please reach out to us.
 
 #Integration
 
