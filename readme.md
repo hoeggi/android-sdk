@@ -2,11 +2,11 @@
 [![Join the chat at https://gitter.im/sensorberg-dev/android-sdk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sensorberg-dev/android-sdk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ##Warning:
-You are viewing the sources of version 1.0.0 . The SDK is released. Feel free to explore it.
+You are viewing the sources of version 1.2.0RC1 . The SDK is released. Feel free to explore it.
 
 #Last stable release
 
-Until 1.0.0 is released stable, please see the old [samples page](https://github.com/sensorberg-dev/android-sdk-samples) page for all neccesary information. As soon as the SDK is released properly, all samples will be updated as well.
+Until 1.2.0RC1 is released stable.
 
 #Integration
 
@@ -81,7 +81,7 @@ If you want to test the procedure, change the **dryRun** variable in the **bintr
 
 	The MIT License (MIT)
 	
-	Copyright (c) 2015 Sensorberg GmbH
+	Copyright (c) 2016 Sensorberg GmbH
 	
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
