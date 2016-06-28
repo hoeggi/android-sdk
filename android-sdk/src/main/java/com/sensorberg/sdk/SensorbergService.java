@@ -42,7 +42,7 @@ import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings("WeakerAccess") //external API
 public class SensorbergService extends Service {
-
+//TODO reimplement latest beacon
     public static final int MSG_APPLICATION_IN_FOREGROUND = 1;
 
     public static final int MSG_APPLICATION_IN_BACKGROUND = 2;
