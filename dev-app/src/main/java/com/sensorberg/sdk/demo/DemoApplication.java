@@ -175,7 +175,7 @@ public class DemoApplication extends MultiDexApplication {
      *
      * @param type
      */
-    public void setScannerStatus(int type) {
+    public void setLocationPermissionGranted(int type) {
         boot.sendLocationFlagToReceiver(type);
     }
 }

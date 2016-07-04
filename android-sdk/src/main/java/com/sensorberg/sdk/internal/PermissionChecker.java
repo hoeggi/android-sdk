@@ -52,7 +52,6 @@ public class PermissionChecker {
             returnValue = true;
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && hasLocationPermission()) {
             returnValue = true;
-
         } else {
             returnValue = false;
         }

@@ -49,7 +49,6 @@ public class PermissionBroadcastReceiver extends BroadcastReceiver {
         context.startService(service);
     }
 
-
     /**
      * Sends a flag for not showing the permission dialog.
      *

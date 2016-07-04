@@ -1,11 +1,9 @@
 package com.sensorberg.sdk.demo;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.action.Action;
@@ -21,13 +19,9 @@ import com.sensorberg.sdk.testApp.BuildConfig;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -45,6 +39,8 @@ public class DemoActivity extends Activity {
     private static final String EXTRA_ACTION = "com.sensorberg.demoActivity.extras.ACTION";
 
     public static final UUID BEACON_PROXIMITY_ID = UUID.fromString("192E463C-9B8E-4590-A23F-D32007299EF5");
+
+    private static final int MY_PERMISSION_REQUEST_LOCATION_SERVICES = 1;
 
     private SugarAction tested;
 
@@ -65,7 +61,7 @@ public class DemoActivity extends Activity {
             // Check Permissions Now
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
+                    MY_PERMISSION_REQUEST_LOCATION_SERVICES);
         }
 
         BeaconEvent beaconEvent = new BeaconEvent.Builder()
@@ -185,12 +181,12 @@ public class DemoActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case 1: {
+            case MY_PERMISSION_REQUEST_LOCATION_SERVICES: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("Scanner Message", "coarse location permission granted");
-                    ((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_SET);
+                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergService.MSG_LOCATION_SET);
                 } else {
-                    ((DemoApplication) getApplication()).setScannerStatus(SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
+                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
 
                     //Alternative, sent dialogue
                    /* final AlertDialog.Builder builder = new AlertDialog.Builder(this);

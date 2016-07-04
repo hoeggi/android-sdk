@@ -6,6 +6,7 @@ import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -19,13 +20,14 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
 
     private boolean leScanRunning = false;
 
-    @Inject
-    PermissionChecker permissionChecker;
+    private PermissionChecker permissionChecker;
+
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public AndroidBluetoothPlatform(BluetoothAdapter adapter, CrashCallBackWrapper wrapper) {
+    public AndroidBluetoothPlatform(BluetoothAdapter adapter, CrashCallBackWrapper wrapper, Context context) {
         crashCallBackWrapper = wrapper;
         bluetoothAdapter = adapter;
+        permissionChecker = new PermissionChecker(context);
     }
 
     /**

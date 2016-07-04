@@ -141,7 +141,7 @@ public class ProvidersModule {
     @Named("androidBluetoothPlatform")
     @Singleton
     public BluetoothPlatform provideAndroidBluetoothPlatform(BluetoothAdapter adapter, CrashCallBackWrapper wrapper) {
-        return new AndroidBluetoothPlatform(adapter, wrapper);
+        return new AndroidBluetoothPlatform(adapter, wrapper, application.getApplicationContext());
     }
 
     @Provides
