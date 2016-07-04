@@ -45,9 +45,8 @@ public class TheAndroidPlatformShould {
 
         tested.hasVibratePermission();
         tested.hasVibratePermission();
-        tested.hasScanPermissionCheckAndroid6();
 
-        verify(mockContext, times(2)).checkCallingOrSelfPermission(anyString());
+        verify(mockContext, times(1)).checkCallingOrSelfPermission(anyString());
     }
 
     @Test

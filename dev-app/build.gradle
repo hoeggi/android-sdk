@@ -5,7 +5,6 @@ android {
     buildToolsVersion project.ext.buildToolsVersion
 
     defaultConfig {
-        multiDexEnabled true
         minSdkVersion 18
         targetSdkVersion 23
         manifestPlaceholders = [
