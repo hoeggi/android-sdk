@@ -201,9 +201,8 @@ public class InternalApplicationBootstrapper extends MinimalBootstrapper
     public void startScanning() {
         if (bluetoothPlatform.isBluetoothLowEnergySupported()
                 && bluetoothPlatform.isBluetoothLowEnergyDeviceTurnedOn()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !permissionChecker.hasLocationPermission()) {
+            if (!permissionChecker.hasScanPermissionCheckAndroid6()) {
                 Logger.log.logError("User needs to be shown runtime dialogue asking for coarse location services");
-                //setLocationServicesHaveBeenSet();
             } else {
                 scanner.start();
             }
