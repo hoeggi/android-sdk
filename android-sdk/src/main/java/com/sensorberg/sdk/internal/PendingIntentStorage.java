@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.SensorbergApplicationBootstrapper;
+import com.sensorberg.SensorbergSdk;
 import com.sensorberg.sdk.internal.interfaces.Clock;
 import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 
@@ -18,14 +18,14 @@ public class PendingIntentStorage {
     private final SQLiteStore storage;
 
     @Inject
-    Context context;
+    protected Context context;
 
-    Clock clock;
+    private Clock clock;
 
     public PendingIntentStorage(ServiceScheduler serviceScheduler, Clock clk) {
         this.serviceScheduler = serviceScheduler;
         clock = clk;
-        SensorbergApplicationBootstrapper.getComponent().inject(this);
+        SensorbergSdk.getComponent().inject(this);
         storage = new SQLiteStore("pendingIntentStorage.sqlite", context);
     }
 

@@ -1,45 +1,44 @@
 package com.sensorberg.sdk.model.server;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionFactory;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.resolver.BeaconEvent;
+import com.sensorberg.sdk.settings.TimeConstants;
 import com.sensorberg.utils.ListUtils;
 import com.sensorberg.utils.UUIDUtils;
 
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.Getter;
 import lombok.ToString;
 
 @SuppressWarnings("WeakerAccess")
 @ToString
 public class ResolveAction implements Serializable {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public static final ListUtils.Mapper<ResolveAction, BeaconEvent> BEACON_EVENT_MAPPER = new ListUtils.Mapper<ResolveAction, BeaconEvent>() {
         public BeaconEvent map(ResolveAction resolveAction) {
             try {
                 Action action = ActionFactory
                         .getAction(resolveAction.type, resolveAction.content, UUID.fromString(UUIDUtils.addUuidDashes(resolveAction.eid)),
-                                resolveAction.delay * Constants.Time.ONE_SECOND);
+                                resolveAction.delay * TimeConstants.ONE_SECOND);
                 if (action == null) {
                     return null;
                 }
                 return new BeaconEvent.Builder()
                         .withAction(action)
-                        .withSuppressionTime(resolveAction.suppressionTime * Constants.Time.ONE_SECOND)
+                        .withSuppressionTime(resolveAction.suppressionTime * TimeConstants.ONE_SECOND)
                         .withSendOnlyOnce(resolveAction.sendOnlyOnce)
                         .withDeliverAtDate(resolveAction.deliverAt)
                         .withTrigger(resolveAction.trigger)
@@ -51,40 +50,42 @@ public class ResolveAction implements Serializable {
     };
 
     @Expose
-    public String eid;
+    private String eid;
 
     @Expose
-    public int trigger;
+    private int trigger;
 
     @Expose
-    public int type;
+    private int type;
 
     @Expose
-    public String name;
+    private String name;
 
     @Expose
-    public List<String> beacons;
+    private List<String> beacons;
 
     @Expose
-    public long suppressionTime; //in seconds
+    private long suppressionTime; //in seconds
 
     @Expose
-    public boolean sendOnlyOnce;
+    private boolean sendOnlyOnce;
 
     @Expose
-    public long delay;
+    private long delay;
 
     @Expose
-    public boolean reportImmediately;
+    @Getter
+    private boolean reportImmediately;
 
     @Expose
-    public JsonObject content;
+    @Getter
+    private JsonObject content;
 
     @Expose
-    public List<Timeframe> timeframes;
+    private List<Timeframe> timeframes;
 
     @Expose
-    public Date deliverAt;
+    private Date deliverAt;
 
     @SuppressWarnings("WeakerAccess")
     public ResolveAction(String uuid, int trigger, int type, String name, List<String> beacons, long suppressionTime, long delay,
@@ -99,37 +100,6 @@ public class ResolveAction implements Serializable {
         this.reportImmediately = reportImmediately;
         this.content = content;
         this.deliverAt = deliverAt;
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeObject(eid);
-        out.writeInt(trigger);
-        out.writeInt(type);
-        out.writeObject(name);
-        out.writeObject(beacons);
-        out.writeLong(suppressionTime);
-        out.writeLong(delay);
-        out.writeBoolean(reportImmediately);
-        out.writeObject(content.toString());
-        out.writeObject(deliverAt);
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException, JSONException {
-        eid = (String) in.readObject();
-        trigger = in.readInt();
-        type = in.readInt();
-        name = (String) in.readObject();
-        //noinspection unchecked -> see writeObject
-        beacons = (List<String>) in.readObject();
-        suppressionTime = in.readLong();
-        delay = in.readLong();
-        reportImmediately = in.readBoolean();
-        String jsonString = (String) in.readObject();
-        if (jsonString != null) {
-            JsonParser parser = new JsonParser();
-            content = parser.parse(jsonString).getAsJsonObject();
-        }
-        deliverAt = (Date) in.readObject();
     }
 
     public boolean matchTrigger(int eventMask) {

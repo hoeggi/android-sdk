@@ -17,7 +17,7 @@ import lombok.ToString;
 @ToString
 public class ResolveResponse extends BaseResolveResponse implements Serializable {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @Expose
     private List<ResolveAction> actions = Collections.emptyList();
@@ -91,13 +91,13 @@ public class ResolveResponse extends BaseResolveResponse implements Serializable
 
     public static class Builder {
 
-        List<String> accountProximityUUIDs = Collections.emptyList();
+        private List<String> accountProximityUUIDs = Collections.emptyList();
 
-        List<ResolveAction> actions = Collections.emptyList();
+        private List<ResolveAction> actions = Collections.emptyList();
 
-        List<ResolveAction> instantActions = Collections.emptyList();
+        private List<ResolveAction> instantActions = Collections.emptyList();
 
-        Long reportTrigger = 0L;
+        private Long reportTrigger = 0L;
 
         public Builder() {
         }

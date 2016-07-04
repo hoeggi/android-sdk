@@ -1,9 +1,13 @@
 package com.sensorberg.sdk.di;
 
 import com.sensorberg.di.Component;
+import com.sensorberg.sdk.SensorbergServiceIntentHandlingTests;
+import com.sensorberg.sdk.SensorbergServiceIntentMessageHandlingTests;
+import com.sensorberg.sdk.SensorbergServiceInternalTests;
+import com.sensorberg.sdk.SensorbergServiceMessengerListTests;
+import com.sensorberg.sdk.SensorbergServiceStartTests;
 import com.sensorberg.sdk.TheInternalApplicationBootstrapperShould;
 import com.sensorberg.sdk.TheInternalBootstrapperIntegration;
-import com.sensorberg.sdk.TheSensorbergServiceShould;
 import com.sensorberg.sdk.internal.TheIntentSchedulingBeUpdateable;
 import com.sensorberg.sdk.internal.TheIntentSchedulingShould;
 import com.sensorberg.sdk.internal.http.ApiServiceShould;
@@ -58,7 +62,7 @@ public interface TestComponent extends Component {
 
     void inject(TheScannerWithoutPausesShould theScannerWithoutPausesShould);
 
-    void inject(TheSensorbergServiceShould theSensorbergServiceShould);
+    void inject(SensorbergServiceInternalTests sensorbergServiceInternalTests);
 
     void inject(TheBackgroundScannerShould theBackgroundScannerShould);
 
@@ -101,6 +105,14 @@ public interface TestComponent extends Component {
     void inject(TheResolveResponseShould theResolveResponseShould);
 
     void inject(ApiServiceShould apiServiceShould);
+
+    void inject(SensorbergServiceStartTests sensorbergServiceStartTests);
+
+    void inject(SensorbergServiceIntentHandlingTests sensorbergServiceIntentHandlingTests);
+
+    void inject(SensorbergServiceIntentMessageHandlingTests sensorbergServiceIntentMessageHandlingTests);
+
+    void inject(SensorbergServiceMessengerListTests sensorbergServiceMessengerListTests);
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Initializer {

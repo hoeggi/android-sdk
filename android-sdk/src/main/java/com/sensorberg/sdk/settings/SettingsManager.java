@@ -43,7 +43,7 @@ public class SettingsManager {
         transport.loadSettings(transportSettingsCallback);
     }
 
-    TransportSettingsCallback transportSettingsCallback = new TransportSettingsCallback() {
+    private TransportSettingsCallback transportSettingsCallback = new TransportSettingsCallback() {
         @Override
         public void nothingChanged() {
             //all is good nothing to do
@@ -71,7 +71,7 @@ public class SettingsManager {
         }
     };
 
-    BeaconHistoryUploadIntervalListener mBeaconHistoryUploadIntervalListener = new BeaconHistoryUploadIntervalListener() {
+    private BeaconHistoryUploadIntervalListener mBeaconHistoryUploadIntervalListener = new BeaconHistoryUploadIntervalListener() {
         @Override
         public void historyUploadIntervalChanged(Long newHistoryUploadIntervalMillis) {
             if (newHistoryUploadIntervalMillis != settings.getHistoryUploadInterval()) {

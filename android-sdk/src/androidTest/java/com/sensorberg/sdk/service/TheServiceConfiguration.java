@@ -1,7 +1,7 @@
 package com.sensorberg.sdk.service;
 
 import com.sensorberg.sdk.SensorbergTestApplication;
-import com.sensorberg.sdk.ServiceConfiguration;
+import com.sensorberg.sdk.SensorbergServiceConfiguration;
 import com.sensorberg.sdk.di.TestComponent;
 import com.sensorberg.sdk.resolver.ResolverConfiguration;
 import com.sensorberg.sdk.testUtils.TestFileManager;
@@ -23,7 +23,7 @@ public class TheServiceConfiguration {
     @Inject
     TestFileManager testFileManager;
 
-    ServiceConfiguration tested;
+    SensorbergServiceConfiguration tested;
 
     private String API_TOKEN = "SOMETHING";
     private String ADVERTISING_ID = "SOMETHING_ADVERTISING_ID";
@@ -36,7 +36,7 @@ public class TheServiceConfiguration {
         resolverConf.setApiToken(API_TOKEN);
         resolverConf.setAdvertisingIdentifier(ADVERTISING_ID);
 
-        tested = new ServiceConfiguration(resolverConf);
+        tested = new SensorbergServiceConfiguration(resolverConf);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class TheServiceConfiguration {
         File file = File.createTempFile("test" + System.currentTimeMillis(), "tmp");
         testFileManager.write(tested, file);
 
-        ServiceConfiguration deserialized = (ServiceConfiguration) testFileManager.getContentsOfFileOrNull(file);
+        SensorbergServiceConfiguration deserialized = (SensorbergServiceConfiguration) testFileManager.getContentsOfFileOrNull(file);
 
         Assertions.assertThat(deserialized).isNotNull();
         Assertions.assertThat(deserialized.resolverConfiguration.apiToken).isEqualTo(API_TOKEN);

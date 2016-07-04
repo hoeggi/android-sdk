@@ -1,5 +1,6 @@
 package com.sensorberg.sdk.internal;
 
+import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.FileManager;
 
 import android.content.Context;
@@ -47,7 +48,7 @@ public class AndroidFileManager implements FileManager {
             oos.writeObject(object);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.log.logError("error writing file", e);
         } finally {
             Closeables.close(fos);
             Closeables.close(oos);
@@ -64,12 +65,13 @@ public class AndroidFileManager implements FileManager {
             ois = new ObjectInputStream(fis);
             return ois.readObject();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            Logger.log.logError("error reading file", e);
         } finally {
             Closeables.close(fis);
             Closeables.close(ois);
         }
+
+        return null;
     }
 
     static class Closeables {

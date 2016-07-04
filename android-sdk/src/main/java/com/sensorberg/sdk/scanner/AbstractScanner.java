@@ -1,6 +1,5 @@
 package com.sensorberg.sdk.scanner;
 
-import com.sensorberg.sdk.Constants;
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.internal.interfaces.Platform;
 import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
@@ -12,6 +11,7 @@ import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 import com.sensorberg.sdk.model.BeaconId;
 import com.sensorberg.sdk.settings.DefaultSettings;
 import com.sensorberg.sdk.settings.SettingsManager;
+import com.sensorberg.sdk.settings.TimeConstants;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
@@ -25,19 +25,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 
+import lombok.Getter;
+
 public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback, Platform.ForegroundStateListener {
 
     private static final long NEVER_STOPPED = 0L;
 
-    long waitTime = DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME;
+    protected long waitTime = DefaultSettings.DEFAULT_BACKGROUND_WAIT_TIME;
 
-    long scanTime = DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME;
+    protected long scanTime = DefaultSettings.DEFAULT_BACKGROUND_SCAN_TIME;
 
     private final SettingsManager settingsManager;
 
-    Clock clock;
+    private final Clock clock;
 
-    ServiceScheduler serviceScheduler;
+    @Getter
+    private final ServiceScheduler serviceScheduler;
 
     private final BluetoothPlatform bluetoothPlatform;
 
@@ -51,7 +54,8 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
 
     private final BeaconMap enteredBeacons;
 
-    final RunLoop runLoop;
+    @Getter
+    private final RunLoop runLoop;
 
     private long lastStopTimestamp = NEVER_STOPPED; // this.platform.getClock().now(); // or 0L
 
@@ -100,7 +104,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 enteredBeacons.filter(new BeaconMap.Filter() {
                     public boolean filter(EventEntry beaconEntry, BeaconId beaconId) {
                         //might be negative!!!
-                        long timeSinceWeSawTheBeacon = now - lastBreakLength - beaconEntry.lastBeaconTime;
+                        long timeSinceWeSawTheBeacon = now - lastBreakLength - beaconEntry.getLastBeaconTime();
                         if (timeSinceWeSawTheBeacon > settingsManager.getExitTimeoutMillis()) {
                             ScanEvent scanEvent = new ScanEvent(beaconId, now, ScanEventType.EXIT.getMask());
                             runLoop.sendMessage(ScannerEvent.EVENT_DETECTED, scanEvent);
@@ -149,8 +153,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                     entry = new EventEntry(now, ScanEventType.ENTRY.getMask());
                     Logger.log.beaconResolveState(scanEvent, "entered");
                 } else {
-                    entry = new EventEntry(entry);
-                    entry.lastBeaconTime = now;
+                    entry = new EventEntry(now, entry.getEventMask());
                     Logger.log.beaconSeenAgain(beaconId);
                     if (this.rssiListener != RssiListener.NONE) {
                         runLoop.sendMessage(ScannerEvent.RSSI_UPDATED, new Pair<>(beaconId, rssi));
@@ -164,7 +167,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
     @Override
     public void handleMessage(Message message) {
         ScannerEvent queueEvent = new ScannerEvent(message.what, message.obj);
-        switch (queueEvent.type) {
+        switch (queueEvent.getType()) {
             case ScannerEvent.LOGICAL_SCAN_START_REQUESTED: {
                 if (!scanning) {
                     lastExitCheckTimestamp = clock.now();
@@ -200,7 +203,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                         public void run() {
                             loop();
                         }
-                    }, 0, Constants.Time.ONE_SECOND);
+                    }, 0, TimeConstants.ONE_SECOND);
                 }
                 break;
             }
@@ -215,7 +218,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 break;
             }
             case ScannerEvent.EVENT_DETECTED: {
-                ScanEvent scanEvent = (ScanEvent) queueEvent.data;
+                ScanEvent scanEvent = (ScanEvent) queueEvent.getData();
                 synchronized (listenersMonitor) {
                     for (ScannerListener listener : listeners) {
                         listener.onScanEventDetected(scanEvent);
@@ -225,13 +228,13 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
             }
             case ScannerEvent.RSSI_UPDATED: {
                 //noinspection unchecked -> see useage of ScannerEvent.RSSI_UPDATED
-                Pair<BeaconId, Integer> value = (Pair<BeaconId, Integer>) queueEvent.data;
+                Pair<BeaconId, Integer> value = (Pair<BeaconId, Integer>) queueEvent.getData();
                 this.rssiListener.onRssiUpdated(value.first, value.second);
                 break;
 
             }
             default: {
-                throw new IllegalArgumentException("unhandled case " + queueEvent.type);
+                throw new IllegalArgumentException("unhandled case " + queueEvent.getData());
             }
         }
     }

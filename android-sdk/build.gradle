@@ -161,6 +161,7 @@ sonarqube {
         property "sonar.java.binaries", "build/intermediates/classes/debug"
         property "sonar.libraries", libraries
         property "sonar.java.libraries", libraries
+        property "sonar.jacoco.reportPath", "build/outputs/code-coverage/connected/coverage.ec"
     }
 }
 

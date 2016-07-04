@@ -4,7 +4,7 @@ import com.sensorberg.sdk.internal.interfaces.ServiceScheduler;
 
 class MinimalBootstrapper {
 
-    final ServiceScheduler serviceScheduler;
+    protected final ServiceScheduler serviceScheduler;
 
     public MinimalBootstrapper(ServiceScheduler scheduler) {
         serviceScheduler = scheduler;

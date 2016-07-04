@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class BeaconMap {
 
-    FileManager fileManager;
+    private FileManager fileManager;
 
     public interface Filter {
 

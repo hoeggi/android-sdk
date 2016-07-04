@@ -1,6 +1,6 @@
 package com.sensorberg.sdk;
 
-import com.sensorberg.SensorbergApplicationBootstrapper;
+import com.sensorberg.SensorbergSdk;
 import com.sensorberg.di.Component;
 import com.sensorberg.sdk.di.TestComponent;
 
@@ -19,7 +19,9 @@ public class SensorbergTestApplication extends Application {
     public void onCreate() {
         super.onCreate();
         setComponent(buildComponentAndInject());
-        SensorbergApplicationBootstrapper bootstrapper = new SensorbergApplicationBootstrapper(this);
+
+        //we need this because this is the entry point for dagger
+        SensorbergSdk bootstrapper = new SensorbergSdk(this, null);
     }
 
     public Component buildComponentAndInject() {

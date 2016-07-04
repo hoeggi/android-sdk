@@ -39,7 +39,7 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
 
     private static final int CONNECTION_TIMEOUT = 30; //seconds
 
-    private static final long HTTP_RESPONSE_DISK_CACHE_MAX_SIZE = 5 * 1024 * 1024; //5MB
+    private static final long HTTP_RESPONSE_DISK_CACHE_MAX_SIZE = 5 * 1024L * 1024L; //5MB
 
     protected final Context mContext;
 
@@ -80,7 +80,7 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
         return mApiService;
     }
 
-    Interceptor headerAuthorizationInterceptor = new Interceptor() {
+    private Interceptor headerAuthorizationInterceptor = new Interceptor() {
         @Override
         public okhttp3.Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
@@ -157,7 +157,11 @@ public class RetrofitApiServiceImpl implements PlatformIdentifier.DeviceInstalla
     }
 
     public Call<SettingsResponse> getSettings() {
-        return getApiService().getSettings(getSettingsURLString(mApiToken));
+        return getSettings(getSettingsURLString(mApiToken));
+    }
+
+    public Call<SettingsResponse> getSettings(@Url String url) {
+        return getApiService().getSettings(url);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.sensorberg.sdk.internal;
 
-import com.sensorberg.sdk.Constants;
+import com.sensorberg.sdk.settings.SharedPreferencesKeys;
 
 import org.fest.assertions.api.Assertions;
 import org.junit.Before;
@@ -27,7 +27,7 @@ public class ThePersistentIntegerCounterShould {
                 InstrumentationRegistry.getContext().getSharedPreferences(String.valueOf(System.currentTimeMillis()), Context.MODE_PRIVATE));
 
         settings = InstrumentationRegistry.getContext().getSharedPreferences(String.valueOf(System.currentTimeMillis()), Context.MODE_PRIVATE);
-        settings.edit().putInt(Constants.SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER, Integer.MAX_VALUE - 1).apply();
+        settings.edit().putInt(SharedPreferencesKeys.Platform.POST_TO_SERVICE_COUNTER, Integer.MAX_VALUE - 1).apply();
 
         testedCloseToTheEnd = new PersistentIntegerCounter(settings);
     }

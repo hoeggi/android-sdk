@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class Logger {
 
+    @SuppressWarnings("squid:S1444")
     public static Log log;
 
     private static final String TAG = "Sensorberg";
@@ -20,6 +21,7 @@ public class Logger {
     }
 
     public interface Log {
+
         void beaconResolveState(ScanEvent event, String state);
 
         void beaconResolveState(BeaconEvent event, String state);
@@ -47,7 +49,7 @@ public class Logger {
         void verbose(String message);
     }
 
-    public static void enableVerboseLogging(){
+    public static void enableVerboseLogging() {
         log = new VerboseLogger();
     }
 
@@ -157,10 +159,9 @@ public class Logger {
 
         @Override
         public void logError(String s, Throwable cause) {
-            if(cause != null){
+            if (cause != null) {
                 logError(s + cause.getMessage());
-            }
-            else{
+            } else {
                 logError(s);
             }
         }
@@ -172,12 +173,12 @@ public class Logger {
 
         @Override
         public void logServiceState(String state) {
-            android.util.Log.d(TAG,"service state:"+ state);
+            android.util.Log.d(TAG, "service state:" + state);
         }
 
         @Override
         public void logSettingsUpdateState(String state) {
-            android.util.Log.d(TAG, "settings update finished message:\""+state+"\"");
+            android.util.Log.d(TAG, "settings update finished message:\"" + state + "\"");
         }
 
         @Override
@@ -216,7 +217,8 @@ public class Logger {
 
     public static class VerboseLoggerSeenAgainSlowed extends VerboseLogger {
 
-        final Map<BeaconId, Integer> counter = new HashMap<>();
+        private final Map<BeaconId, Integer> counter = new HashMap<>();
+
         private final int countNeeded;
 
         public VerboseLoggerSeenAgainSlowed(int countNeeded) {
@@ -226,11 +228,11 @@ public class Logger {
         @Override
         public void beaconSeenAgain(BeaconId beaconId) {
             Integer value = counter.get(beaconId);
-            if (value == null){
+            if (value == null) {
                 value = 1;
             }
             counter.put(beaconId, value);
-            if (counter.get(beaconId) % countNeeded == 0){
+            if (counter.get(beaconId) % countNeeded == 0) {
                 android.util.Log.d(TAG, beaconId.toTraditionalString() + " was seen again ");
             }
 

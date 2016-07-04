@@ -11,8 +11,12 @@ import java.util.List;
 
 public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
 
+    @SuppressWarnings("squid:S1444")
     public static NetworkInfo latestNetworkInfo = null;
+
     public static final List<NetworkInfoListener> listener = new ArrayList<NetworkInfoListener>();
+
+    @SuppressWarnings("squid:S1444")
     public static NotificationBuilder notificationBuilder = NotificationBuilder.NONE;
 
     @Override
@@ -21,10 +25,9 @@ public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static String infoToString(NetworkInfo networkInfoMaybeNull) {
-        if ( networkInfoMaybeNull == null){
+        if (networkInfoMaybeNull == null) {
             return "not connected";
-        }
-        else {
+        } else {
             StringBuilder builder = new StringBuilder();
             builder.append("Connected: ").append(networkInfoMaybeNull.isConnected()).append('\n');
             builder.append("ConnectedOrConnecting: ").append(networkInfoMaybeNull.isConnectedOrConnecting()).append('\n');
@@ -41,7 +44,7 @@ public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
     }
 
     private static String typeToString(int type) {
-        switch (type){
+        switch (type) {
             case ConnectivityManager.TYPE_ETHERNET:
                 return "TYPE_ETHERNET";
             case ConnectivityManager.TYPE_BLUETOOTH:
@@ -80,13 +83,14 @@ public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
 
     /**
      * maps the network states to lan, wifi or the broadband types (edge, hsdpa...)
+     *
      * @return the mapped network type name or "unknown"
      */
     public static String getNetworkInfoString() {
-        if (latestNetworkInfo == null){
+        if (latestNetworkInfo == null) {
             return "unknown";
         }
-        switch (latestNetworkInfo.getType()){
+        switch (latestNetworkInfo.getType()) {
             case ConnectivityManager.TYPE_ETHERNET:
                 return "lan";
             case ConnectivityManager.TYPE_MOBILE:
@@ -100,10 +104,12 @@ public class NetworkInfoBroadcastReceiver extends BroadcastReceiver {
 
 
     public interface NetworkInfoListener {
+
         void onNetworkInfoChanged(NetworkInfo networkInfoMaybeNull);
     }
 
     public interface NotificationBuilder {
+
         NotificationBuilder NONE = new NotificationBuilder() {
             @Override
             public void buildNotification(Context context, NetworkInfo latestNetworkInfo) {
