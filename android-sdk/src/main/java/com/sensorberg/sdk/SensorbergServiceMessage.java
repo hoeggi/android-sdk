@@ -22,6 +22,8 @@ public class SensorbergServiceMessage {
 
     public static final int MSG_BEACON_LAYOUT_UPDATE = 11;
 
+    public static final int MSG_LOCATION_SERVICES_IS_SET = 13;
+
     public static final int MSG_SET_API_ADVERTISING_IDENTIFIER = 12;
 
     public static final int GENERIC_TYPE_BEACON_ACTION = 1001;
@@ -39,6 +41,10 @@ public class SensorbergServiceMessage {
     public static final int MSG_TYPE_ENABLE_LOGGING = 104;
 
     public static final int MSG_TYPE_SET_RESOLVER_ENDPOINT = 105;
+
+    public static final int MSG_LOCATION_NOT_SET_WHEN_NEEDED = 106;
+
+    public static final int MSG_LOCATION_SET = 107;
 
     public static final String MSG_SET_API_TOKEN_TOKEN = "com.sensorberg.android.sdk.message.setApiToken.apiTokenString";
 
@@ -64,6 +70,8 @@ public class SensorbergServiceMessage {
     public static final String EXTRA_START_SERVICE = "com.sensorberg.android.sdk.intent.startService";
 
     public static final String EXTRA_MESSENGER = "com.sensorberg.android.sdk.intent.messenger";
+
+    public static final String EXTRA_LOCATION_PERMISSION = "com.sensorberg.android.sdk.intent.permissionState";
 
     private SensorbergServiceMessage() {
         throw new IllegalAccessError("Utility class");
@@ -110,6 +118,8 @@ public class SensorbergServiceMessage {
                 return "MSG_TYPE_SET_RESOLVER_ENDPOINT";
             case MSG_SET_API_ADVERTISING_IDENTIFIER:
                 return "MSG_SET_API_ADVERTISING_IDENTIFIER";
+            case MSG_LOCATION_SERVICES_IS_SET:
+                return "MSG_LOCATION_SERVICES_IS_SET";
             default:
                 return "unknown message" + what;
         }

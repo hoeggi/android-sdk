@@ -6,7 +6,11 @@ import com.sensorberg.sdk.internal.interfaces.BluetoothPlatform;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.os.Build;
+import android.util.Log;
+
+import javax.inject.Inject;
 
 public class AndroidBluetoothPlatform implements BluetoothPlatform {
 
@@ -16,10 +20,13 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
 
     private boolean leScanRunning = false;
 
+    private PermissionChecker permissionChecker;
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public AndroidBluetoothPlatform(BluetoothAdapter adapter, CrashCallBackWrapper wrapper) {
+    public AndroidBluetoothPlatform(BluetoothAdapter adapter, CrashCallBackWrapper wrapper, Context context) {
         crashCallBackWrapper = wrapper;
         bluetoothAdapter = adapter;
+        permissionChecker = new PermissionChecker(context);
     }
 
     /**
@@ -47,7 +54,9 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
     @Override
     public void startLeScan(BluetoothAdapter.LeScanCallback scanCallback) {
         if (isBluetoothLowEnergySupported()) {
-            if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+            if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON
+                    && permissionChecker.hasScanPermissionCheckAndroid6()) {
+                Log.i("bluetooth adapter", Integer.toString(bluetoothAdapter.getState()));
                 //noinspection deprecation old API compatability
                 bluetoothAdapter.startLeScan(crashCallBackWrapper);
                 crashCallBackWrapper.setCallback(scanCallback);

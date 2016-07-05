@@ -5,6 +5,8 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.SensorbergServiceMessage;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -16,11 +18,18 @@ import com.sensorberg.sdk.scanner.ScanEvent;
 import com.sensorberg.sdk.scanner.ScanEventType;
 import com.sensorberg.sdk.testApp.BuildConfig;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.TextView;
 
@@ -35,6 +44,8 @@ public class DemoActivity extends Activity {
 
     public static final UUID BEACON_PROXIMITY_ID = UUID.fromString("192E463C-9B8E-4590-A23F-D32007299EF5");
 
+    private static final int MY_PERMISSION_REQUEST_LOCATION_SERVICES = 1;
+
     private SugarAction tested;
 
     private Clock clock;
@@ -45,9 +56,39 @@ public class DemoActivity extends Activity {
 
     private TextView textView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Functionality limited");
+                builder.setMessage("Since location access has not been granted, " +
+                        "this app will not be able to discover beacons when in the background.");
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        ActivityCompat.requestPermissions(DemoActivity.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                MY_PERMISSION_REQUEST_LOCATION_SERVICES);
+                    }
+
+                });
+                builder.show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSION_REQUEST_LOCATION_SERVICES);
+            }
+        }
 
         BeaconEvent beaconEvent = new BeaconEvent.Builder()
                 .withAction(new InAppAction(uuid, null, null, null, null, 0))
@@ -66,6 +107,7 @@ public class DemoActivity extends Activity {
                 return 0;
             }
         };
+
 
         //app = (SugarApp)getApplication();
         tested = SugarAction.from(beaconEvent, clock);
@@ -159,5 +201,21 @@ public class DemoActivity extends Activity {
         Intent intent = new Intent(context, DemoActivity.class);
         intent.putExtra(EXTRA_ACTION, action);
         return intent;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSION_REQUEST_LOCATION_SERVICES: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("Scanner Message", "coarse location permission granted");
+                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergServiceMessage.MSG_LOCATION_SET);
+                } else {
+                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergServiceMessage.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
+                }
+                return;
+            }
+        }
     }
 }

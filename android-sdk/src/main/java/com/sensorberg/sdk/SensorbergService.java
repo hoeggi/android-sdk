@@ -30,6 +30,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.net.URL;
@@ -364,8 +365,16 @@ public class SensorbergService extends Service {
                 setAdvertisingIdentifier(intent);
                 break;
             }
+            case SensorbergServiceMessage.MSG_LOCATION_SERVICES_IS_SET: {
+                if (intent.getBooleanExtra(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION, false)) {
+                    Log.i("Location Permission", "scanner should stop");
+                    bootstrapper.stopScanning();
+                } else {
+                    bootstrapper.startScanning();
+                    Log.i("Location Permission", "scanner should start");
+                }
+            }
         }
-
         return START_STICKY;
     }
 

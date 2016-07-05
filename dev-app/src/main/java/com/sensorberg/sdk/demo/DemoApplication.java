@@ -8,11 +8,13 @@ import com.sensorberg.BackgroundDetector;
 import com.sensorberg.SensorbergSdk;
 import com.sensorberg.SensorbergSdkEventListener;
 import com.sensorberg.sdk.Logger;
+import com.sensorberg.sdk.SensorbergService;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.ActionType;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.action.UriMessageAction;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
+import com.sensorberg.sdk.demo.presenters.MyActionPresenter;
 import com.sensorberg.sdk.resolver.BeaconEvent;
 import com.sensorberg.sdk.testApp.BuildConfig;
 
@@ -57,6 +59,9 @@ public class DemoApplication extends MultiDexApplication {
             @Override
             public void presentBeaconEvent(BeaconEvent beaconEvent) {
                 showAlert(beaconEvent.getAction(), beaconEvent.trigger);
+                Log.i("beaconevent", beaconEvent.getBeaconId().toString());
+                Action action = beaconEvent.getAction();
+                showAlert(action, beaconEvent.trigger);
             }
         });
 
@@ -164,5 +169,13 @@ public class DemoApplication extends MultiDexApplication {
 
     public void setActivityContext(Context activityContext) {
         this.activityContext = activityContext;
+    }
+
+    /**
+     *
+     * @param type
+     */
+    public void setLocationPermissionGranted(int type) {
+        boot.sendLocationFlagToReceiver(type);
     }
 }

@@ -18,6 +18,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 import android.os.Message;
+import android.util.Log;
 import android.util.Pair;
 
 import java.io.File;
@@ -194,6 +195,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
                 lastBreakLength = clock.now() - lastExitCheckTimestamp;
                 Logger.log.scannerStateChange("starting to scan again, scan break was " + lastBreakLength + "millis");
                 if (scanning) {
+                    Log.i("scannerStatusUnpause", Boolean.toString(scanning));
                     Logger.log.scannerStateChange("scanning for" + scanTime + "millis");
                     bluetoothPlatform.startLeScan(scanCallback);
                     scheduleExecution(ScannerEvent.PAUSE_SCAN, scanTime);
@@ -272,6 +274,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
      * Starts scanning.
      */
     public void start() {
+        Log.i("Scan: ", "Scanner started");
         runLoop.sendMessage(ScannerEvent.LOGICAL_SCAN_START_REQUESTED);
     }
 
@@ -280,6 +283,7 @@ public abstract class AbstractScanner implements RunLoop.MessageHandlerCallback,
      * Stop the scanning.
      */
     public void stop() {
+        Log.i("Scan: ", "Scanner stopped");
         runLoop.sendMessage(ScannerEvent.SCAN_STOP_REQUESTED);
     }
 

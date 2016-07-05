@@ -1,9 +1,10 @@
-package com.sensorberg.sdk.demo;
+package com.sensorberg.sdk.demo.presenters;
 
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.action.UriMessageAction;
 import com.sensorberg.sdk.action.VisitWebsiteAction;
+import com.sensorberg.sdk.demo.DemoActivity;
 import com.sensorberg.sdk.testApp.R;
 
 import android.app.Notification;
