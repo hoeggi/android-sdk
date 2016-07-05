@@ -38,7 +38,8 @@ public class PermissionBroadcastReceiver extends BroadcastReceiver {
     }
 
     /**
-     * Sends a flag
+     * Sends a flag for indicating whether to show a permissions dialogue or not.
+     *
      * @param context
      * @param toShow
      */
