@@ -28,36 +28,24 @@ public class PermissionBroadcastReceiver extends BroadcastReceiver {
             final int flagType = intent.getExtras().getInt("type");
             switch (flagType) {
                 case SensorbergServiceMessage.MSG_LOCATION_SET:
-                    dontShowPermission(context);
+                    shouldDisplayPermission(context, false);
                     break;
                 case SensorbergServiceMessage.MSG_LOCATION_NOT_SET_WHEN_NEEDED:
-                    showPermission(context);
+                    shouldDisplayPermission(context, true);
                     break;
             }
         }
     }
 
     /**
-     * Sends a flag for showing the permission.
-     *
-     * @param context - Context object.
+     * Sends a flag
+     * @param context
+     * @param toShow
      */
-    private void showPermission(Context context) {
+    private void shouldDisplayPermission(Context context, boolean toShow) {
         Intent service = new Intent(context, SensorbergServiceMessage.class);
         service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_LOCATION_SERVICES_IS_SET);
-        service.putExtra(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION, true);
-        context.startService(service);
-    }
-
-    /**
-     * Sends a flag for not showing the permission dialog.
-     *
-      * @param context - Context object.
-     */
-    private void dontShowPermission(Context context) {
-        Intent service = new Intent(context, SensorbergServiceMessage.class);
-        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_LOCATION_SERVICES_IS_SET);
-        service.putExtra(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION, false);
+        service.putExtra(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION, toShow);
         context.startService(service);
     }
 }
