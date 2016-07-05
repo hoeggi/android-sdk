@@ -22,7 +22,6 @@ public class AndroidBluetoothPlatform implements BluetoothPlatform {
 
     private PermissionChecker permissionChecker;
 
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public AndroidBluetoothPlatform(BluetoothAdapter adapter, CrashCallBackWrapper wrapper, Context context) {
         crashCallBackWrapper = wrapper;

@@ -19,12 +19,15 @@ import com.sensorberg.sdk.testApp.BuildConfig;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Pair;
 import android.widget.TextView;
@@ -56,12 +59,32 @@ public class DemoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Check Permissions Now
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSION_REQUEST_LOCATION_SERVICES);
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Functionality limited");
+                builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        ActivityCompat.requestPermissions(getParent(),
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                MY_PERMISSION_REQUEST_LOCATION_SERVICES);
+                    }
+
+                });
+                builder.show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSION_REQUEST_LOCATION_SERVICES);
+            }
         }
 
         BeaconEvent beaconEvent = new BeaconEvent.Builder()
@@ -187,21 +210,6 @@ public class DemoActivity extends Activity {
                     ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergService.MSG_LOCATION_SET);
                 } else {
                     ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
-
-                    //Alternative, sent dialogue
-                   /* final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Functionality limited");
-                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
-                    builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            ((DemoApplication) getApplication()).stopScan();
-                        }
-
-                    });
-                    builder.show();*/
                 }
                 return;
             }
