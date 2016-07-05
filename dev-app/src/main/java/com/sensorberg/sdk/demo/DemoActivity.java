@@ -6,6 +6,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import com.sensorberg.sdk.Logger;
 import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.SensorbergServiceMessage;
 import com.sensorberg.sdk.action.Action;
 import com.sensorberg.sdk.action.InAppAction;
 import com.sensorberg.sdk.internal.interfaces.Clock;
@@ -55,6 +56,7 @@ public class DemoActivity extends Activity {
 
     private TextView textView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,13 +69,14 @@ public class DemoActivity extends Activity {
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Functionality limited");
-                builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
+                builder.setMessage("Since location access has not been granted, " +
+                        "this app will not be able to discover beacons when in the background.");
                 builder.setPositiveButton(android.R.string.ok, null);
                 builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        ActivityCompat.requestPermissions(getParent(),
+                        ActivityCompat.requestPermissions(DemoActivity.this,
                                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                 MY_PERMISSION_REQUEST_LOCATION_SERVICES);
                     }
@@ -207,9 +210,9 @@ public class DemoActivity extends Activity {
             case MY_PERMISSION_REQUEST_LOCATION_SERVICES: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("Scanner Message", "coarse location permission granted");
-                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergService.MSG_LOCATION_SET);
+                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergServiceMessage.MSG_LOCATION_SET);
                 } else {
-                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
+                    ((DemoApplication) getApplication()).setLocationPermissionGranted(SensorbergServiceMessage.MSG_LOCATION_NOT_SET_WHEN_NEEDED);
                 }
                 return;
             }

@@ -195,4 +195,11 @@ public class SensorbergSdk implements Platform.ForegroundStateListener {
     protected Component buildComponentAndInject(Context context) {
         return Component.Initializer.init((Application) context.getApplicationContext());
     }
+
+    public void sendLocationFlagToReceiver(int flagType) {
+        Intent intent = new Intent();
+        intent.setAction(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION);
+        intent.putExtra("type", flagType);
+        context.sendBroadcast(intent);
+    }
 }

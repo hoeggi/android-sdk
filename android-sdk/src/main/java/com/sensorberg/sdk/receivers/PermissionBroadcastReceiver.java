@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-import com.sensorberg.sdk.SensorbergService;
+import com.sensorberg.sdk.SensorbergServiceMessage;
 import com.sensorberg.sdk.internal.PermissionChecker;
 
 import javax.inject.Inject;
@@ -24,13 +24,13 @@ public class PermissionBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
 
-        if (action.equals(SensorbergService.EXTRA_LOCATION_PERMISSION)) {
+        if (action.equals(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION)) {
             final int flagType = intent.getExtras().getInt("type");
             switch (flagType) {
-                case SensorbergService.MSG_LOCATION_SET:
+                case SensorbergServiceMessage.MSG_LOCATION_SET:
                     dontShowPermission(context);
                     break;
-                case SensorbergService.MSG_LOCATION_NOT_SET_WHEN_NEEDED:
+                case SensorbergServiceMessage.MSG_LOCATION_NOT_SET_WHEN_NEEDED:
                     showPermission(context);
                     break;
             }
@@ -43,9 +43,9 @@ public class PermissionBroadcastReceiver extends BroadcastReceiver {
      * @param context - Context object.
      */
     private void showPermission(Context context) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_LOCATION_SERVICES_IS_SET);
-        service.putExtra(SensorbergService.EXTRA_LOCATION_PERMISSION, true);
+        Intent service = new Intent(context, SensorbergServiceMessage.class);
+        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_LOCATION_SERVICES_IS_SET);
+        service.putExtra(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION, true);
         context.startService(service);
     }
 
@@ -55,9 +55,9 @@ public class PermissionBroadcastReceiver extends BroadcastReceiver {
       * @param context - Context object.
      */
     private void dontShowPermission(Context context) {
-        Intent service = new Intent(context, SensorbergService.class);
-        service.putExtra(SensorbergService.EXTRA_GENERIC_TYPE, SensorbergService.MSG_LOCATION_SERVICES_IS_SET);
-        service.putExtra(SensorbergService.EXTRA_LOCATION_PERMISSION, false);
+        Intent service = new Intent(context, SensorbergServiceMessage.class);
+        service.putExtra(SensorbergServiceMessage.EXTRA_GENERIC_TYPE, SensorbergServiceMessage.MSG_LOCATION_SERVICES_IS_SET);
+        service.putExtra(SensorbergServiceMessage.EXTRA_LOCATION_PERMISSION, false);
         context.startService(service);
     }
 }
